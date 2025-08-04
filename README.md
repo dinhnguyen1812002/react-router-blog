@@ -1,87 +1,75 @@
-# Welcome to React Router!
+# Blog Platform Frontend
 
-A modern, production-ready template for building full-stack React applications using React Router.
+Frontend cho Blog Platform được xây dựng với React Router v7, TypeScript và TailwindCSS.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+## Tính năng
 
-## Features
+- 🚀 Server-side rendering với React Router v7
+- 🎨 UI hiện đại với TailwindCSS
+- 🔐 Xác thực người dùng với JWT
+- 📱 Responsive design
+- 🔍 Tìm kiếm và lọc bài viết
+- 📝 Hỗ trợ Rich Text và Markdown
+- 🖼️ Chia sẻ memes
+- ⚡ State management với Zustand
+- 🔄 Data fetching với TanStack Query
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+## Cài đặt
 
-## Getting Started
-
-### Installation
-
-Install the dependencies:
-
+1. Cài đặt dependencies:
 ```bash
 npm install
+npm run install-deps
 ```
 
-### Development
-
-Start the development server with HMR:
-
+2. Chạy development server:
 ```bash
 npm run dev
 ```
 
-Your application will be available at `http://localhost:5173`.
-
-## Building for Production
-
-Create a production build:
-
+3. Build cho production:
 ```bash
 npm run build
+npm start
 ```
 
-## Deployment
-
-### Docker Deployment
-
-To build and run using Docker:
-
-```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
-```
-
-The containerized application can be deployed to any platform that supports Docker, including:
-
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
+## Cấu trúc thư mục
 
 ```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
+app/
+├── api/              # API services
+├── components/       # React components
+│   ├── ui/          # UI components
+│   ├── layout/      # Layout components
+│   ├── post/        # Post-related components
+│   └── auth/        # Auth components
+├── config/          # Configuration files
+├── store/           # Zustand stores
+├── types/           # TypeScript types
+└── routes/          # Route components
 ```
 
-## Styling
+## API Integration
 
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
+Frontend kết nối với Spring Boot backend qua:
+- Base URL: `http://localhost:8080/api/v1`
+- Authentication: Cookie-based với JWT
+- File uploads: Multipart form data
 
----
+## Các trang chính
 
-Built with ❤️ using React Router.
+- `/` - Trang chủ
+- `/posts` - Danh sách bài viết
+- `/posts/:slug` - Chi tiết bài viết
+- `/memes` - Trang memes
+- `/login` - Đăng nhập
+- `/register` - Đăng ký
+
+## Development
+
+Để phát triển thêm tính năng:
+
+1. Tạo components trong `app/components/`
+2. Thêm API services trong `app/api/`
+3. Tạo routes mới trong `app/routes/`
+4. Cập nhật types trong `app/types/`

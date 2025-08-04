@@ -1,0 +1,210 @@
+import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router';
+import { useAuthStore } from '~/store/authStore';
+import { useTheme } from '~/components/providers/ThemeProvider';
+import { PageTransition } from '~/components/ui/PageTransition';
+import { RouteLoadingIndicator } from '~/components/ui/RouteLoadingIndicator';
+import { DashboardSidebar } from './DashboardSidebar';
+import { ThemedButton, ThemedIconButton } from '~/components/ui/ThemedButton';
+import { NotificationBadge } from '~/components/ui/ThemedBadge';
+import { 
+  Menu,
+  Bell,
+  Search
+} from 'lucide-react';
+
+interface DashboardLayoutProps {
+  children: React.ReactNode;
+}
+
+
+
+export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    // Load saved sidebar state from localStorage
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('sidebar-collapsed') === 'true';
+    }
+    return false;
+  });
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { user } = useAuthStore();
+  const { theme, setTheme, actualTheme } = useTheme();
+
+  const toggleTheme = () => {
+    const newTheme = actualTheme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+  };
+
+  // Close sidebar on route change (mobile)
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [location.pathname]);
+
+  // Save sidebar collapsed state to localStorage
+  useEffect(() => {
+    localStorage.setItem('sidebar-collapsed', sidebarCollapsed.toString());
+  }, [sidebarCollapsed]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only handle shortcuts when not typing in input fields
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      if (e.metaKey || e.ctrlKey) {
+        switch (e.key) {
+          case '1':
+            e.preventDefault();
+            navigate('/dashboard');
+            break;
+          case '2':
+            e.preventDefault();
+            navigate('/dashboard/my-posts');
+            break;
+          case '3':
+            e.preventDefault();
+            navigate('/dashboard/bookmarks');
+            break;
+          case '4':
+            e.preventDefault();
+            navigate('/dashboard/analytics');
+            break;
+          case '5':
+            e.preventDefault();
+            navigate('/dashboard/profile');
+            break;
+          case '6':
+            e.preventDefault();
+            navigate('/dashboard/settings');
+            break;
+          case 'n':
+            e.preventDefault();
+            navigate('/dashboard/posts/new');
+            break;
+          case 'b':
+            e.preventDefault();
+            toggleSidebarCollapse();
+            break;
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [navigate]);
+
+  // Toggle sidebar collapse
+  const toggleSidebarCollapse = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
+  };
+
+  return (
+    <div className="min-h-screen flex theme-bg-page">
+      <RouteLoadingIndicator />
+      
+      {/* Mobile sidebar overlay */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 z-40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        >
+          <div className="absolute inset-0 bg-black/50" />
+        </div>
+      )}
+
+      {/* Sidebar */}
+      <DashboardSidebar
+        sidebarOpen={sidebarOpen}
+        sidebarCollapsed={sidebarCollapsed}
+        darkMode={actualTheme === 'dark'}
+        onToggleCollapse={toggleSidebarCollapse}
+        onToggleTheme={toggleTheme}
+        onCloseSidebar={() => setSidebarOpen(false)}
+      />
+
+      {/* Main content */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Top bar */}
+        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              {/* Mobile menu button */}
+              <ThemedIconButton
+                icon={<Menu className="w-5 h-5" />}
+                variant="ghost"
+                onClick={() => setSidebarOpen(true)}
+                className="lg:hidden"
+              />
+
+              {/* Breadcrumb */}
+              <div className="hidden lg:flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+                <span>Dashboard</span>
+                {location.pathname !== '/dashboard' && (
+                  <>
+                    <span>/</span>
+                    <span className="text-gray-900 dark:text-gray-100 font-medium">
+                      {location.pathname === '/dashboard/posts/new' && 'Viết bài mới'}
+                      {location.pathname === '/dashboard/my-posts' && 'Bài viết của tôi'}
+                      {location.pathname === '/dashboard/bookmarks' && 'Bài viết đã lưu'}
+                      {location.pathname === '/dashboard/analytics' && 'Thống kê'}
+                      {location.pathname === '/dashboard/profile' && 'Hồ sơ'}
+                      {location.pathname === '/dashboard/settings' && 'Cài đặt'}
+                    </span>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Search bar */}
+            <div className="hidden md:flex flex-1 max-w-md mx-4">
+              <div className="relative w-full">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <input
+                  type="text"
+                  placeholder="Tìm kiếm... (⌘K)"
+                  className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-all duration-200"
+                />
+              </div>
+            </div>
+
+            {/* Right side actions */}
+            <div className="flex items-center space-x-2">
+              {/* Notifications */}
+              <div className="relative">
+                <ThemedIconButton
+                  icon={<Bell className="w-5 h-5" />}
+                  variant="ghost"
+                />
+                <NotificationBadge count={3} className="absolute -top-1 -right-1" />
+              </div>
+
+              {/* Back to main site */}
+              <ThemedButton
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/')}
+                className="hidden sm:flex"
+              >
+                Về trang chủ
+              </ThemedButton>
+            </div>
+          </div>
+        </div>
+
+        {/* Page content */}
+        <main className="flex-1 p-4 lg:p-6 overflow-auto">
+          <div className="max-w-7xl mx-auto">
+            <PageTransition>
+              {children}
+            </PageTransition>
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+};
