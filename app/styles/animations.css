@@ -137,3 +137,74 @@
   background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
   background-size: 200% 100%;
 }
+
+/* Sidebar specific animations */
+.sidebar-item {
+  transition: all 0.2s ease-out;
+}
+
+.sidebar-item:hover {
+  transform: translateX(4px);
+}
+
+.sidebar-item.active {
+  transform: translateX(4px);
+}
+
+/* Card animations */
+.card-hover {
+  transition: all 0.3s ease-out;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Button animations */
+.btn-pulse {
+  animation: pulse-soft 2s infinite;
+}
+
+.btn-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+/* Notification animations */
+.notification-badge {
+  animation: bounce-soft 1s ease-in-out;
+}
+
+/* Progress animations */
+.progress-bar {
+  transition: width 0.3s ease-out;
+}
+
+/* Modal animations */
+.modal-enter {
+  animation: fadeInScale 0.3s ease-out;
+}
+
+.modal-exit {
+  animation: fadeInScale 0.3s ease-out reverse;
+}
+
+/* Page transition animations */
+.page-enter {
+  animation: slideInFromRight 0.3s ease-out;
+}
+
+.page-exit {
+  animation: slideInFromLeft 0.3s ease-out;
+}
+
+/* Responsive animations */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

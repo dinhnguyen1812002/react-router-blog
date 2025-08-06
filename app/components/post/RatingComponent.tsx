@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { usePostActions } from '~/hooks/usePostActions';
 import { useAuthStore } from '~/store/authStore';
 import { Button } from '~/components/ui/button';
+import { Star, StarOff } from 'lucide-react';
 
 interface RatingComponentProps {
   postId: string;
@@ -9,7 +10,7 @@ interface RatingComponentProps {
   initialAverageRating?: number;
   className?: string;
   showAverage?: boolean;
-  compact?: boolean; // For card display
+  compact?: boolean;
 }
 
 export const RatingComponent = ({
@@ -25,14 +26,13 @@ export const RatingComponent = ({
 
   const [userRating, setUserRating] = useState<number | null>(initialUserRating);
   const [averageRating, setAverageRating] = useState(initialAverageRating);
-  const [showRatingButtons, setShowRatingButtons] = useState(false);
+  const [hoverRating, setHoverRating] = useState<number | null>(null);
 
   // Update local state when API response comes back
   useEffect(() => {
     if (ratingData) {
       setUserRating(ratingData.userRating);
       setAverageRating(ratingData.averageRating);
-      setShowRatingButtons(false); // Hide buttons after rating
     }
   }, [ratingData]);
 
@@ -44,7 +44,8 @@ export const RatingComponent = ({
 
   const handleRatingClick = (rating: number) => {
     if (!isAuthenticated) {
-      return; // usePostActions will handle redirect
+      handleRate(1); // This will trigger redirect
+      return;
     }
 
     // Optimistic update
@@ -52,47 +53,53 @@ export const RatingComponent = ({
     handleRate(rating);
   };
 
-  const toggleRatingButtons = () => {
-    if (!isAuthenticated) {
-      handleRate(1); // This will trigger redirect
-      return;
-    }
-    setShowRatingButtons(!showRatingButtons);
+  const handleStarHover = (rating: number) => {
+    setHoverRating(rating);
   };
 
-  // Compact version for cards
+  const handleStarLeave = () => {
+    setHoverRating(null);
+  };
+
+  // Compact version for cards/lists
   if (compact) {
     return (
-      <div className={`flex items-center space-x-2 ${className}`}>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={toggleRatingButtons}
-          disabled={isRating}
-          className="flex items-center space-x-1 px-2 py-1 h-auto text-xs"
-        >
-          <span className="text-blue-600 dark:text-blue-400">📊</span>
-          <span>
-            {averageRating > 0 ? averageRating.toFixed(1) : 'Đánh giá'}
-          </span>
-        </Button>
-
-        {/* Quick rating buttons */}
-        {showRatingButtons && (
-          <div className="flex items-center space-x-1">
-            {[1, 2, 3, 4, 5].map((rating) => (
-              <Button
-                key={rating}
-                variant={userRating === rating ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleRatingClick(rating)}
+      <div className={`flex items-center gap-2 ${className}`}>
+        {/* Star Rating Display */}
+        <div className="flex items-center gap-1">
+          {[1, 2, 3, 4, 5].map((star) => {
+            const isFilled = (hoverRating || userRating || averageRating) >= star;
+            return (
+              <button
+                key={star}
+                onClick={() => handleRatingClick(star)}
+                onMouseEnter={() => handleStarHover(star)}
+                onMouseLeave={handleStarLeave}
                 disabled={isRating}
-                className="w-6 h-6 p-0 text-xs"
+                className={`w-4 h-4 transition-colors ${
+                  isFilled 
+                    ? 'text-yellow-400' 
+                    : 'text-gray-300 dark:text-gray-600'
+                } hover:text-yellow-400 disabled:opacity-50`}
               >
-                {rating}
-              </Button>
-            ))}
-          </div>
+                <Star className="w-full h-full fill-current" />
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Rating Text */}
+        {showAverage && (
+          <span className="text-sm text-gray-600 dark:text-gray-400">
+            {averageRating > 0 ? averageRating.toFixed(1) : '' }
+          </span>
+        )}
+
+        {/* User Rating Indicator */}
+        {userRating && (
+          <span className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+            ({userRating}/5)
+          </span>
         )}
 
         {isRating && (
@@ -105,80 +112,97 @@ export const RatingComponent = ({
   // Full version for detail pages
   return (
     <div className={`space-y-4 ${className}`}>
-      {/* Current Rating Display */}
+      {/* Rating Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center gap-4">
+          {/* Average Rating */}
           <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+            <div className="text-2xl font-bold text-yellow-500">
               {averageRating > 0 ? averageRating.toFixed(1) : '0.0'}
             </div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">Điểm trung bình</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">
+              {averageRating > 0 ? 'Điểm trung bình' : 'Chưa có đánh giá'}
+            </div>
           </div>
 
+          {/* User Rating */}
           {userRating && (
             <div className="text-center">
-              <div className="text-lg font-semibold text-green-600 dark:text-green-400">
-                {userRating}
+              <div className="text-lg font-semibold text-blue-600 dark:text-blue-400">
+                {userRating}/5
               </div>
               <div className="text-xs text-gray-500 dark:text-gray-400">Điểm của bạn</div>
             </div>
           )}
         </div>
 
+        {/* Rate Button */}
         {!userRating && isAuthenticated && (
           <Button
-            onClick={() => setShowRatingButtons(true)}
+            onClick={() => handleRatingClick(1)}
             variant="outline"
             size="sm"
+            className="text-sm"
           >
-            Đánh giá bài viết
+            Đánh giá
           </Button>
         )}
       </div>
 
-      {/* Rating Buttons */}
-      {showRatingButtons && (
-        <div className="space-y-3">
-          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Chọn điểm từ 1-5:
-          </p>
-          <div className="flex items-center space-x-2">
-            {[1, 2, 3, 4, 5].map((rating) => (
-              <Button
-                key={rating}
-                variant={userRating === rating ? "default" : "outline"}
-                onClick={() => handleRatingClick(rating)}
+      {/* Interactive Star Rating */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-center gap-1">
+          {[1, 2, 3, 4, 5].map((star) => {
+            const isFilled = (hoverRating || userRating || averageRating) >= star;
+            return (
+              <button
+                key={star}
+                onClick={() => handleRatingClick(star)}
+                onMouseEnter={() => handleStarHover(star)}
+                onMouseLeave={handleStarLeave}
                 disabled={isRating}
-                className="flex-1 sm:flex-none sm:w-12"
+                className={`w-8 h-8 transition-all duration-200 ${
+                  isFilled 
+                    ? 'text-yellow-400 scale-110' 
+                    : 'text-gray-300 dark:text-gray-600 hover:text-yellow-300'
+                } hover:scale-110 disabled:opacity-50`}
               >
-                {rating}
-              </Button>
-            ))}
-          </div>
+                <Star className="w-full h-full fill-current" />
+              </button>
+            );
+          })}
+        </div>
 
-          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-            <span>Kém</span>
-            <span>Xuất sắc</span>
-          </div>
+        {/* Rating Labels */}
+        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 px-2">
+          <span>Kém</span>
+          <span>Xuất sắc</span>
+        </div>
 
-          {isRating && (
-            <p className="text-sm text-blue-600 dark:text-blue-400">Đang lưu đánh giá...</p>
-          )}
+        {/* Loading State */}
+        {isRating && (
+          <p className="text-sm text-blue-600 dark:text-blue-400 text-center">
+            Đang lưu đánh giá...
+          </p>
+        )}
+      </div>
+
+      {/* Authentication Prompt */}
+      {!isAuthenticated && (
+        <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg text-center">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Đăng nhập để đánh giá bài viết này
+          </p>
         </div>
       )}
 
-      {/* Authentication prompt */}
-      {!isAuthenticated && (
-        <p className="text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 p-3 rounded">
-          Đăng nhập để đánh giá bài viết này
-        </p>
-      )}
-
-      {/* Error display */}
+      {/* Error Display */}
       {ratingError && (
-        <p className="text-sm text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-3 rounded">
-          Lỗi: {ratingError.message}
-        </p>
+        <div className="bg-red-50 dark:bg-red-900/20 p-3 rounded-lg text-center">
+          <p className="text-sm text-red-600 dark:text-red-400">
+            Lỗi: {ratingError?.message || 'Có lỗi xảy ra'}
+          </p>
+        </div>
       )}
     </div>
   );

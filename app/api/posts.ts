@@ -57,7 +57,8 @@ export const postsApi = {
         return {
           data: response.data,
           message: 'Success',
-          success: true
+          success: true,
+          slug: response.data.map((post: Post) => post.slug)
         };
       } else {
         throw new Error('Invalid response format');
@@ -81,7 +82,8 @@ export const postsApi = {
         return {
           data: response.data,
           message: 'Success',
-          success: true
+          success: true,
+          slug: response.data.slug
         };
       } else {
         throw new Error('Invalid response format');
@@ -167,4 +169,5 @@ export const postsApi = {
       throw error;
     }
   },
+  
 };

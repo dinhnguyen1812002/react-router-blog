@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader } from '~/components/ui/Card';
 import { Button } from '~/components/ui/button';
 import { userPostsApi } from '~/api/userPosts';
 import { useAuthStore } from '~/store/authStore';
+import { DashboardWrapper } from '~/components/layout/DashboardWrapper';
 import { 
   Edit3, 
   Eye, 
@@ -55,6 +56,7 @@ export default function MyPostsPage() {
   const totalPosts = postsData?.total || 0;
 
   return (
+    <DashboardWrapper>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -258,5 +260,6 @@ export default function MyPostsPage() {
           </div>
         )}
       </div>
+    </DashboardWrapper>
   );
 }

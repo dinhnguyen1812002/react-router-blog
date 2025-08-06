@@ -1,10 +1,15 @@
+export interface socialMediaLinks {
+  id: string;
+  name: string;
+  url: string;
+}
+
 export interface User {
   id: string;
   username: string;
   email: string;
   roles: string[];
-  createdAt?: string;
-  avatar?: string ;
+  avatar: string;
 }
 
 export interface LoginResponse {
@@ -26,7 +31,7 @@ export interface Post {
   title: string;
   slug: string;
   content: string;
-  contentType?: 'RICHTEXT' | 'MARKDOWN';
+  contentType?: "RICHTEXT" | "MARKDOWN";
   summary?: string;
   thumbnail?: string;
   thumbnailUrl?: string;
@@ -48,11 +53,13 @@ export interface Post {
   comments?: Comment[];
 }
 
-export interface Category {
+export type Category = {
   id: number;
   category: string;
-  backgroundColor?: string;
-}
+  slug: string;
+  backgroundColor: string;
+  description: string;
+};
 
 export interface Tag {
   uuid: string;
@@ -99,22 +106,28 @@ export interface Comment {
   isEdited?: boolean;
 }
 
-export interface Meme {
+export interface ProfileUser {
   id: string;
-  name: string;
-  description: string;
-  memeUrl: string;
-  slug: string;
-  createdAt?: string;
-  likes?: number;
-  views?: number;
+  username: string;
+  email: string;
+  avatar: string;
+  roles: string[];
+  bio?: string;
+  socialMediaLinks: {
+    LINKEDIN?: string;
+    TWITTER?: string;
+    INSTAGRAM?: string;
+    FACEBOOK?: string;
+    GITHUB?: string;
+  };
+  postsCount: number;
+  savedPostsCount: number;
+  commentsCount: number;
+  customProfileMarkdown: string | null;
 }
 
-export interface MemeResponse {
-  content: Meme[];
-  pageNumber: number;
-  pageSize: number;
-  totalElements: number;
-  totalPages: number;
-  last: boolean;
+export interface Upload {
+  message: string;
+  url: string;
+  file: File;
 }

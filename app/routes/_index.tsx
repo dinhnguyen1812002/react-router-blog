@@ -6,6 +6,8 @@ import { postsApi } from '~/api/posts';
 import { Link } from 'react-router';
 import { useAuthStore } from '~/store/authStore';
 import { Button } from '~/components/ui/button';
+import HeroSection from '~/components/layout/Hero';
+import NewLetters from '~/components/NewLetters';
 
 export default function HomePage() {
   const { user, isAuthenticated } = useAuthStore();
@@ -29,7 +31,7 @@ export default function HomePage() {
   return (
     <MainLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-700 dark:to-purple-700 text-white py-20">
+      {/* <section className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-700 dark:to-purple-700 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           {isAuthenticated && user ? (
             <>
@@ -74,10 +76,12 @@ export default function HomePage() {
               </div>
             </>
           )}
-        </div>
-      </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        </div>
+      </section> */}
+      <HeroSection />
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Featured Posts */}
         <section className="mb-16">
           <div className="flex justify-between items-center mb-8">
@@ -122,6 +126,9 @@ export default function HomePage() {
             </Link>
           </section>
         )}
+
+        {/* new letter */}
+        <NewLetters />
       </div>
     </MainLayout>
   );

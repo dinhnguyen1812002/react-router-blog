@@ -1,8 +1,3 @@
-// import { type RouteConfig, index } from "@react-router/dev/routes";
-//
-// export default [index("routes/home.tsx")] satisfies RouteConfig;
-//
-
 import { type RouteConfig, index, route } from "@react-router/dev/routes";
 
 export default [
@@ -11,24 +6,37 @@ export default [
   route("register", "routes/register.tsx"),
   route("forgot-password", "routes/forgot-password.tsx"),
   route("reset-password", "routes/reset-password.tsx"),
-  route("auth-test", "routes/auth-test.tsx"), // Debug route
-  route("comment-test", "routes/comment-test.tsx"), // Comment test route
-  route("post-actions-test", "routes/post-actions-test.tsx"), // Post actions test route
+  // route("auth-test", "routes/auth-test.tsx"), // Debug route
+  // route("comment-test", "routes/comment-test.tsx"), // Comment test route
+  // route("post-actions-test", "routes/post-actions-test.tsx"), // Post actions test route
 
-  route("header-test", "routes/header-test.tsx"), // Header test route
-  route("theme-test", "routes/theme-test.tsx"), // Theme test route
+  // route("header-test", "routes/header-test.tsx"), // Header test route
+  // route("theme-test", "routes/theme-test.tsx"), // Theme test route
 
   // Dashboard routes
-  // route("dashboard", "routes/dashboard._index.tsx"),
-  route("dashboard/my-posts", "routes/dashboard.my-posts.tsx"), // User posts
-  route("dashboard/bookmarks", "routes/dashboard.bookmarks.tsx"), // Bookmarked posts
-  route("dashboard/posts/new", "routes/dashboard.posts.new.tsx"), // New post editor
-  route("dashboard-test", "routes/dashboard-test.tsx"), // Dashboard test page
-  route("auth-flow-test", "routes/auth-flow-test.tsx"), // Auth flow test page
+route("dashboard", "routes/dashboard/_layout.tsx", [
+  route("", "routes/dashboard/index.tsx"),
+  route("bookmarks", "routes/dashboard/bookmarks.tsx"),
+  route("content", "routes/dashboard/content.tsx"),
+  route("my-posts", "routes/dashboard/my-posts.tsx"), // Thêm route mới cho My Posts
+  route("settings", "routes/dashboard/settings.tsx"),
+  route("posts/new", "routes/dashboard/posts/new.tsx"),
+  route("analytics", "routes/dashboard/analytics.tsx"),
+  route("profile", "routes/dashboard/profile.tsx"),
+]),
+  
+  // route("dashboard-test", "routes/dashboard-test.tsx"), // Dashboard test page
+  // route("auth-flow-test", "routes/auth-flow-test.tsx"), // Auth flow test page
   route("posts", "routes/posts._index.tsx"),
   route("posts/:slug", "routes/posts.$slug.tsx"),
   route("memes", "routes/memes._index.tsx"),
   route("memes/:slug", "routes/memes.$slug.tsx"),
+  route("meme-test", "routes/meme-test.tsx"),
+  route("meme-simple", "routes/meme-simple.tsx"),
+  route("memes-simple", "routes/memes-simple.tsx"),
+  route("memes-debug", "routes/memes-debug.tsx"),
+  route("memes-basic", "routes/memes-basic.tsx"),
+  route("storage-debug", "routes/storage-debug.tsx"),
 
   // Author routes
   route("author/posts", "routes/author.posts._index.tsx"),
@@ -45,5 +53,5 @@ export default [
   // User profile and settings
   // route("profile/:userId", "routes/profile.$userId.tsx"),
   // route("settings/profile", "routes/settings.profile.tsx"),
-  route("dashboard", "routes/dashboard._index.tsx"),
 ] satisfies RouteConfig;
+

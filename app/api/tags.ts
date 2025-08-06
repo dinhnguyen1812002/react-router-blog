@@ -2,9 +2,10 @@ import { apiClient } from './client';
 import type { ApiResponse, Tag } from '~/types';
 
 export const tagsApi = {
+  
   getAll: async (): Promise<Tag[]> => {
-    const response = await apiClient.get('/tags');
-    return response.data.data;
+    const response = await apiClient.get<Tag[]>('/tags');
+    return response.data;
   },
 
   getById: async (id: string): Promise<ApiResponse<Tag>> => {

@@ -1,3 +1,4 @@
+// Auth Store với Zustand - Single source of truth
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { User } from '~/types';
@@ -18,6 +19,7 @@ interface AuthActions {
   login: (user: User, token: string) => void;
   logout: () => void;
   clearError: () => void;
+  initialize: () => Promise<void>;
 }
 
 type AuthStore = AuthState & AuthActions;
@@ -34,11 +36,11 @@ export const useAuthStore = create<AuthStore>()(
 
       // Actions
       setUser: (user: User) => {
-        set({ user, isAuthenticated: true });
+        set({ user, isAuthenticated: !!user });
       },
 
       setToken: (token: string) => {
-        set({ token });
+        set({ token, isAuthenticated: !!token });
       },
 
       setLoading: (loading: boolean) => {
@@ -65,30 +67,49 @@ export const useAuthStore = create<AuthStore>()(
           isAuthenticated: false,
           error: null,
         });
+        // Clear any additional storage if needed
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('refresh-token');
+        }
       },
 
       clearError: () => {
         set({ error: null });
       },
+
+      // Initialize auth state on app start
+      initialize: async () => {
+        const { token, user } = get();
+        if (token && user) {
+          // Optionally verify token is still valid
+          try {
+            // You can add token validation here
+            set({ isAuthenticated: true, isLoading: false });
+          } catch (error) {
+            console.error('Token validation failed:', error);
+            get().logout();
+          }
+        } else {
+          set({ isLoading: false });
+        }
+      },
     }),
     {
       name: 'auth-storage',
-      // Sử dụng localStorage
       storage: createJSONStorage(() => localStorage),
-      // Persist tất cả state quan trọng
       partialize: (state) => ({
         user: state.user,
         token: state.token,
         isAuthenticated: state.isAuthenticated,
       }),
-      // Đảm bảo hydration hoạt động đúng
-      skipHydration: false,
-      // Merge function để đảm bảo state được restore đúng
-      merge: (persistedState:any, currentState) => {
-        return {
-          ...currentState,
-          ...persistedState,
-        };
+      // Keep data for 7 days
+      version: 1,
+      migrate: (persistedState: any, version: number) => {
+        if (version === 0) {
+          // Migration from old version if needed
+          return persistedState;
+        }
+        return persistedState;
       },
     }
   )

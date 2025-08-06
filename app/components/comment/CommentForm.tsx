@@ -211,7 +211,8 @@ export const CommentForm = ({
           onChange={(e) => setContent(e.target.value)}
           placeholder={isAuthenticated ? placeholder : `${placeholder} (Cần đăng nhập để gửi)`}
           rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none
+           focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white"
           disabled={createCommentMutation.isPending}
         />
         <div className="flex justify-between items-center">

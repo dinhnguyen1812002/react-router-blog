@@ -124,77 +124,7 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
           <div className="py-1 border-t border-gray-100 dark:border-gray-600">
             <ThemeToggle variant="dropdown" />
           </div>
-
-          {/* Test Links (Development only) */}
-          <div className="py-1 border-t border-gray-100 dark:border-gray-600">
-            <div className="px-4 py-1">
-              <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Test Pages</p>
-            </div>
-            
-            <Link
-              to="/auth-test"
-              onClick={closeDropdown}
-              className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-            >
-              <TestTube className="w-4 h-4" />
-              <span>Auth Test</span>
-            </Link>
-
-            <Link
-              to="/comment-test"
-              onClick={closeDropdown}
-              className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-            >
-              <TestTube className="w-4 h-4" />
-              <span>Comment Test</span>
-            </Link>
-
-            <Link
-              to="/post-actions-test"
-              onClick={closeDropdown}
-              className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-            >
-              <TestTube className="w-4 h-4" />
-              <span>Like & Rating Test</span>
-            </Link>
-
-            <Link
-              to="/responsive-test"
-              onClick={closeDropdown}
-              className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-            >
-              <TestTube className="w-4 h-4" />
-              <span>Responsive Test</span>
-            </Link>
-
-            <Link
-              to="/theme-test"
-              onClick={closeDropdown}
-              className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-            >
-              <TestTube className="w-4 h-4" />
-              <span>Theme Test</span>
-            </Link>
-
-            <Link
-              to="/dashboard-test"
-              onClick={closeDropdown}
-              className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-            >
-              <TestTube className="w-4 h-4" />
-              <span>Dashboard Test</span>
-            </Link>
-
-            <Link
-              to="/auth-flow-test"
-              onClick={closeDropdown}
-              className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-            >
-              <TestTube className="w-4 h-4" />
-              <span>Auth Flow Test</span>
-            </Link>
-          </div>
-          
+       
           {/* Logout */}
           <div className="py-1 border-t border-gray-100">
             <button

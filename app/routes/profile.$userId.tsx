@@ -2,12 +2,13 @@ import { useQuery } from '@tanstack/react-query';
 import { useParams, Link } from 'react-router';
 import { MainLayout } from '~/components/layout/MainLayout';
 import { Avatar } from '~/components/ui/Avatar';
-import { Button } from '~/components/ui/Button';
+
 import { Card, CardContent, CardHeader } from '~/components/ui/Card';
 import { Spinner } from '~/components/ui/Spinner';
 import { PostCard } from '~/components/post/PostCard';
 import { userApi } from '~/api/user';
 import { formatDateSimple } from '~/lib/utils';
+import { Button } from '~/components/ui/button';
 
 export default function UserProfilePage() {
   const { userId } = useParams();
@@ -92,7 +93,7 @@ export default function UserProfilePage() {
                     src={profile.avatarUrl}
                     fallback={profile.displayName?.charAt(0) || profile.username.charAt(0)}
                     alt={profile.displayName || profile.username}
-                    size="xl"
+                    size="lg"
                     className="border-4 border-white shadow-lg"
                   />
                 </div>

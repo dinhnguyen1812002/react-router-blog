@@ -17,6 +17,7 @@ import animations from "./styles/animations.css?url";
 import theme from "./styles/theme.css?url";
 
 export const links: Route.LinksFunction = () => [
+ 
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
     rel: "preconnect",

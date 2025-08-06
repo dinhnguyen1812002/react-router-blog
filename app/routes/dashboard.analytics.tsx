@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader } from "~/components/ui/Card";
 import { Button } from "~/components/ui/button";
 import { useAuthStore } from "~/store/authStore";
+import { DashboardWrapper } from "~/components/layout/DashboardWrapper";
 import {
   TrendingUp,
   Eye,
@@ -186,7 +187,8 @@ export default function AnalyticsPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <DashboardWrapper>
+      <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -444,6 +446,7 @@ export default function AnalyticsPage() {
           </div>
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </DashboardWrapper>
   );
 }

@@ -1,3 +1,4 @@
+import { Eye, MessageSquare, Heart, ThumbsUp, Share2 } from 'lucide-react';
 import { LikeButton } from './LikeButton';
 import { RatingComponent } from './RatingComponent';
 import type { Post } from '~/types';
@@ -14,40 +15,46 @@ export const PostActions = ({
   layout = 'horizontal'
 }: PostActionsProps) => {
   const containerClass = layout === 'horizontal' 
-    ? 'flex items-center justify-between space-x-6'
-    : 'space-y-4';
+    ? 'flex items-center justify-between gap-4'
+    : 'flex flex-col items-start gap-3';
 
   return (
     <div className={`${containerClass} ${className}`}>
-      {/* Like Button */}
-      <LikeButton
-        postId={post.id}
-        initialLiked={post.isLikedByCurrentUser}
-        initialLikeCount={post.likeCount}
-      />
+      {/* Main Actions */}
+      <div className="flex items-center gap-3">
+        <LikeButton
+          postId={post.id}
+          initialLiked={post.isLikedByCurrentUser}
+          initialLikeCount={post.likeCount}
+        />
 
-      {/* Rating Component */}
-      <RatingComponent
-        postId={post.id}
-        initialUserRating={post.userRating}
-        initialAverageRating={post.averageRating}
-        showAverage={true}
-        compact={false}
-      />
-
-      {/* Additional Stats */}
-      <div className="flex items-center space-x-4 text-sm text-gray-600">
-        <span className="flex items-center space-x-1">
-          <span>👁️</span>
-          <span>{post.viewCount} lượt xem</span>
-        </span>
+        <RatingComponent
+          postId={post.id}
+          initialUserRating={post.userRating}
+          initialAverageRating={post.averageRating}
+          showAverage={true}
+          compact={true}
+        />
+      </div>
+     
+      {/* Stats & Share */}
+      <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+        <div className="flex items-center gap-1">
+          <Eye className="w-4 h-4" />
+          <span>{post.viewCount || 0}</span>
+        </div>
         
         {post.commentCount !== null && (
-          <span className="flex items-center space-x-1">
-            <span>💬</span>
-            <span>{post.commentCount} bình luận</span>
-          </span>
+          <div className="flex items-center gap-1">
+            <MessageSquare className="w-4 h-4" />
+            <span>{post.commentCount}</span>
+          </div>
         )}
+
+        <button className="flex items-center gap-1 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+          <Share2 className="w-4 h-4" />
+          <span className="hidden sm:inline">Chia sẻ</span>
+        </button>
       </div>
     </div>
   );

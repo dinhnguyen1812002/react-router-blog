@@ -2,11 +2,12 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router';
 import { MainLayout } from '~/components/layout/MainLayout';
-import { Button } from '~/components/ui/Button';
+
 import { Card, CardContent, CardHeader } from '~/components/ui/Card';
 import { Spinner } from '~/components/ui/Spinner';
 import { authorApi } from '~/api/author';
 import { formatDateSimple } from '~/lib/utils';
+import { Button } from '~/components/ui/button';
 
 export default function AuthorPostsPage() {
   // TODO: Add authentication check here

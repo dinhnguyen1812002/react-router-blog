@@ -1,34 +1,34 @@
 import axios from 'axios';
-import { storage } from '~/lib/storage';
+import { useAuthStore } from '~/store/authStore';
+import { env } from './env';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8888/api/v1', // Sử dụng port 8888 theo docs
+  baseURL: env.API_BASE_URL,
+  timeout: env.API_TIMEOUT,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Request interceptor to add auth token
+// Request interceptor
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = storage.getToken();
-    console.log('🔍 Checking for token...' + token);
+    const { token } = useAuthStore.getState();
+    
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-      console.log('🔑 Token added to request:', token.substring(0, 20) + '...');
-    } else {
-      console.log('⚠️ No token found for request');
     }
 
-    // Debug logging
-    console.log('🚀 API Request:', {
-      method: config.method?.toUpperCase(),
-      url: config.url,
-      baseURL: config.baseURL,
-      data: config.data,
-      hasAuthHeader: !!config.headers.Authorization,
-    });
+    // Only log in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🚀 API Request:', {
+        method: config.method?.toUpperCase(),
+        url: config.url,
+        hasAuth: !!config.headers.Authorization,
+        tokenLength: token?.length || 0,
+      });
+    }
 
     return config;
   },
@@ -38,47 +38,37 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-// Response interceptor to handle auth errors
+// Response interceptor
 axiosInstance.interceptors.response.use(
   (response) => {
-    // Debug logging
-    console.log('✅ API Response:', {
-      status: response.status,
-      url: response.config.url,
-      data: response.data
-    });
+    if (process.env.NODE_ENV === 'development') {
+      console.log('✅ API Response:', response.status, response.config.url);
+    }
     return response;
   },
   (error) => {
-    // Enhanced error logging
-    console.error('❌ API Error:', {
-      status: error.response?.status,
-      statusText: error.response?.statusText,
-      url: error.config?.url,
-      method: error.config?.method?.toUpperCase(),
-      data: error.response?.data,
-      message: error.message,
-      headers: error.response?.headers
-    });
-
-    // Log specific error details for 403
-    if (error.response?.status === 403) {
-      console.error('🚫 403 Forbidden - Possible causes:');
-      console.error('- Token is missing or invalid');
-      console.error('- User does not have required permissions');
-      console.error('- CORS configuration issue');
-      console.error('- Backend security configuration issue');
-    }
-
+    const { logout } = useAuthStore.getState();
+    
     if (error.response?.status === 401) {
       // Token expired or invalid
-      storage.clear();
-
-      // Only redirect if we're in the browser
+      console.log('🔒 Token expired or invalid, logging out...');
+      logout();
+      
+      // Redirect to login
       if (typeof window !== 'undefined') {
         window.location.href = '/login';
       }
     }
+
+    // Log errors in development
+    if (process.env.NODE_ENV === 'development') {
+      console.error('❌ API Error:', {
+        status: error.response?.status,
+        url: error.config?.url,
+        message: error.response?.data?.message || error.message,
+      });
+    }
+
     return Promise.reject(error);
   }
 );

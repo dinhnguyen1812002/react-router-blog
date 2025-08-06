@@ -3,8 +3,8 @@ import type { ApiResponse, Category } from '~/types';
 
 export const categoriesApi = {
   getAll: async (): Promise<Category[]> => {
-    const response = await apiClient.get('/categories');
-    return response.data.data;
+    const response = await apiClient.get('/category');
+    return response.data ?? []; // ✅ return raw array directly
   },
 
   getById: async (id: string): Promise<ApiResponse<Category>> => {

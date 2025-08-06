@@ -108,7 +108,7 @@ export default function RegisterPage() {
                     type="text"
                     label="Tên đăng nhập"
                     placeholder="Nhập tên đăng nhập"
-                    leftIcon={<User className="w-4 h-4" />}
+                   
                     error={errors.username?.message}
                     {...registerField("username")}
                     onChange={(e) => {
@@ -121,7 +121,7 @@ export default function RegisterPage() {
                     type="email"
                     label="Email"
                     placeholder="Nhập địa chỉ email"
-                    leftIcon={<Mail className="w-4 h-4" />}
+                 
                     error={errors.email?.message}
                     {...registerField("email")}
                     onChange={(e) => {
@@ -134,7 +134,7 @@ export default function RegisterPage() {
                     type="password"
                     label="Mật khẩu"
                     placeholder="Nhập mật khẩu"
-                    leftIcon={<Lock className="w-4 h-4" />}
+                   
                     error={errors.password?.message}
                     helperText="Mật khẩu phải có ít nhất 6 ký tự"
                     {...registerField("password")}
@@ -144,7 +144,7 @@ export default function RegisterPage() {
                     type="password"
                     label="Xác nhận mật khẩu"
                     placeholder="Nhập lại mật khẩu"
-                    leftIcon={<Lock className="w-4 h-4" />}
+                  
                     error={errors.confirmPassword?.message}
                     {...registerField("confirmPassword")}
                   />

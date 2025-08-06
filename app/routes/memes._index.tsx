@@ -1,138 +1,138 @@
-import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { MainLayout } from '~/components/layout/MainLayout';
-import { MemeGrid } from '~/components/meme/MemeGrid';
-import { RandomMemeAlert } from '~/components/meme/RandomMemeAlert';
-import { MemeUploadModal } from '~/components/meme/MemeUploadModal';
-import { Spinner } from '~/components/ui/Spinner';
-import { Button } from "~/components/ui/button";
-import { memesApi } from '~/api/memes';
-import type { Meme } from '~/types';
+import { useState } from "react";
+import { MainLayout } from "~/components/layout/MainLayout";
+import MemeList from "~/components/meme/MemeList";
+import MemeUpload from "~/components/meme/MemeUpload";
+import RandomMemeStream from "~/components/meme/RandomMemeStream";
+import { Image, Upload, Shuffle, Sparkles } from "lucide-react";
 
-export default function MemesPage() {
-  const [page, setPage] = useState(0);
-  const [allMemes, setAllMemes] = useState<Meme[]>([]);
-  const pageSize = 12;
+export default function MemesIndex() {
+  const [activeTab, setActiveTab] = useState<"list" | "upload" | "stream">(
+    "list"
+  );
 
-  const {
-    data: memesData,
-    isLoading,
-    error,
-    refetch
-  } = useQuery({
-    queryKey: ['memes', page],
-    queryFn: () => memesApi.getMemes(page, pageSize),
-  });
-
-  // Update all memes when new data comes in
-  useEffect(() => {
-    if (memesData?.content) {
-      if (page === 0) {
-        setAllMemes(memesData.content);
-      } else {
-        setAllMemes(prev => [...prev, ...memesData.content]);
-      }
-    }
-  }, [memesData, page]);
-
-
-
-  const handleLoadMore = () => {
-    if (memesData && !memesData.last) {
-      setPage(prev => prev + 1);
-    }
-  };
-
-  const handleLike = (memeId: string) => {
-    // TODO: Implement like functionality
-    console.log('Like meme:', memeId);
-  };
+  const tabs = [
+    {
+      id: "list",
+      label: "Khám phá Memes",
+      icon: Image,
+      description: "Duyệt qua bộ sưu tập memes thú vị",
+    },
+    {
+      id: "upload",
+      label: "Tạo Meme",
+      icon: Upload,
+      description: "Chia sẻ meme của bạn với cộng đồng",
+    },
+    {
+      id: "stream",
+      label: "Meme Ngẫu Nhiên",
+      icon: Shuffle,
+      description: "Nhận meme bất ngờ mỗi 5 phút",
+    },
+  ];
 
   return (
     <MainLayout>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Memes Vui Nhộn 😄
-          </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Những hình ảnh hài hước và thú vị để làm tươi mới ngày của bạn
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl shadow-lg">
+              <Sparkles className="w-8 h-8 text-white" />
+            </div>
+            <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">
+              Meme Hub
+            </h1>
+          </div>
+          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            Nơi chia sẻ và khám phá những meme thú vị nhất. Tham gia cộng đồng
+            sáng tạo và giải trí!
           </p>
         </div>
 
-        {/* Random Meme Alert */}
-        <RandomMemeAlert />
+        {/* Tab Navigation */}
+        <div className="flex justify-center mb-12">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-2 inline-flex">
+            {tabs.map((tab) => {
+              const IconComponent = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`group relative px-6 py-4 rounded-xl font-medium transition-all duration-300 flex items-center gap-3 min-w-[200px] ${
+                    activeTab === tab.id
+                      ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg transform scale-105"
+                      : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
+                  }`}
+                >
+                  <IconComponent
+                    className={`w-5 h-5 transition-transform duration-300 ${
+                      activeTab === tab.id
+                        ? "scale-110"
+                        : "group-hover:scale-105"
+                    }`}
+                  />
+                  <div className="text-left">
+                    <div className="font-semibold">{tab.label}</div>
+                    <div
+                      className={`text-xs mt-1 ${
+                        activeTab === tab.id
+                          ? "text-blue-100"
+                          : "text-gray-500 dark:text-gray-500"
+                      }`}
+                    >
+                      {tab.description}
+                    </div>
+                  </div>
 
-        {/* Upload Button */}
-        <div className="text-center mb-8">
-          <MemeUploadModal />
+                  {/* Active indicator */}
+                  {activeTab === tab.id && (
+                    <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-white rounded-full shadow-lg"></div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Error State */}
-        {error && (
-          <div className="text-center py-12">
-            <p className="text-red-500 text-lg mb-4">Có lỗi xảy ra khi tải memes.</p>
-            <Button onClick={() => refetch()}>Thử lại</Button>
+        {/* Tab Content */}
+        <div className="transition-all duration-500 ease-in-out">
+          <div
+            className={`transform transition-all duration-500 ${
+              activeTab === "list"
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-4 absolute pointer-events-none"
+            }`}
+          >
+            {activeTab === "list" && <MemeList />}
           </div>
-        )}
 
-        {/* Loading State */}
-        {isLoading && page === 0 && (
-          <div className="flex justify-center items-center py-12">
-            <Spinner size="lg" />
+          <div
+            className={`transform transition-all duration-500 ${
+              activeTab === "upload"
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-4 absolute pointer-events-none"
+            }`}
+          >
+            {activeTab === "upload" && <MemeUpload />}
           </div>
-        )}
 
-        {/* Memes Grid */}
-        {!error && allMemes.length > 0 && (
-          <MemeGrid
-            memes={allMemes}
-            onLike={handleLike}
-          />
-        )}
-
-        {/* Empty State */}
-        {!isLoading && !error && allMemes.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">Chưa có meme nào được tải lên.</p>
+          <div
+            className={`transform transition-all duration-500 ${
+              activeTab === "stream"
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-4 absolute pointer-events-none"
+            }`}
+          >
+            {activeTab === "stream" && <RandomMemeStream />}
           </div>
-        )}
+        </div>
 
-        {/* Load More */}
-        {memesData && !memesData.last && (
-          <div className="text-center mt-12">
-            <Button
-              variant="secondary"
-              size="lg"
-              onClick={handleLoadMore}
-              disabled={isLoading}
-            >
-              {isLoading ? 'Đang tải...' : 'Tải thêm memes'}
-            </Button>
-          </div>
-        )}
-
-        {/* Fun Stats */}
-        <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg p-8 mt-16 text-white text-center">
-          <h2 className="text-2xl font-bold mb-4">Thống kê vui</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-              <div className="text-3xl font-bold">{memesData?.totalElements || 0}</div>
-              <div className="text-purple-100">Memes được chia sẻ</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold">
-                {allMemes.reduce((total, meme) => total + (meme.likes || 0), 0)}
-              </div>
-              <div className="text-purple-100">Lượt thích</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold">
-                {allMemes.reduce((total, meme) => total + (meme.views || 0), 0)}
-              </div>
-              <div className="text-purple-100">Lượt xem</div>
-            </div>
+        {/* Footer Info */}
+        <div className="mt-16 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-full text-sm text-gray-600 dark:text-gray-400">
+            <Sparkles className="w-4 h-4" />
+            <span>Được tạo với ❤️ bởi cộng đồng</span>
           </div>
         </div>
       </div>

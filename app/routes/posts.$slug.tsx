@@ -29,14 +29,14 @@ export default function PostDetailPage() {
     if (contentType === 'MARKDOWN') {
       // For now, just render as plain text. Later we can add markdown parser
       return (
-        <div className="prose prose-lg max-w-none">
+        <article className="prose prose-lg max-w-none">
           <pre className="whitespace-pre-wrap font-sans">{content}</pre>
-        </div>
+        </article>
       );
     } else {
       // Rich text content
       return (
-        <div 
+        <article 
           className="prose prose-lg max-w-none"
           dangerouslySetInnerHTML={{ __html: content }}
         />
@@ -100,29 +100,38 @@ export default function PostDetailPage() {
             <li>/</li>
             <li><Link to="/posts" className="hover:text-blue-600">Bài viết</Link></li>
             <li>/</li>
-            <li className="text-gray-900">{post.title}</li>
+            <li className="text-gray-900 dark:text-white">{post.title}</li>
           </ol>
         </nav>
-
+        {/* Featured Image */}
+        {(post.thumbnail || post.thumbnailUrl) && (
+          <div className="mb-8">
+            <img
+              src={post.thumbnail || post.thumbnailUrl}
+              alt={post.title}
+              className="w-full h-96 object-cover rounded-lg shadow-lg"
+            />
+          </div>
+        )}
         {/* Post Header */}
         <header className="mb-8">
           <div className="flex items-center space-x-2 mb-4">
             {Array.isArray(post.categories) && post.categories.length > 0 && (
               <span
-                className="px-3 py-1 rounded-full text-sm font-medium text-white"
+                className="px-3 py-1 rounded-full text-sm font-medium text-black dark:text-white"
                 style={{ backgroundColor: post.categories[0].backgroundColor || '#3B82F6' }}
               >
                 {post.categories.map((category) => category.category).join(', ')}
               </span>
             )}
             {post.featured && (
-              <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
+              <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium dark:text-black">
                 Nổi bật
               </span>
             )}
           </div>
 
-          <h1 className="text-4xl font-bold text-gray-900 mb-4 leading-tight">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4 leading-tight dark:text-white">
             {post.title}
           </h1>
 
@@ -141,7 +150,7 @@ export default function PostDetailPage() {
                 size="md"
               />
               <div>
-                <p className="font-medium text-gray-900">{post.user.username}</p>
+                <p className="font-medium text-gray-900 dark:text-white">{post.user.username}</p>
                 <p className="text-sm text-gray-500">
                   Đăng ngày {formatDate(post.createdAt)}
                   {post.updatedAt && post.updatedAt !== post.createdAt && (
@@ -160,26 +169,20 @@ export default function PostDetailPage() {
           </div>
         </header>
 
-        {/* Featured Image */}
-        {(post.thumbnail || post.thumbnailUrl) && (
-          <div className="mb-8">
-            <img
-              src={post.thumbnail || post.thumbnailUrl}
-              alt={post.title}
-              className="w-full h-96 object-cover rounded-lg shadow-lg"
-            />
-          </div>
-        )}
-
         {/* Post Content */}
-        <div className="mb-8">
+        <div className="mb-8 dark:text-white">
           {renderContent(post.content, post.contentType || 'RICHTEXT')}
         </div>
 
         {/* Tags */}
+       
+
+        {/* Post Actions (Like & Rating) */}
+        <div className=" border-gray-200 pt-6 mb-6 border-t dark:border-amber-50">
+
         {Array.isArray(post.tags) && post.tags.length > 0 && (
-          <div className="border-t border-gray-200 pt-6 mb-8">
-            <h3 className="text-sm font-medium text-gray-900 mb-3">Tags:</h3>
+          <div className=" border-gray-200 pt-6 mb-8">
+            <h3 className="text-sm font-medium text-gray-900 mb-3 dark:text-white">Tags:</h3>
             <div className="flex flex-wrap gap-2">
               {post.tags.map((tag) => (
                 <span
@@ -194,13 +197,11 @@ export default function PostDetailPage() {
           </div>
         )}
 
-        {/* Post Actions (Like & Rating) */}
-        <div className="border-t border-gray-200 pt-6 mb-6">
           <PostActions post={post} layout="vertical" />
         </div>
 
         {/* Navigation */}
-        <div className="border-t border-gray-200 pt-6">
+        {/* <div className=" border-gray-200 pt-6">
           <div className="flex justify-between">
             <Link to="/posts">
               <Button variant="secondary">
@@ -211,9 +212,9 @@ export default function PostDetailPage() {
               Bài viết tiếp theo →
             </Button>
           </div>
-        </div>
+        </div> */}
       </article>
-      <div className="mt-12 border-t border-gray-200 pt-8">
+      <div className="border-gray-200 pt-8 mb-8 ">
         <CommentSection
           postId={post.id}
           initialComments={post.comments || []}
@@ -224,15 +225,14 @@ export default function PostDetailPage() {
         />
       </div>
       {/* Related Posts Section*/}
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-gray-200">
+      {/* <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8  border-gray-200">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">Bài viết liên quan</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Placeholder for related posts */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6"> 
           <div className="bg-gray-50 rounded-lg p-6 text-center">
             <p className="text-gray-500">Đang tải bài viết liên quan...</p>
           </div>
         </div>
-      </section>
+      </section> */}
     </MainLayout>
   );
 }

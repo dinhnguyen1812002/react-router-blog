@@ -12,7 +12,7 @@ export const bookmarksApi = {
   // Get user's bookmarked posts
   getBookmarks: async (page = 0, limit = 10): Promise<BookmarkResponse> => {
     try {
-      const response = await apiClient.get(`/user/bookmarks?page=${page}&limit=${limit}`);
+      const response = await apiClient.get(`saved-posts?page=${page}&limit=${limit}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching bookmarks:', error);
