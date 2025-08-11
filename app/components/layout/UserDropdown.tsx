@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router';
 import { useAuth } from '~/hooks/useAuth';
 import { ChevronDown, User, Settings, LogOut, BookOpen, TestTube } from 'lucide-react';
-import { ThemeToggle } from '~/components/ui/ThemeToggle';
+
 import type { User as UserType } from '~/types';
 
 interface UserDropdownProps {
@@ -121,10 +121,10 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
           </div>
 
           {/* Theme Toggle */}
-          <div className="py-1 border-t border-gray-100 dark:border-gray-600">
-            <ThemeToggle variant="dropdown" />
+          {/* <div className="py-1 border-t border-gray-100 dark:border-gray-600">
+            <ThemeSwitch />
           </div>
-       
+        */}
           {/* Logout */}
           <div className="py-1 border-t border-gray-100">
             <button

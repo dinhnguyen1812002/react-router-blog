@@ -29,6 +29,7 @@ export interface RegisterResponse extends LoginResponse {
 export interface Post {
   id: string;
   title: string;
+  excerpt:string;
   slug: string;
   content: string;
   contentType?: "RICHTEXT" | "MARKDOWN";
@@ -130,4 +131,15 @@ export interface Upload {
   message: string;
   url: string;
   file: File;
+}
+
+export interface Meme {
+  id: string;
+  name: string;
+  description: string;
+  memeUrl: string;
+  slug: string;
+  createdAt?: string;
+  likes?: number;
+  views?: number;
 }

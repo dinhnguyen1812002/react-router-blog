@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router';
 import { useAuthStore } from '~/store/authStore';
-import { useTheme } from '~/components/providers/ThemeProvider';
+
 
 // Components
 import { Sidebar } from '~/components/dashboard/Sidebar';
@@ -21,7 +21,6 @@ export default function DashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuthStore();
-  const { theme, setTheme, actualTheme } = useTheme();
 
   // Đóng sidebar khi chuyển trang (mobile)
   useEffect(() => {
@@ -34,10 +33,6 @@ export default function DashboardLayout() {
   }, [sidebarCollapsed]);
 
   // Chuyển đổi theme
-  const toggleTheme = () => {
-    const newTheme = actualTheme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
-  };
 
   // Chuyển đổi trạng thái sidebar
   const toggleSidebarCollapse = () => {
@@ -62,9 +57,9 @@ export default function DashboardLayout() {
       <Sidebar
         isOpen={sidebarOpen}
         isCollapsed={sidebarCollapsed}
-        isDarkMode={actualTheme === 'dark'}
+     
         onToggleCollapse={toggleSidebarCollapse}
-        onToggleTheme={toggleTheme}
+      
         onClose={() => setSidebarOpen(false)}
       />
 

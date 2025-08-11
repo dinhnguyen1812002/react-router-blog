@@ -5,24 +5,27 @@ import { z } from 'zod';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router';
 
-import { Input } from '~/components/ui/Input';
 import { Card, CardContent, CardHeader } from '~/components/ui/Card';
 import { postsApi } from '~/api/posts';
 import { categoriesApi } from '~/api/categories';
 import { tagsApi } from '~/api/tags';
 import { useAuthStore } from '~/store/authStore';
 import { Button } from '~/components/ui/button';
-import { ImageUp, UploadCloud, X, Settings, Tag, Image, FileText, Save, Send } from 'lucide-react';
-import { upload as uploadFile } from '~/api/uploads';
+import { Settings, Tag, Image, FileText, Save, Send, AlertCircle, Eye, X } from 'lucide-react';
+import ThumbnailUpload from '~/components/ui/ThumbnailUpload';
+import PostPreview from '~/components/post/PostPreview';
 import EditorWrapper from '~/components/editors/EditorWrapper';
+import { authApi } from '~/api/auth';
+import { authorApi, type CreateAuthorPostRequest } from '~/api/author';
 
 const postSchema = z.object({
-  title: z.string().min(1, 'Tiêu đề là bắt buộc').max(200, 'Tiêu đề không được quá 200 ký tự'),
+  title: z.string().min(5, 'Tiêu đề là bắt buộc').max(200, 'Tiêu đề không được quá 200 ký tự'),
+  excerpt: z.string().min(5, 'Hãy thêm tóm tắt ').max(200, 'không được quá 200 ký tự'),
   summary: z.string().max(500, 'Tóm tắt không được quá 500 ký tự').optional(),
   content: z.string().min(1, 'Nội dung là bắt buộc'),
   categoryId: z.string().min(1, 'Danh mục là bắt buộc'),
   tagUuids: z.array(z.string()).optional(),
-  thumbnailUrl: z.string().url('URL không hợp lệ').optional().or(z.literal('')),
+  thumbnailUrl: z.string().optional(),
   contentType: z.enum(['MARKDOWN', 'RICHTEXT']),
   status: z.enum(['DRAFT', 'PUBLISHED']),
 });
@@ -30,14 +33,11 @@ const postSchema = z.object({
 type PostForm = z.infer<typeof postSchema>;
 
 export default function NewPostPage() {
-  const { user } = useAuthStore();
   const navigate = useNavigate();
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [showConfirmUpload, setShowConfirmUpload] = useState(false);
-  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
   const [showSidebar, setShowSidebar] = useState(true);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
   
   const {
     register,
@@ -68,21 +68,27 @@ export default function NewPostPage() {
   });
 
   const createPostMutation = useMutation({
-    mutationFn: postsApi.createPost,
+    mutationFn: authorApi.createPost,
     onSuccess: () => {
       navigate('/dashboard/content');
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Error creating post:', error);
+      setSubmitError(error.response?.data?.message || 'Có lỗi xảy ra khi tạo bài viết');
     },
   });
 
   const onSubmit = (data: PostForm) => {
-    const postData = {
-      ...data,
-      tagUuids: selectedTags,
+    setSubmitError(null);
+    const payload: CreateAuthorPostRequest = {
+      title: data.title,
+      excerpt:data.excerpt,
+      content: data.content,
+      categories: [Number(data.categoryId)],
+      tags: selectedTags,
+      thumbnail: data.thumbnailUrl || undefined,
     };
-    createPostMutation.mutate(postData);
+    createPostMutation.mutate(payload);
   };
 
   const handleTagToggle = (tagUuid: string) => {
@@ -93,43 +99,11 @@ export default function NewPostPage() {
     );
   };
 
-  const uploadImageMutation = useMutation({
-    mutationFn: uploadFile,
-    onSuccess: (url: string) => {
-      setValue('thumbnailUrl', url);
-      setShowConfirmUpload(false);
-      setSelectedFile(null);
-      setPreviewUrl(null);
-      setUploadedImageUrl(url);
-    },
-    onError: (err) => {
-      console.error('Upload failed', err);
-    },
-  });
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
-      const fileUrl = URL.createObjectURL(file);
-      setPreviewUrl(fileUrl);
-    }
+  const handleThumbnailChange = (url: string) => {
+    setValue('thumbnailUrl', url);
   };
 
-  const handleUploadConfirm = () => {
-    if (selectedFile) {
-      uploadImageMutation.mutate(selectedFile);
-    }
-  };
-
-  const handleCancelUpload = () => {
-    setSelectedFile(null);
-    setPreviewUrl(null);
-    setShowConfirmUpload(false);
-  };
-
-  const handleRemoveUploadedImage = () => {
-    setUploadedImageUrl(null);
+  const handleThumbnailRemove = () => {
     setValue('thumbnailUrl', '');
   };
 
@@ -161,6 +135,15 @@ export default function NewPostPage() {
                 className="text-sm"
               >
                 Hủy
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => setShowPreview(true)}
+                className="text-sm"
+              >
+                <Eye className="w-4 h-4 mr-2" />
+                Xem trước
               </Button>
               <Button
                 type="submit"
@@ -241,7 +224,7 @@ export default function NewPostPage() {
                 </CardHeader>
                 <CardContent>
                   <textarea
-                    {...register('summary')}
+                    {...register('excerpt')}
                     rows={4}
                     className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 resize-none"
                     placeholder="Viết tóm tắt ngắn gọn về bài viết..."
@@ -306,72 +289,17 @@ export default function NewPostPage() {
                   </h3>
                 </CardHeader>
                 <CardContent>
-                  {uploadedImageUrl ? (
-                    <div className="space-y-3">
-                      <img 
-                        src={uploadedImageUrl} 
-                        alt="Thumbnail" 
-                        className="w-full h-32 object-cover rounded-md border border-gray-300 dark:border-gray-600" 
-                      />
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        size="sm"
-                        onClick={handleRemoveUploadedImage}
-                        className="w-full"
-                      >
-                        <X className="w-4 h-4 mr-2" />
-                        Xóa ảnh
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                        <div className="flex flex-col items-center justify-center">
-                          <UploadCloud className="w-6 h-6 mb-2 text-gray-500 dark:text-gray-400" />
-                          <p className="text-xs text-gray-500 dark:text-gray-400">Upload ảnh</p>
-                        </div>
-                        <input
-                          type="file"
-                          className="hidden"
-                          onChange={handleFileChange}
-                          accept="image/*"
-                        />
-                      </label>
-                      
-                      {selectedFile && (
-                        <div className="space-y-2">
-                          {previewUrl && (
-                            <img 
-                              src={previewUrl} 
-                              alt="Preview" 
-                              className="w-full h-20 object-cover rounded-md border border-gray-300 dark:border-gray-600" 
-                            />
-                          )}
-                          <div className="flex space-x-2">
-                            <Button
-                              type="button"
-                              size="sm"
-                              onClick={() => setShowConfirmUpload(true)}
-                              disabled={uploadImageMutation.isPending}
-                              className="flex-1"
-                            >
-                              <ImageUp className="w-4 h-4 mr-1" />
-                              Upload
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="secondary"
-                              size="sm"
-                              onClick={handleCancelUpload}
-                              className="flex-1"
-                            >
-                              <X className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                  <ThumbnailUpload
+                    value={watch('thumbnailUrl')}
+                    onChange={handleThumbnailChange}
+                    onRemove={handleThumbnailRemove}
+                    maxSize={10}
+                    allowedTypes={['image/jpeg', 'image/png', 'image/gif', 'image/webp']}
+                  />
+                  {errors.thumbnailUrl && (
+                    <p className="mt-2 text-xs text-red-600 dark:text-red-400">
+                      {errors.thumbnailUrl.message}
+                    </p>
                   )}
                 </CardContent>
               </Card>
@@ -413,49 +341,41 @@ export default function NewPostPage() {
         </div>
       </div>
 
-      {/* Upload Confirmation Dialog */}
-      {showConfirmUpload && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4">Xác nhận upload ảnh</h3>
-            
-            {previewUrl && (
-              <div className="mb-4">
-                <img 
-                  src={previewUrl} 
-                  alt="Preview" 
-                  className="w-full h-auto max-h-48 object-contain rounded-md border border-gray-300 dark:border-gray-700" 
-                />
-              </div>
-            )}
-            
-            <p className="mb-4 text-sm">Bạn có chắc chắn muốn upload ảnh này không?</p>
-            
-            <div className="flex justify-end space-x-3">
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => setShowConfirmUpload(false)}
-              >
-                Huỷ
-              </Button>
-              <Button
-                type="button"
-                onClick={handleUploadConfirm}
-                disabled={uploadImageMutation.isPending}
-              >
-                {uploadImageMutation.isPending ? 'Đang upload...' : 'Xác nhận'}
-              </Button>
+      {/* Error Messages */}
+      {submitError && (
+        <div className="fixed bottom-4 right-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg shadow-lg p-4 max-w-md">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+            <div>
+              <h4 className="text-sm font-medium text-red-800 dark:text-red-200">
+                Lỗi tạo bài viết
+              </h4>
+              <p className="text-sm text-red-700 dark:text-red-300 mt-1">
+                {submitError}
+              </p>
             </div>
+            <button
+              onClick={() => setSubmitError(null)}
+              className="text-red-400 hover:text-red-600 dark:text-red-500 dark:hover:text-red-400"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
         </div>
       )}
 
-      {createPostMutation.error && (
-        <div className="fixed bottom-4 right-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-4 py-3 rounded-md shadow-lg">
-          Có lỗi xảy ra khi tạo bài viết. Vui lòng thử lại.
-        </div>
-      )}
+      {/* Post Preview */}
+      <PostPreview
+        post={{
+          title: watch('title') || '',
+          content: watch('content') || '',
+          summary: watch('summary') || '',
+          thumbnailUrl: watch('thumbnailUrl') || '',
+          contentType: watch('contentType') || 'RICHTEXT',
+        }}
+        isOpen={showPreview}
+        onClose={() => setShowPreview(false)}
+      />
     </div>
   );
 }

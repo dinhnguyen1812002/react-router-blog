@@ -103,14 +103,14 @@ export const useAuthStore = create<AuthStore>()(
         isAuthenticated: state.isAuthenticated,
       }),
       // Keep data for 7 days
-      version: 1,
-      migrate: (persistedState: any, version: number) => {
-        if (version === 0) {
-          // Migration from old version if needed
-          return persistedState;
-        }
-        return persistedState;
-      },
+      // version: 1,
+      // migrate: (persistedState: any, version: number) => {
+      //   if (version === 0) {
+        
+      //     return persistedState;
+      //   }
+      //   return persistedState;
+      // },
     }
   )
 );

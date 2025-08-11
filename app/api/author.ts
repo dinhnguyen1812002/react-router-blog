@@ -1,7 +1,16 @@
 import type {ApiResponse, PaginatedResponse, Post} from '~/types';
 import { apiClient } from './client';
+import axiosInstance from '~/config/axios';
 
-// import { Post, ApiResponse, PaginatedResponse } from '~/types';
+// Request DTO aligned with docs/AUTHOR.md
+export interface CreateAuthorPostRequest {
+  title: string;
+  excerpt:string;
+  content: string;
+  categories: number[]; // category IDs
+  tags: string[]; // tag UUIDs
+  thumbnail?: string; // thumbnail URL
+}
 
 export const authorApi = {
   getMyPosts: async (page: number = 0, size: number = 10): Promise<PaginatedResponse<Post>> => {
@@ -9,8 +18,8 @@ export const authorApi = {
     return response.data;
   },
 
-  createPost: async (postData: any): Promise<ApiResponse<Post>> => {
-    const response = await apiClient.post('/author/write', postData);
+  createPost: async (data: CreateAuthorPostRequest): Promise<ApiResponse<Post>> => {
+    const response = await axiosInstance.post('/author/write', data);
     return response.data;
   },
 

@@ -120,18 +120,16 @@ const categories = {
 interface DashboardSidebarProps {
   sidebarOpen: boolean;
   sidebarCollapsed: boolean;
-  darkMode: boolean;
+
   onToggleCollapse: () => void;
-  onToggleTheme: () => void;
+ 
   onCloseSidebar: () => void;
 }
 
 export const DashboardSidebar = ({
   sidebarOpen,
   sidebarCollapsed,
-  darkMode,
   onToggleCollapse,
-  onToggleTheme,
   onCloseSidebar
 }: DashboardSidebarProps) => {
   const location = useLocation();
@@ -456,7 +454,7 @@ export const DashboardSidebar = ({
         {/* Sidebar footer */}
         <div className="p-3 border-t border-gray-200 dark:border-gray-700 space-y-2 bg-gray-50/50 dark:bg-gray-800/50">
           {/* Theme toggle */}
-          {sidebarCollapsed ? (
+          {/* {sidebarCollapsed ? (
             <ThemedIconButton
               icon={darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
               variant="ghost"
@@ -475,7 +473,7 @@ export const DashboardSidebar = ({
             >
               {darkMode ? 'Chế độ sáng' : 'Chế độ tối'}
             </ThemedButton>
-          )}
+          )} */}
 
           {/* Logout */}
           {sidebarCollapsed ? (

@@ -11,6 +11,10 @@ export const env = {
   
   // Feature Flags (có thể thêm sau)
   ENABLE_DEBUG: import.meta.env.VITE_ENABLE_DEBUG === 'true',
+  
+  // Upload Configuration
+  MAX_FILE_SIZE: parseInt(import.meta.env.VITE_MAX_FILE_SIZE || '10485760'), // 10MB default
+  ALLOWED_IMAGE_TYPES: (import.meta.env.VITE_ALLOWED_IMAGE_TYPES || 'image/jpeg,image/png,image/gif,image/webp').split(','),
 } as const;
 
 // Type-safe environment variables

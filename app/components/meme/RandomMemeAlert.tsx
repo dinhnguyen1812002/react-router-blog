@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router';
 import { Button } from '~/components/ui/button';
 import { X, Sparkles, Eye, Heart, Clock } from 'lucide-react';
-import { memesApi } from '~/api/memes';
+// import { memesApi } from '~/api/memes';
 import type { Meme } from '~/types';
 
 interface RandomMemeAlertProps {
@@ -27,7 +27,7 @@ export const RandomMemeAlert = ({ onClose }: RandomMemeAlertProps) => {
           handleClose();
         }, 10000);
       },
-      (error) => {
+      (error: any) => {
         console.error('Random meme stream error:', error);
       }
     );
@@ -47,7 +47,7 @@ export const RandomMemeAlert = ({ onClose }: RandomMemeAlertProps) => {
     return null;
   }
 
-  const imageUrl = memesApi.getMemeImageUrl(randomMeme.memeUrl);
+  // const imageUrl = memesApi.getMemeImageUrl(randomMeme.memeUrl);
 
   return (
     <div className={`relative mb-8 transition-all duration-500 ${
@@ -78,7 +78,7 @@ export const RandomMemeAlert = ({ onClose }: RandomMemeAlertProps) => {
             <div className="md:col-span-1">
               <div className="aspect-square rounded-xl overflow-hidden bg-white/10 backdrop-blur-sm">
                 <img
-                  src={imageUrl}
+                  src={randomMeme.memeUrl}
                   alt={randomMeme.name}
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                   onError={(e) => {

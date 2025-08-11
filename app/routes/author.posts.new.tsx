@@ -8,11 +8,13 @@ import { MainLayout } from '~/components/layout/MainLayout';
 
 import { Input } from '~/components/ui/Input';
 import { Card, CardContent, CardHeader } from '~/components/ui/Card';
-import { authorApi } from '~/api/author';
+import { authorApi, type CreateAuthorPostRequest } from '~/api/author';
 import { categoriesApi } from '~/api/categories';
 import { tagsApi } from '~/api/tags';
 // TODO: Add authentication when implemented
 import { Button } from '~/components/ui/button';
+import ThumbnailUpload from '~/components/ui/ThumbnailUpload';
+import EditorWrapper from '~/components/editors/EditorWrapper';
 
 const postSchema = z.object({
   title: z.string().min(1, 'Tiêu đề là bắt buộc').max(200, 'Tiêu đề không được quá 200 ký tự'),
@@ -20,8 +22,8 @@ const postSchema = z.object({
   content: z.string().min(1, 'Nội dung là bắt buộc'),
   categoryId: z.string().min(1, 'Danh mục là bắt buộc'),
   tagUuids: z.array(z.string()).optional(),
-  thumbnailUrl: z.url('URL không hợp lệ').optional().or(z.literal('')),
-  contentType: z.enum(['RICH_TEXT', 'MARKDOWN']),
+  thumbnailUrl: z.string().optional(),
+  contentType: z.enum(['RICHTEXT', 'MARKDOWN']),
   status: z.enum(['DRAFT', 'PUBLISHED']),
 });
 
@@ -42,7 +44,7 @@ export default function NewPostPage() {
   } = useForm<PostForm>({
     resolver: zodResolver(postSchema),
     defaultValues: {
-      contentType: 'RICH_TEXT',
+      contentType: 'RICHTEXT',
       status: 'DRAFT',
     },
   });
@@ -69,11 +71,14 @@ export default function NewPostPage() {
   });
 
   const onSubmit = (data: PostForm) => {
-    const postData = {
-      ...data,
-      tagUuids: selectedTags,
+    const payload: CreateAuthorPostRequest = {
+      title: data.title,
+      content: data.content,
+      categories: [Number(data.categoryId)],
+      tags: selectedTags,
+      thumbnail: data.thumbnailUrl || undefined,
     };
-    createPostMutation.mutate(postData);
+    createPostMutation.mutate(payload);
   };
 
   const handleTagToggle = (tagUuid: string) => {
@@ -168,12 +173,17 @@ export default function NewPostPage() {
                   </div>
                 </div>
 
-                <Input
-                    // label="URL ảnh thumbnail (tùy chọn)"
-                    {...register('thumbnailUrl')}
-                    // error={errors.thumbnailUrl?.message}
-                    placeholder="https://example.com/image.jpg"
-                />
+                {/* Thumbnail Upload per docs step 1 */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Ảnh thumbnail (tùy chọn)
+                  </label>
+                  <ThumbnailUpload
+                    value={watch('thumbnailUrl')}
+                    onChange={(url) => setValue('thumbnailUrl', url)}
+                    onRemove={() => setValue('thumbnailUrl', '')}
+                  />
+                </div>
               </CardContent>
             </Card>
 
@@ -211,16 +221,12 @@ export default function NewPostPage() {
                 <h2 className="text-xl font-semibold">Nội dung bài viết</h2>
               </CardHeader>
               <CardContent>
-              <textarea
-                  {...register('content')}
-                  rows={15}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 font-mono"
-                  placeholder={
-                    watch('contentType') === 'MARKDOWN'
-                        ? '# Tiêu đề\n\nViết nội dung bài viết bằng Markdown...'
-                        : 'Viết nội dung bài viết...'
-                  }
-              />
+                <EditorWrapper
+                  contentType={watch('contentType')}
+                  value={watch('content') || ''}
+                  onChange={(val) => setValue('content', val)}
+                  placeholder={watch('contentType') === 'MARKDOWN' ? '# Tiêu đề\n\nViết nội dung bài viết bằng Markdown...' : 'Viết nội dung bài viết...'}
+                />
                 {errors.content && (
                     <p className="mt-1 text-sm text-red-600">{errors.content.message}</p>
                 )}

@@ -1,123 +1,86 @@
-# Hướng dẫn API Bài viết đã lưu (Saved Posts)
+# Bookmarks API Guide
 
-Tài liệu này mô tả các API để quản lý các bài viết đã lưu của người dùng.
+This guide provides detailed instructions for testing the Bookmarks API, which allows users to save, manage, and retrieve their bookmarked posts.
 
----
+## 1. Bookmark a Post
 
-## 1. Lưu một bài viết
+-   **Method:** `POST`
+-   **URL:** `http://localhost:8888/api/v1/post/{postId}/bookmark`
+-   **Authorization:** Required.
+-   **Path Variable:**
+    -   `postId` (string): The unique identifier of the post to be bookmarked.
+-   **Body:** (Optional) `raw` - `JSON`
 
-- **Method:** `POST`
-- **URL:** `http://localhost:8888/api/v1/saved-posts/{postId}`
-- **Authorization:** Bắt buộc.
-- **Path Variable:** `postId` - ID của bài viết cần lưu.
-- **Body:** `raw` - `JSON` (tùy chọn)
+    You can optionally include notes when bookmarking a post.
 
     ```json
     {
-      "notes": "Ghi chú cho bài viết đã lưu."
+      "notes": "This is an interesting article about..."
     }
     ```
 
-- **Phản hồi thành công (200 OK):**
+## 2. Unbookmark a Post
+
+-   **Method:** `DELETE`
+-   **URL:** `http://localhost:8888/api/v1/post/{postId}/bookmark`
+-   **Authorization:** Required.
+-   **Path Variable:**
+    -   `postId` (string): The unique identifier of the post to be unbookmarked.
+
+## 3. Get Bookmarked Posts (Paginated)
+
+-   **Method:** `GET`
+-   **URL:** `http://localhost:8888/api/v1/post/saved-posts`
+-   **Authorization:** Required.
+-   **Query Parameters:**
+    -   `page` (integer, optional, default: 0): The page number to retrieve.
+    -   `size` (integer, optional, default: 10): The number of items per page.
+
+## 4. Get All Bookmarked Posts (List)
+
+-   **Method:** `GET`
+-   **URL:** `http://localhost:8888/api/v1/post/list`
+-   **Authorization:** Required.
+
+## 5. Check if a Post is Bookmarked
+
+-   **Method:** `GET`
+-   **URL:** `http://localhost:8888/api/v1/post/check/{postId}`
+-   **Authorization:** Required.
+-   **Path Variable:**
+    -   `postId` (string): The unique identifier of the post to check.
+-   **Response:**
+    -   `true` if the post is bookmarked by the current user, `false` otherwise.
+
+## 6. Get User's Bookmarked Posts Count
+
+-   **Method:** `GET`
+-   **URL:** `http://localhost:8888/api/v1/post/count`
+-   **Authorization:** Required.
+-   **Response:**
+    -   A long integer representing the total number of posts bookmarked by the user.
+
+## 7. Get Post's Bookmark Count
+
+-   **Method:** `GET`
+-   **URL:** `http://localhost:8888/api/v1/post/post/{postId}/count`
+-   **Authorization:** Required.
+-   **Path Variable:**
+    -   `postId` (string): The unique identifier of the post.
+-   **Response:**
+    -   A long integer representing the total number of times the post has been bookmarked by all users.
+
+## 8. Update Notes on a Bookmarked Post
+
+-   **Method:** `PUT`
+-   **URL:** `http://localhost:8888/api/v1/post/notes/{savedPostId}`
+-   **Authorization:** Required.
+-   **Path Variable:**
+    -   `savedPostId` (string): The unique identifier of the saved post entry.
+-   **Body:** `raw` - `JSON`
 
     ```json
     {
-        "message": "Post saved successfully"
-    }
-    ```
-
----
-
-## 2. Bỏ lưu một bài viết
-
-- **Method:** `DELETE`
-- **URL:** `http://localhost:8888/api/v1/saved-posts/{postId}`
-- **Authorization:** Bắt buộc.
-- **Path Variable:** `postId` - ID của bài viết cần bỏ lưu.
-
-- **Phản hồi thành công (200 OK):**
-
-    ```json
-    {
-        "message": "Post unsaved successfully"
-    }
-    ```
-
----
-
-## 3. Lấy danh sách bài viết đã lưu
-
-- **Method:** `GET`
-- **URL:** `http://localhost:8888/api/v1/saved-posts`
-- **Authorization:** Bắt buộc.
-- **Query Params:**
-    -   `page`: Số trang (mặc định: `0`).
-    -   `size`: Kích thước trang (mặc định: `10`).
-
-- **Phản hồi thành công (200 OK):** Trả về một danh sách các bài viết đã lưu.
-
----
-
-## 4. Lấy danh sách tất cả các bài viết đã lưu
-
-- **Method:** `GET`
-- **URL:** `http://localhost:8888/api/v1/saved-posts/list`
-- **Authorization:** Bắt buộc.
-
-- **Phản hồi thành công (200 OK):** Trả về một danh sách đầy đủ các bài viết đã lưu.
-
----
-
-## 5. Kiểm tra xem một bài viết đã được lưu chưa
-
-- **Method:** `GET`
-- **URL:** `http://localhost:8888/api/v1/saved-posts/check/{postId}`
-- **Authorization:** Bắt buộc.
-- **Path Variable:** `postId` - ID của bài viết cần kiểm tra.
-
-- **Phản hồi thành công (200 OK):** Trả về `true` nếu bài viết đã được lưu, ngược lại trả về `false`.
-
----
-
-## 6. Lấy số lượng bài viết đã lưu
-
-- **Method:** `GET`
-- **URL:** `http://localhost:8888/api/v1/saved-posts/count`
-- **Authorization:** Bắt buộc.
-
-- **Phản hồi thành công (200 OK):** Trả về tổng số bài viết đã lưu.
-
----
-
-## 7. Lấy số lượng người dùng đã lưu một bài viết
-
-- **Method:** `GET`
-- **URL:** `http://localhost:8888/api/v1/saved-posts/post/{postId}/count`
-- **Authorization:** Bắt buộc.
-- **Path Variable:** `postId` - ID của bài viết.
-
-- **Phản hồi thành công (200 OK):** Trả về tổng số người dùng đã lưu bài viết.
-
----
-
-## 8. Cập nhật ghi chú cho một bài viết đã lưu
-
-- **Method:** `PUT`
-- **URL:** `http://localhost:8888/api/v1/saved-posts/notes/{savedPostId}`
-- **Authorization:** Bắt buộc.
-- **Path Variable:** `savedPostId` - ID của bài viết đã lưu.
-- **Body:** `raw` - `JSON`
-
-    ```json
-    {
-      "notes": "Ghi chú đã được cập nhật."
-    }
-    ```
-
-- **Phản hồi thành công (200 OK):**
-
-    ```json
-    {
-        "message": "Notes updated successfully"
+      "notes": "Updated notes for this bookmarked post."
     }
     ```

@@ -1,8 +1,8 @@
-import { Link } from 'react-router';
-import { Card, CardContent } from '~/components/ui/Card';
+
+import { CardContent } from '~/components/ui/Card';
 import { Heart, Eye } from 'lucide-react';
-import { memesApi } from '~/api/memes';
 import type { Meme } from '~/types';
+import { Link } from 'react-router';
 
 interface MemeCardClassicProps {
   meme: Meme;
@@ -10,8 +10,6 @@ interface MemeCardClassicProps {
 }
 
 export const MemeCardClassic = ({ meme, onLike }: MemeCardClassicProps) => {
-  const imageUrl = memesApi.getMemeImageUrl(meme.memeUrl);
-
   const handleLike = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -20,59 +18,64 @@ export const MemeCardClassic = ({ meme, onLike }: MemeCardClassicProps) => {
 
   return (
     <Link to={`/memes/${meme.slug}`}>
-      <Card className="hover:shadow-lg transition-all duration-300 cursor-pointer group">
-        <div className="aspect-square overflow-hidden rounded-t-lg bg-gray-100">
-          <img
-            src={imageUrl}
-            alt={meme.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            loading="lazy"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.src = '/api/placeholder/400/400';
-            }}
-          />
-        </div>
-        
-        <CardContent className="p-4">
-          <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
-            {meme.name}
-          </h3>
-          
-          {meme.description && (
-            <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-              {meme.description}
-            </p>
-          )}
-          
-          <div className="flex items-center justify-between text-sm text-gray-500">
-            <div className="flex items-center space-x-3">
-              {meme.likes !== undefined && (
-                <button
-                  onClick={handleLike}
-                  className="flex items-center space-x-1 hover:text-red-500 transition-colors"
-                >
-                  <Heart className="w-4 h-4" />
-                  <span>{meme.likes}</span>
-                </button>
-              )}
-              
-              {meme.views !== undefined && (
-                <div className="flex items-center space-x-1">
-                  <Eye className="w-4 h-4" />
-                  <span>{meme.views}</span>
-                </div>
+      <div className="relative overflow-hidden rounded-lg cursor-pointer group">
+        {/* Ảnh */}
+        <img
+          src={meme.memeUrl}
+          alt={meme.name}
+          className="w-full aspect-square object-cover transition-transform duration-500 group-hover:scale-105"
+          loading="lazy"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.src = '/api/placeholder/400/400';
+          }}
+        />
+
+        {/* Overlay nền */}
+        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+        {/* Nội dung text trượt lên */}
+        <div className="absolute bottom-0 w-full transform translate-y-full group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500 ease-out">
+          <CardContent className="text-white p-4">
+            <h3 className="font-semibold mb-2 line-clamp-2">
+              {meme.name}
+            </h3>
+
+            {meme.description && (
+              <p className="text-sm mb-3 line-clamp-2">
+                {meme.description}
+              </p>
+            )}
+
+            <div className="flex items-center justify-between text-sm">
+              <div className="flex items-center space-x-3">
+                {meme.likes !== undefined && (
+                  <button
+                    onClick={handleLike}
+                    className="flex items-center space-x-1 hover:text-red-400 transition-colors"
+                  >
+                    <Heart className="w-4 h-4" />
+                    <span>{meme.likes}</span>
+                  </button>
+                )}
+
+                {meme.views !== undefined && (
+                  <div className="flex items-center space-x-1">
+                    <Eye className="w-4 h-4" />
+                    <span>{meme.views}</span>
+                  </div>
+                )}
+              </div>
+
+              {meme.createdAt && (
+                <span className="text-xs">
+                  {new Date(meme.createdAt).toLocaleDateString('vi-VN')}
+                </span>
               )}
             </div>
-            
-            {meme.createdAt && (
-              <span className="text-xs">
-                {new Date(meme.createdAt).toLocaleDateString('vi-VN')}
-              </span>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </div>
+      </div>
     </Link>
   );
 };

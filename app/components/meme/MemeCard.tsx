@@ -2,8 +2,9 @@ import { Link } from 'react-router';
 import { Card, CardContent } from '~/components/ui/Card';
 import { DirectionAwareHover } from '~/components/ui/direction-aware-hover';
 import { Heart, Eye, Play } from 'lucide-react';
-import { memesApi } from '~/api/memes';
 import type { Meme } from '~/types';
+// import { memesApi } from '~/api/memes';
+
 
 interface MemeCardProps {
   meme: Meme;
@@ -11,7 +12,8 @@ interface MemeCardProps {
 }
 
 export const MemeCard = ({ meme, onLike }: MemeCardProps) => {
-  const imageUrl = memesApi.getMemeImageUrl(meme.memeUrl);
+  // const imageUrl = memesApi.getMemeImageUrl(meme.memeUrl);
+  // const memeUrl = "localhost:8888/uploads/" + ;
 
   const handleLike = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -22,14 +24,14 @@ export const MemeCard = ({ meme, onLike }: MemeCardProps) => {
   return (
     <Link to={`/memes/${meme.slug}`} className="block">
       <DirectionAwareHover
-        imageUrl={imageUrl}
-        className="w-full h-80 rounded-lg"
+        imageUrl={meme.memeUrl }
+        className="w-full h-full rounded-lg"
         imageClassName="object-cover"
         childrenClassName="p-4"
       >
         <div className="space-y-3">
           {/* Title */}
-          <h3 className="text-lg font-bold text-white line-clamp-2">
+          <h3 className="text-lg font-bold text-white line-clamp-2 ">
             {meme.name}
           </h3>
 

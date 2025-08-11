@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { useAuthStore } from '~/store/authStore';
-import { useTheme } from '~/components/providers/ThemeProvider';
+
 import { PageTransition } from '~/components/ui/PageTransition';
 import { RouteLoadingIndicator } from '~/components/ui/RouteLoadingIndicator';
 import { DashboardSidebar } from './DashboardSidebar';
@@ -33,12 +33,9 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuthStore();
-  const { theme, setTheme, actualTheme } = useTheme();
 
-  const toggleTheme = () => {
-    const newTheme = actualTheme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
-  };
+
+
 
   // Close sidebar on route change (mobile)
   useEffect(() => {
@@ -148,9 +145,9 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       <DashboardSidebar
         sidebarOpen={sidebarOpen}
         sidebarCollapsed={sidebarCollapsed}
-        darkMode={actualTheme === 'dark'}
+      
         onToggleCollapse={toggleSidebarCollapse}
-        onToggleTheme={toggleTheme}
+
         onCloseSidebar={() => setSidebarOpen(false)}
       />
 

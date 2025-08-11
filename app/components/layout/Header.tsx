@@ -3,7 +3,8 @@ import { Button } from '../ui/button';
 import { useAuthStore } from '~/store/authStore';
 import { useHydration } from '~/hooks/useHydration';
 import { UserDropdown } from './UserDropdown';
-import { ThemeToggle } from '../ui/ThemeToggle';
+
+import NotificationCenter from '../notification/NotificationCenter';
 
 export const Header = () => {
   const { user, isAuthenticated } = useAuthStore();
@@ -48,10 +49,13 @@ export const Header = () => {
           {/* User Menu */}
           <div className="flex items-center space-x-4">
             {showAuthState && user ? (
-              <UserDropdown user={user} />
+              <>
+                <NotificationCenter />
+                <UserDropdown user={user} />
+              </>
             ) : (
               <div className="flex items-center space-x-2">
-                <ThemeToggle />
+                
                 <Link to="/login">
                   <Button variant="secondary" size="sm">
                     Đăng nhập

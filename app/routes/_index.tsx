@@ -128,7 +128,10 @@ export default function HomePage() {
         )}
 
         {/* new letter */}
+        <div className="space-x-3 mb-6">
         <NewLetters />
+        </div>
+       
       </div>
     </MainLayout>
   );

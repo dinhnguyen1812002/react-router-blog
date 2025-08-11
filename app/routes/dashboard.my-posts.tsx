@@ -33,7 +33,9 @@ export default function MyPostsPage() {
   // Fetch user posts
   const { data: postsData, isLoading, error } = useQuery({
     queryKey: ['user-posts', page, searchTerm, filter],
+    
     queryFn: () => userPostsApi.getUserPosts(page, 10),
+    // queryFn: () => userPostsApi.getUserPosts(page, 10, searchTerm, filter),
     enabled: !!user
   });
 

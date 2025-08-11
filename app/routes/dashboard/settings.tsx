@@ -5,7 +5,7 @@ import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/Input';
 import { useAuthStore } from '~/store/authStore';
 import { authApi } from '~/api/auth';
-import { useTheme } from '~/components/providers/ThemeProvider';
+
 import {
   Settings,
   Bell,
@@ -31,7 +31,7 @@ import {
 
 export default function SettingsPage() {
   const { user, setUser, logout } = useAuthStore();
-  const { theme, setTheme } = useTheme();
+
   const queryClient = useQueryClient();
   
   const [activeTab, setActiveTab] = useState<'profile' | 'account' | 'notifications' | 'appearance' | 'data'>('profile');
@@ -698,7 +698,7 @@ useEffect(() => {
       )}
 
       {/* Appearance Settings */}
-      {activeTab === 'appearance' && (
+      {/* {activeTab === 'appearance' && (
         <Card>
           <CardHeader>
             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
@@ -733,13 +733,14 @@ useEffect(() => {
                   <span>Hệ thống</span>
                 </button>
               </div>
-                    <div>
-        <h3 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-4">
-          Màu sắc chủ đề
-        </h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <button
-            className="p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-blue-500 hover:bg-blue-600 text-white flex flex-col items-center space-y-2"
+            </div>
+          <div>
+            <h3 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-4">
+              Màu sắc chủ đề
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <button
+                className="p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-blue-500 hover:bg-blue-600 text-white flex flex-col items-center space-y-2"
             onClick={() => handleColorChange('blue')}
           >
             <div className="w-6 h-6 rounded-full bg-blue-500 border-2 border-white"></div>
@@ -834,7 +835,7 @@ useEffect(() => {
             </div>
           </CardContent>
         </Card>
-      )}
+      )} */}
 
       {/* Data Settings */}
       {activeTab === 'data' && (

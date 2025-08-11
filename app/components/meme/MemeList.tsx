@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { ur } from "zod/v4/locales";
 import { getMemes, type Meme, type MemeResponse } from "~/api/memes";
+import { MemeCard } from "./MemeCard";
+import { MemeCardClassic } from "./MemeCardClassic";
 
 export default function MemeList() {
   const [memes, setMemes] = useState<Meme[]>([]);
@@ -12,13 +14,6 @@ export default function MemeList() {
 
 
 // tạm nhá
-  const url = "http://localhost:8888/"
-
-
-
-
-
-
   const fetchMemes = async (page: number) => {
     setLoading(true);
     setError(null);
@@ -109,70 +104,12 @@ export default function MemeList() {
       ) : (
         <>
           {/* Meme Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
-            {memes.map((meme) => (
-              <div 
-                key={meme.id} 
-                className="group bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer"
-              >
-                <div className="relative overflow-hidden">
-                  <img
-                    src={ url + meme.memeUrl}
-                    alt={meme.name}
-                    className="w-full h-48 sm:h-56 object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  
-                  {/* Overlay actions */}
-                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="flex gap-2">
-                      <button className="p-2 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-colors">
-                        <span className="text-sm">❤️</span>
-                      </button>
-                      <button className="p-2 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-colors">
-                        <span className="text-sm">📤</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="p-4">
-                  <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                    {meme.name}
-                  </h3>
-                  
-                  {meme.description && (
-                    <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
-                      {meme.description}
-                    </p>
-                  )}
-                  
-                  <div className="flex justify-between items-center">
-                    <div className="flex gap-4 text-sm text-gray-500 dark:text-gray-400">
-                      {meme.likes !== undefined && (
-                        <div className="flex items-center gap-1">
-                          <span>👍</span>
-                          <span className="font-medium">{meme.likes}</span>
-                        </div>
-                      )}
-                      {meme.views !== undefined && (
-                        <div className="flex items-center gap-1">
-                          <span>👁️</span>
-                          <span className="font-medium">{meme.views}</span>
-                        </div>
-                      )}
-                    </div>
-                    
-                    {meme.createdAt && (
-                      <span className="text-xs text-gray-400 dark:text-gray-500">
-                        {new Date(meme.createdAt).toLocaleDateString('vi-VN')}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-12 m-4">
+              {memes.map((meme) => (
+                // <MemeCard meme={meme} key={meme.id} />
+                <MemeCardClassic meme={meme} key={meme.id} />
+              ))}
+            </div>
 
           {/* Pagination */}
           {totalPages > 1 && (

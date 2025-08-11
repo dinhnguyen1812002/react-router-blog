@@ -25,7 +25,7 @@ export const subscribeNewsletter = async (data : subscribe) => {
  * @param {string} token - Confirmation token
  */
 export const confirmSubscription = async (token: string) => {
-  const response = await axiosInstance.get(`/api/v1/newsletter/confirm?token=${token}`);
+  const response = await axiosInstance.get(`/newsletter/confirm?token=${token}`);
   return response.data;
 };
 
@@ -34,7 +34,7 @@ export const confirmSubscription = async (token: string) => {
  * @param {string} token - Unsubscribe token
  */
 export const unsubscribeNewsletter = async (token: string) => {
-  const response = await axiosInstance.get(`/api/v1/newsletter/unsubscribe?token=${token}`);
+  const response = await axiosInstance.get(`/newsletter/unsubscribe?token=${token}`);
   return response.data;
 };
 
@@ -47,7 +47,7 @@ export const unsubscribeNewsletter = async (token: string) => {
  * @param {number} [params.size=10] - Page size
  */
 export const getAllSubscribers = async ({ page = 0, size = 10 } = {}) => {
-  const response = await axiosInstance.get('/api/v1/newsletter/subscribers', {
+  const response = await axiosInstance.get('/newsletter/subscribers', {
     params: { page, size }
   });
   return response.data;
@@ -60,7 +60,7 @@ export const getAllSubscribers = async ({ page = 0, size = 10 } = {}) => {
  * @param {number} [params.size=10] - Page size
  */
 export const getActiveSubscribers = async ({ page = 0, size = 10 } = {}) => {
-  const response = await axiosInstance.get('/api/v1/newsletter/subscribers/active', {
+  const response = await axiosInstance.get('/newsletter/subscribers/active', {
     params: { page, size }
   });
   return response.data;
@@ -70,7 +70,7 @@ export const getActiveSubscribers = async ({ page = 0, size = 10 } = {}) => {
  * Get count of active subscribers (Admin only)
  */
 export const getActiveSubscribersCount = async () => {
-  const response = await axiosInstance.get('/api/v1/newsletter/subscribers/count');
+  const response = await axiosInstance.get('/newsletter/subscribers/count');
   return response.data;
 };
 
