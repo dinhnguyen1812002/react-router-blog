@@ -10,6 +10,7 @@ import { ThemedCard, ThemedCardContent } from "~/components/ui/ThemedCard";
 import { ThemedInput } from "~/components/ui/ThemedInput";
 import { ThemedButton } from "~/components/ui/ThemedButton";
 import { User, Mail, Lock, UserPlus } from "lucide-react";
+import { Button } from "~/components/ui/button";
 
 const registerSchema = z
   .object({
@@ -83,9 +84,6 @@ export default function RegisterPage() {
           <div className="max-w-md w-full space-y-8">
             {/* Header */}
             <div className="text-center">
-              <div className="theme-gradient-bg w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <UserPlus className="w-8 h-8 text-white" />
-              </div>
               <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Tạo tài khoản mới
               </h2>
@@ -121,7 +119,7 @@ export default function RegisterPage() {
                     type="email"
                     label="Email"
                     placeholder="Nhập địa chỉ email"
-                 
+                    
                     error={errors.email?.message}
                     {...registerField("email")}
                     onChange={(e) => {
@@ -134,7 +132,7 @@ export default function RegisterPage() {
                     type="password"
                     label="Mật khẩu"
                     placeholder="Nhập mật khẩu"
-                   
+                  
                     error={errors.password?.message}
                     helperText="Mật khẩu phải có ít nhất 6 ký tự"
                     {...registerField("password")}
@@ -144,22 +142,14 @@ export default function RegisterPage() {
                     type="password"
                     label="Xác nhận mật khẩu"
                     placeholder="Nhập lại mật khẩu"
-                  
+                 
                     error={errors.confirmPassword?.message}
                     {...registerField("confirmPassword")}
                   />
 
-                  <ThemedButton
-                    type="submit"
-                    gradient
-                    fullWidth
-                    size="lg"
-                    loading={isLoading}
-                    icon={<UserPlus className="w-5 h-5" />}
-                    className="mt-8"
-                  >
-                    {isLoading ? "Đang tạo tài khoản..." : "Tạo tài khoản"}
-                  </ThemedButton>
+                  <Button type="submit" variant="outline" className="w-full">
+                    Tạo tài khoản
+                  </Button>
                 </form>
 
                 <div className="mt-6 text-center">

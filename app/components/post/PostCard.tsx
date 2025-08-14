@@ -1,12 +1,20 @@
-import { Link } from 'react-router';
-import { Card, CardContent, CardHeader } from '~/components/ui/Card';
-import { formatDateSimple } from '~/lib/utils';
-import { Avatar } from '~/components/ui/Avatar';
-import { Heart, Eye, MessageCircle, Star, Bookmark, Clock, User } from 'lucide-react';
-import { LikeButton } from './LikeButton';
-import { RatingComponent } from './RatingComponent';
-import { BookmarkButton } from './BookmarkButton';
-import type { Post } from '~/types';
+import { Link } from "react-router";
+import { Card, CardContent, CardHeader } from "~/components/ui/Card";
+import { formatDateSimple } from "~/lib/utils";
+import { Avatar } from "~/components/ui/Avatar";
+import {
+  Heart,
+  Eye,
+  MessageCircle,
+  Star,
+  Bookmark,
+  Clock,
+  User,
+} from "lucide-react";
+import { LikeButton } from "./LikeButton";
+import { RatingComponent } from "./RatingComponent";
+import { BookmarkButton } from "./BookmarkButton";
+import type { Post } from "~/types";
 
 interface PostCardProps {
   post: Post;
@@ -14,43 +22,42 @@ interface PostCardProps {
 
 export const PostCard = ({ post }: PostCardProps) => {
   return (
-    <Card className="group hover:shadow-lg dark:hover:shadow-gray-900/50
-    transition-all duration-300 overflow-hidden border-0 shadow-sm bg-white dark:bg-gray-800 w-full max-w-md">
-      {/* Header with thumbnail */}
-      <div className="relative overflow-hidden">
-        {(post.thumbnail || post.thumbnailUrl) ? (
-          <div className="aspect-[16/12] overflow-hidden">
-            <img
-              src={post.thumbnail || post.thumbnailUrl}
-              alt={post.title}
-              className="w-full h-full 
-              object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-          </div>
-        ) : (
-          <div className="aspect-[16/12] bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/20 dark:via-indigo-900/20 dark:to-purple-900/20 flex items-center justify-center">
-            <div className="text-3xl text-blue-300 dark:text-blue-400">📝</div>
-          </div>
-        )}
+    <Card
+      className="group hover:shadow-lg dark:hover:shadow-gray-900/50
+  transition-all duration-300 overflow-hidden border-0 shadow-sm bg-white dark:bg-gray-800 w-full max-w-md p-0"
+    >
+      {/* Hình ảnh */}
+      <div className="relative">
+        <div className="aspect-[16/9] w-full">
+          <img
+            src={post.thumbnail || post.thumbnailUrl}
+            alt={post.title}
+            loading="lazy"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+        </div>
 
-        {/* Compact badges overlay */}
-        <div className="absolute top-2 left-2 right-2 flex items-center justify-between">
-          {post.categories && post.categories.length > 0 && (
+        {/* Badge */}
+        <div className="absolute top-2 left-2 flex items-center gap-2">
+          {post.categories?.length > 0 && (
             <span
               className="px-2 py-1 rounded-full text-xs font-medium text-white shadow-sm"
-              style={{ backgroundColor: post.categories[0].backgroundColor || '#3B82F6' }}
+              style={{
+                backgroundColor:
+                  post.categories[0].backgroundColor || "#3B82F6",
+              }}
             >
               {post.categories[0].category}
             </span>
           )}
           {post.featured && (
-            <span className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-400 text-yellow-900">
+            <span className="px-2 py-1 rounded-full text-xs bg-yellow-400 text-yellow-900">
               ⭐
             </span>
           )}
         </div>
 
-        {/* Bookmark button overlay */}
+        {/* Bookmark */}
         <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <BookmarkButton
             postId={post.id}
@@ -61,91 +68,63 @@ export const PostCard = ({ post }: PostCardProps) => {
         </div>
       </div>
 
-      <div className="p-4">
-        {/* Title */}
-        <Link to={`/posts/${post.slug}`} className="block group">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 mb-2 leading-tight">
+      {/* Nội dung */}
+      <div className="p-3 sm:p-4 flex flex-col justify-between h-full">
+        <Link to={`/posts/${post.slug}`} className="block group mb-2">
+          <h3
+            className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 
+      group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2"
+          >
             {post.title}
           </h3>
-
-          <p className=" mb-1.5"> 
-            {post.excerpt} 
+          {post.excerpt && (
+            <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+              {post.excerpt}
             </p>
+          )}
         </Link>
 
-        {/* Summary - shorter */}
-        {post.content && (
-          <p className="text-gray-600 dark:text-gray-400 line-clamp-2 text-sm mb-3"
-          dangerouslySetInnerHTML={{ __html: post.content }}
-          >
-        
-          </p>
-        )}
-
-        {/* Compact tags */}
-        {Array.isArray(post.tags) && post.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-3">
-            {post.tags.slice(0, 3).map((tag) => (
-              <span
-                key={tag.uuid}
-                className="px-2 py-1 rounded text-xs bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300"
-              >
-                #{tag.name}
-              </span>
-            ))}
-            {post.tags.length > 3 && (
-              <span className="px-2 py-1 rounded text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
-                +{post.tags.length - 3}
-              </span>
-            )}
-          </div>
-        )}
-
-        {/* Compact author, date, rating and stats */}
-        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+        {/* Thông tin tác giả + Stats */}
+        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-3">
           <div className="flex items-center space-x-2">
             <Avatar
-              src={post.user.avatar}
+              src={post.user.avatar || ""}
               fallback={post.user.username.charAt(0)}
               alt={post.user.username}
               size="sm"
             />
-            <span className="font-medium truncate max-w-20">{post.user.username}</span>
+            <span className="font-medium truncate max-w-[80px]">
+              {post.user.username}
+            </span>
             <span>•</span>
             <span>{formatDateSimple(post.createdAt)}</span>
           </div>
 
           <div className="flex items-center space-x-3">
-            <div className="flex items-center space-x-1">
-              <Eye className="w-3 h-3" />
-              <span>{post.viewCount}</span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <Heart className="w-3 h-3" />
-              <span>{post.likeCount}</span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <MessageCircle className="w-3 h-3" />
-              <span>{post.commentCount || 0}</span>
-            </div>
+            <span className="flex items-center space-x-1">
+              <Eye className="w-3 h-3" /> {post.viewCount}
+            </span>
+            <span className="flex items-center space-x-1">
+              <Heart className="w-3 h-3" /> {post.likeCount}
+            </span>
+            <span className="flex items-center space-x-1">
+              <MessageCircle className="w-3 h-3" /> {post.commentCount || 0}
+            </span>
           </div>
         </div>
 
-        {/* Compact rating and like button */}
-        <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
+        {/* Rating & Like */}
+        <div className="flex items-center justify-between border-t border-gray-100 dark:border-gray-700 pt-2">
           <RatingComponent
             postId={post.id}
             initialUserRating={post.userRating}
             initialAverageRating={post.averageRating}
-            compact={true}
-            className="text-xs"
+            compact
           />
-
           <LikeButton
             postId={post.id}
             initialLiked={post.isLikedByCurrentUser}
             initialLikeCount={post.likeCount}
-            className="text-xs"
           />
         </div>
       </div>

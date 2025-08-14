@@ -39,11 +39,16 @@ route("dashboard", "routes/dashboard/_layout.tsx", [
   // route("author/posts/edit/:postId", "routes/author.posts.edit.$postId.tsx"),
 
   // Admin routes
-  // route("admin", "routes/admin._index.tsx"),
-  // route("admin/categories", "routes/admin.categories.tsx"),
-  // route("admin/tags", "routes/admin.tags.tsx"),
-  // route("admin/users", "routes/admin.users.tsx"),
-  // route("admin/posts", "routes/admin.posts.tsx"),
+  route("admin", "routes/admin/_layout.tsx", [
+    route("", "routes/admin/index.tsx"),
+    route("analytics", "routes/admin/analytics.tsx"),
+    route("users", "routes/admin/users.tsx"),
+    route("roles", "routes/admin/roles.tsx"),
+    route("categories", "routes/admin/categories.tsx"),
+    route("tags", "routes/admin/tags.tsx"),
+    route("newsletter", "routes/admin/newsletter.tsx"),
+    route("settings", "routes/admin/settings.tsx"),
+  ]),
 
   // User profile and settings
   // route("profile/:userId", "routes/profile.$userId.tsx"),

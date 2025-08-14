@@ -3,6 +3,17 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { User } from '~/types';
 
+// Helper function to decode JWT and check expiration
+const isTokenExpired = (token: string): boolean => {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const currentTime = Date.now() / 1000;
+    return payload.exp < currentTime;
+  } catch {
+    return true; // If we can't decode, consider it expired
+  }
+};
+
 interface AuthState {
   user: User | null;
   token: string | null;
@@ -19,6 +30,7 @@ interface AuthActions {
   login: (user: User, token: string) => void;
   logout: () => void;
   clearError: () => void;
+  checkTokenValidity: () => boolean;
   initialize: () => Promise<void>;
 }
 
@@ -77,17 +89,35 @@ export const useAuthStore = create<AuthStore>()(
         set({ error: null });
       },
 
+      // Check if current token is valid
+      checkTokenValidity: () => {
+        const { token } = get();
+        if (token && isTokenExpired(token)) {
+          console.log('Token expired, logging out...');
+          get().logout();
+          return false;
+        }
+        return !!token;
+      },
+
       // Initialize auth state on app start
       initialize: async () => {
         const { token, user } = get();
         if (token && user) {
-          // Optionally verify token is still valid
+          // Check if token is expired
+          if (isTokenExpired(token)) {
+            console.log('Token expired during initialization, logging out...');
+            get().logout();
+            set({ isLoading: false });
+            return;
+          }
+          
           try {
-            // You can add token validation here
             set({ isAuthenticated: true, isLoading: false });
           } catch (error) {
             console.error('Token validation failed:', error);
             get().logout();
+            set({ isLoading: false });
           }
         } else {
           set({ isLoading: false });
@@ -102,15 +132,16 @@ export const useAuthStore = create<AuthStore>()(
         token: state.token,
         isAuthenticated: state.isAuthenticated,
       }),
-      // Keep data for 7 days
-      // version: 1,
-      // migrate: (persistedState: any, version: number) => {
-      //   if (version === 0) {
-        
-      //     return persistedState;
-      //   }
-      //   return persistedState;
-      // },
+      // Custom hydration to check token expiration on load
+      onRehydrateStorage: () => (state) => {
+        if (state?.token && isTokenExpired(state.token)) {
+          console.log('Token expired on rehydration, clearing storage...');
+          // Clear expired data
+          state.user = null;
+          state.token = null;
+          state.isAuthenticated = false;
+        }
+      },
     }
   )
 );

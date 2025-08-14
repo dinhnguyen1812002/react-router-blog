@@ -36,17 +36,29 @@ export const ThemedInput = React.forwardRef<HTMLInputElement, ThemedInputProps>(
   };
 
   const sizeClasses = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2.5 text-sm',
-    lg: 'px-4 py-3 text-base'
+    sm: 'py-1.5 text-sm',
+    md: 'py-2.5 text-sm', 
+    lg: 'py-3 text-base'
   };
 
   const errorClasses = error 
     ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
     : '';
 
-  const leftPadding = leftIcon ? 'pl-10' : '';
-  const rightPadding = rightIcon || isPassword ? 'pr-10' : '';
+  // Dynamic padding based on size and icons
+  const getHorizontalPadding = () => {
+    const basePadding = {
+      sm: { left: 'px-3', right: 'px-3', iconLeft: 'pl-9', iconRight: 'pr-9' },
+      md: { left: 'px-4', right: 'px-4', iconLeft: 'pl-11', iconRight: 'pr-11' },
+      lg: { left: 'px-4', right: 'px-4', iconLeft: 'pl-12', iconRight: 'pr-12' }
+    };
+    
+    const size = basePadding[inputSize];
+    let leftPad = leftIcon ? size.iconLeft : size.left;
+    let rightPad = (rightIcon || isPassword) ? size.iconRight : size.right;
+    
+    return `${leftPad} ${rightPad}`;
+  };
 
   return (
     <div className="space-y-1">
@@ -58,7 +70,9 @@ export const ThemedInput = React.forwardRef<HTMLInputElement, ThemedInputProps>(
       
       <div className="relative">
         {leftIcon && (
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <div className={`absolute inset-y-0 left-0 flex items-center pointer-events-none ${
+            inputSize === 'lg' ? 'pl-4' : inputSize === 'md' ? 'pl-3' : 'pl-2'
+          }`}>
             <div className="text-gray-400 dark:text-gray-500">
               {leftIcon}
             </div>
@@ -73,8 +87,7 @@ export const ThemedInput = React.forwardRef<HTMLInputElement, ThemedInputProps>(
             ${variantClasses[variant]}
             ${sizeClasses[inputSize]}
             ${errorClasses}
-            ${leftPadding}
-            ${rightPadding}
+            ${getHorizontalPadding()}
             ${className}
           `}
           {...props}
@@ -83,7 +96,9 @@ export const ThemedInput = React.forwardRef<HTMLInputElement, ThemedInputProps>(
         {isPassword && (
           <button
             type="button"
-            className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            className={`absolute inset-y-0 right-0 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors ${
+              inputSize === 'lg' ? 'pr-4' : inputSize === 'md' ? 'pr-3' : 'pr-2'
+            }`}
             onClick={() => setShowPassword(!showPassword)}
           >
             {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -91,7 +106,9 @@ export const ThemedInput = React.forwardRef<HTMLInputElement, ThemedInputProps>(
         )}
         
         {rightIcon && !isPassword && (
-          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+          <div className={`absolute inset-y-0 right-0 flex items-center pointer-events-none ${
+            inputSize === 'lg' ? 'pr-4' : inputSize === 'md' ? 'pr-3' : 'pr-2'
+          }`}>
             <div className="text-gray-400 dark:text-gray-500">
               {rightIcon}
             </div>

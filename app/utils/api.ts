@@ -1,5 +1,31 @@
 import { env, buildApiUrl } from "~/config/env";
 
+// API interceptor to handle token expiration
+export const createApiRequest = (url: string, options: RequestInit = {}) => {
+  // Check if we're in browser environment
+  if (typeof window !== 'undefined') {
+    // Import authStore dynamically to avoid SSR issues
+    import('~/store/authStore').then(({ useAuthStore }) => {
+      const store = useAuthStore.getState();
+      
+      // Check token validity before making request
+      if (store.token && !store.checkTokenValidity()) {
+        // Token is expired, request will fail anyway
+        console.log('Token expired before API request');
+        return;
+      }
+    });
+  }
+
+  return fetch(url, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+};
+
 // API endpoint builders
 export const apiEndpoints = {
   // Auth endpoints
