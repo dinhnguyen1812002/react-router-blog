@@ -73,7 +73,7 @@ export default function DashboardLayout() {
 
         {/* Page content */}
         <main className="flex-1 p-4 lg:p-6 overflow-auto">
-          <div className="max-w-7xl mx-auto">
+          <div className="container mx-auto">
             <PageTransition>
               <Outlet />
             </PageTransition>

@@ -44,5 +44,48 @@ export const userApi = {
     return response.data;
   },
 
-  
+  getPopularUsers: async (limit: number = 10): Promise<ApiResponse<UserProfile[]>> => {
+    try {
+      // For now, return mock data. In real app, this would be an API endpoint
+      const mockUsers: UserProfile[] = [
+        {
+          id: '1',
+          username: 'nguyenvana',
+          email: 'nguyenvana@example.com',
+          displayName: 'Nguyễn Văn A',
+          bio: 'Full-stack developer với 5+ năm kinh nghiệm',
+          avatarUrl: '',
+          createdAt: '2023-01-01T00:00:00Z',
+          stats: {
+            totalPosts: 45,
+            totalComments: 890,
+            totalBookmarks: 125,
+          },
+        },
+        {
+          id: '2',
+          username: 'tranthib',
+          email: 'tranthib@example.com',
+          displayName: 'Trần Thị B',
+          bio: 'UI/UX Designer & Frontend Developer',
+          avatarUrl: '',
+          createdAt: '2023-02-01T00:00:00Z',
+          stats: {
+            totalPosts: 32,
+            totalComments: 650,
+            totalBookmarks: 98,
+          },
+        },
+      ];
+
+      return {
+        data: mockUsers.slice(0, limit),
+        message: 'Success',
+        success: true,
+      };
+    } catch (error) {
+      console.error('Error fetching popular users:', error);
+      throw error;
+    }
+  },
 };

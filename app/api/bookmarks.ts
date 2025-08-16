@@ -38,20 +38,30 @@ const handleBookmarkError = (error: any, action: string) => {
 
 export const bookmarksApi = {
   // Get user's bookmarked posts (paginated)
-  getBookmarks: async (page = 0, size = 10): Promise<BookmarkResponse> => {
-    try {
-      const response = await apiClient.get(apiEndpoints.bookmarks.list(page, size));
-      return response.data;
-    } catch (error) {
-      handleBookmarkError(error, 'lấy danh sách');
-      throw error;
-    }
-  },
+getBookmarks: async (page = 0, size = 10): Promise<BookmarkResponse> => {
+  try {
+    const response = await apiClient.get(apiEndpoints.bookmarks.list(page, size));
+    console.log('Bookmarks API Response:', response.data);
+
+    const data = response.data;
+
+    return {
+      posts: data.content.map((item: any) => item.post), // extract post object
+      total: data.totalElements,
+      page: data.number,
+      limit: data.size,
+    };
+  } catch (error) {
+    handleBookmarkError(error, 'lấy danh sách');
+    throw error;
+  }
+},
 
   // Get all saved posts (non-paginated)
   getAll: async (): Promise<Post[]> => {
     try {
-      const response = await apiClient.get(apiEndpoints.bookmarks.listAll());
+      const response = await apiClient.get(apiEndpoints.bookmarks.list(0,10));
+      console.log('All bookmarks:', response.data);
       return response.data;
     } catch (error) {
       handleBookmarkError(error, 'lấy tất cả bài đã lưu');
@@ -60,15 +70,17 @@ export const bookmarksApi = {
   },
 
   // Toggle bookmark following docs: POST to add, DELETE to remove
+  // Note: This method makes two API calls and may have race conditions
+  // Consider using explicit addBookmark/removeBookmark for better reliability
   toggleBookmark: async (postId: string, notes?: string): Promise<BookmarkActionResponse> => {
     try {
       const statusRes = await bookmarksApi.isBookmarked(postId);
       if (statusRes.isBookmarked) {
         const response = await apiClient.delete(apiEndpoints.bookmarks.remove(postId));
-        return response.data;
+        return { ...response.data, isBookmarked: false };
       } else {
         const response = await apiClient.post(apiEndpoints.bookmarks.add(postId), notes ? { notes } : undefined);
-        return response.data;
+        return { ...response.data, isBookmarked: true };
       }
     } catch (error) {
       handleBookmarkError(error, 'thay đổi bookmark');
@@ -80,7 +92,7 @@ export const bookmarksApi = {
   addBookmark: async (postId: string, notes?: string): Promise<BookmarkActionResponse> => {
     try {
       const response = await apiClient.post(apiEndpoints.bookmarks.add(postId), notes ? { notes } : undefined);
-      return response.data;
+      return { ...response.data, isBookmarked: true };
     } catch (error) {
       handleBookmarkError(error, 'thêm bookmark');
       throw error;
@@ -91,7 +103,7 @@ export const bookmarksApi = {
   removeBookmark: async (postId: string): Promise<BookmarkActionResponse> => {
     try {
       const response = await apiClient.delete(apiEndpoints.bookmarks.remove(postId));
-      return response.data;
+      return { ...response.data, isBookmarked: false };
     } catch (error) {
       handleBookmarkError(error, 'xóa bookmark');
       throw error;
@@ -106,8 +118,8 @@ export const bookmarksApi = {
     } catch (error: any) {
       if (error?.response?.status === 404) {
         // Fallback to legacy endpoint
-        const legacy = await apiClient.get(apiEndpoints.bookmarks.legacyStatus(postId));
-        return legacy.data;
+        // const legacy = await apiClient.get(apiEndpoints.bookmarks.legacyStatus(postId));
+        // return legacy.data;
       }
       handleBookmarkError(error, 'kiểm tra trạng thái');
       throw error;

@@ -25,7 +25,7 @@ export const usePostActions = (postId: string) => {
     onError: (error: any) => {
       console.error('❌ Like post error:', error);
       
-      if (error.response?.status === 401 || error.response?.status === 403) {
+      if (error.response?.status === 401 ) {
         // Redirect to login if not authenticated
         navigate('/login', {
           state: {
@@ -51,7 +51,7 @@ export const usePostActions = (postId: string) => {
     onError: (error: any) => {
       console.error('❌ Rate post error:', error);
       
-      if (error.response?.status === 401 || error.response?.status === 403) {
+      if (error.response?.status === 401 ) {
         // Redirect to login if not authenticated
         navigate('/login', {
           state: {

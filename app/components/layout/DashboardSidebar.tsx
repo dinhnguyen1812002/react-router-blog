@@ -32,7 +32,8 @@ import {
   Zap,
   Star,
   Clock,
-  Filter
+  Filter,
+  Mail
 } from 'lucide-react';
 
 interface NavItem {
@@ -93,6 +94,15 @@ const navigation: NavItem[] = [
     isPro: true
   },
   {
+    name: 'Newsletter',
+    href: '/dashboard/newsletter',
+    icon: Mail,
+    description: 'Quản lý newsletter',
+    shortcut: '⌘7',
+    category: 'marketing',
+    isNew: true
+  },
+  {
     name: 'Hồ sơ',
     href: '/dashboard/profile',
     icon: User,
@@ -114,6 +124,7 @@ const categories = {
   main: { name: 'Chính', icon: Home },
   content: { name: 'Nội dung', icon: FileText },
   analytics: { name: 'Thống kê', icon: BarChart3 },
+  marketing: { name: 'Marketing', icon: Mail },
   account: { name: 'Tài khoản', icon: User }
 };
 

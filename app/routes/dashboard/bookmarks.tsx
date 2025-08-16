@@ -20,6 +20,9 @@ import {
   FileText
 } from 'lucide-react';
 import { formatDateSimple } from "~/lib/utils";
+import { toast } from 'sonner';
+
+
 
 export default function BookmarksPage() {
   const { user } = useAuthStore();
@@ -43,6 +46,54 @@ export default function BookmarksPage() {
     post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     post.summary?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+ const [pendingRemovals, setPendingRemovals] = useState<Record<string, NodeJS.Timeout>>({});
+
+ function handleBookmark(postId: string) {
+    // 1. Tạm thời loại bỏ bài viết khỏi giao diện
+    setPendingRemovals((prev) => {
+      // nếu đã pending rồi thì bỏ qua
+      if (prev[postId]) return prev;
+      const timeout = setTimeout(async () => {
+        try {
+          await bookmarksApi.removeBookmark(postId);
+        } catch (err) {
+          console.error("Failed to remove bookmark:", err);
+          toast.error("Xóa bookmark thất bại");
+        } finally {
+          setPendingRemovals((prev) => {
+            const { [postId]: _, ...rest } = prev;
+            return rest;
+          });
+        }
+      }, 30000);
+
+      return { ...prev, [postId]: timeout };
+    });
+
+    // 2. Hiện toast với nút Hoàn tác
+    toast("Đã gỡ bookmark", {
+      description: "Sẽ xóa sau 30 giây nếu bạn không hoàn tác.",
+      duration: 30000,
+      style: {
+        background: "rgba(255, 255, 255, 0.95)",
+        color: "black",
+        border: "1px solid #eee",
+      },
+      action: {
+        label: "Hoàn tác",
+        onClick: () => {
+          // Huỷ timeout và khôi phục post
+          if (pendingRemovals[postId]) {
+            clearTimeout(pendingRemovals[postId]);
+            setPendingRemovals((prev) => {
+              const { [postId]: _, ...rest } = prev;
+              return rest;
+            });
+          }
+        },
+      },
+    });
+  }
 
   return (
     <div className="space-y-6">
@@ -185,6 +236,7 @@ export default function BookmarksPage() {
                         variant="ghost" 
                         size="sm"
                         className="text-amber-500 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300"
+                        onClick={() => handleBookmark(post.id)}
                       >
                         <Bookmark className="w-5 h-5 fill-current" />
                       </Button>

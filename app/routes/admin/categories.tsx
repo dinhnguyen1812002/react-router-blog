@@ -1,61 +1,75 @@
-import { useState } from "react";
-import { Search, Plus, Edit, Trash2, FolderOpen, FileText, Calendar } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, Plus, Edit, Trash2, FolderOpen, FileText, Calendar, Loader2, AlertCircle, RefreshCw } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import CategoryModal from "~/components/admin/CategoryModal";
+import { categoriesApi } from "~/api/categories";
 import type { Category } from "~/types";
 
-const categories = [
-  {
-    id: 1,
-    name: "Technology",
-    description: "Các bài viết về công nghệ, lập trình, và phát triển phần mềm",
-    postCount: 45,
-    createdAt: "2024-01-15",
-    updatedAt: "2024-01-20",
-    status: "active"
-  },
-  {
-    id: 2,
-    name: "Lifestyle",
-    description: "Chia sẻ về cuộc sống, sức khỏe, và phong cách sống",
-    postCount: 23,
-    createdAt: "2024-01-18",
-    updatedAt: "2024-01-19",
-    status: "active"
-  },
-  {
-    id: 3,
-    name: "Business",
-    description: "Kinh doanh, khởi nghiệp, và phát triển sự nghiệp",
-    postCount: 12,
-    createdAt: "2024-01-10",
-    updatedAt: "2024-01-12",
-    status: "active"
-  },
-  {
-    id: 4,
-    name: "Travel",
-    description: "Du lịch, khám phá, và trải nghiệm",
-    postCount: 8,
-    createdAt: "2024-01-20",
-    updatedAt: "2024-01-20",
-    status: "inactive"
-  },
-];
-
 export default function AdminCategories() {
+  const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [newCategory, setNewCategory] = useState({
-    name: "",
-    description: "",
-    status: "active"
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+
+  // Fetch categories
+  const {
+    data: categories = [],
+    isLoading,
+    error,
+    refetch,
+    isFetching
+  } = useQuery({
+    queryKey: ['categories'],
+    queryFn: categoriesApi.getAll,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
+  // Create category mutation
+  const createCategoryMutation = useMutation({
+    mutationFn: categoriesApi.create,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      toast.success("Danh mục đã được tạo thành công!");
+      setShowAddModal(false);
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Có lỗi xảy ra khi tạo danh mục");
+    },
+  });
+
+  // Update category mutation
+  const updateCategoryMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<Category> }) =>
+      categoriesApi.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      toast.success("Danh mục đã được cập nhật thành công!");
+      setShowEditModal(false);
+      setSelectedCategory(null);
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Có lỗi xảy ra khi cập nhật danh mục");
+    },
+  });
+
+  // Delete category mutation
+  const deleteCategoryMutation = useMutation({
+    mutationFn: categoriesApi.delete,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      toast.success("Danh mục đã được xóa thành công!");
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Có lỗi xảy ra khi xóa danh mục");
+    },
+  });
+
+  // Filter categories based on search term
   const filteredCategories = categories.filter(category =>
-    category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    category.description.toLowerCase().includes(searchTerm.toLowerCase())
+    category.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    category.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleAddCategory = () => {
@@ -63,24 +77,61 @@ export default function AdminCategories() {
     setShowAddModal(true);
   };
 
-  const handleEditCategory = (category : Category) => {
+  const handleEditCategory = (category: Category) => {
     setSelectedCategory(category);
     setShowEditModal(true);
   };
 
-  const handleDeleteCategory = (categoryId) => {
+  const handleDeleteCategory = (categoryId: number) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa danh mục này?")) {
-      // Handle delete logic here
-      console.log("Delete category:", categoryId);
+      deleteCategoryMutation.mutate(categoryId.toString());
     }
   };
 
-  const handleSubmitCategory = (categoryData) => {
-    console.log("Submit category:", categoryData);
-    // Handle form submission logic here
-    setShowAddModal(false);
-    setShowEditModal(false);
+  const handleSubmitCategory = (categoryData: Partial<Category>) => {
+    if (selectedCategory) {
+      // Update existing category
+      updateCategoryMutation.mutate({
+        id: selectedCategory.id.toString(),
+        data: categoryData
+      });
+    } else {
+      // Create new category
+      createCategoryMutation.mutate(categoryData);
+    }
   };
+
+  const handleRefresh = () => {
+    refetch();
+  };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+        <span className="ml-2 text-gray-600">Đang tải danh mục...</span>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64">
+        <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
+        <h3 className="text-lg font-medium text-gray-900 mb-2">Có lỗi xảy ra</h3>
+        <p className="text-gray-600 mb-4">Không thể tải danh sách danh mục</p>
+        <button
+          onClick={handleRefresh}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
+        >
+          <RefreshCw className="h-4 w-4" />
+          <span>Thử lại</span>
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -90,13 +141,28 @@ export default function AdminCategories() {
           <h1 className="text-2xl font-bold text-gray-900">Quản lý danh mục</h1>
           <p className="text-gray-600">Quản lý các danh mục bài viết trong hệ thống</p>
         </div>
-        <button 
-          onClick={handleAddCategory}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Thêm danh mục</span>
-        </button>
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={handleRefresh}
+            disabled={isFetching}
+            className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+          >
+            <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
+            <span>Làm mới</span>
+          </button>
+          <button
+            onClick={handleAddCategory}
+            disabled={createCategoryMutation.isPending}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+          >
+            {createCategoryMutation.isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Plus className="h-4 w-4" />
+            )}
+            <span>Thêm danh mục</span>
+          </button>
+        </div>
       </div>
 
       {/* Stats */}
@@ -116,13 +182,11 @@ export default function AdminCategories() {
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Danh mục hoạt động</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {categories.filter(c => c.status === 'active').length}
-              </p>
+              <p className="text-sm font-medium text-gray-600">Kết quả tìm kiếm</p>
+              <p className="text-2xl font-bold text-gray-900">{filteredCategories.length}</p>
             </div>
             <div className="p-3 bg-green-50 rounded-full">
-              <FolderOpen className="h-6 w-6 text-green-600" />
+              <Search className="h-6 w-6 text-green-600" />
             </div>
           </div>
         </div>
@@ -130,13 +194,13 @@ export default function AdminCategories() {
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Tổng bài viết</p>
+              <p className="text-sm font-medium text-gray-600">Đang tải</p>
               <p className="text-2xl font-bold text-gray-900">
-                {categories.reduce((sum, c) => sum + c.postCount, 0)}
+                {isFetching ? "..." : "✓"}
               </p>
             </div>
             <div className="p-3 bg-purple-50 rounded-full">
-              <FileText className="h-6 w-6 text-purple-600" />
+              <RefreshCw className={`h-6 w-6 text-purple-600 ${isFetching ? 'animate-spin' : ''}`} />
             </div>
           </div>
         </div>
@@ -144,13 +208,17 @@ export default function AdminCategories() {
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Trung bình bài viết</p>
+              <p className="text-sm font-medium text-gray-600">Trạng thái</p>
               <p className="text-2xl font-bold text-gray-900">
-                {Math.round(categories.reduce((sum, c) => sum + c.postCount, 0) / categories.length)}
+                {error ? "Lỗi" : "OK"}
               </p>
             </div>
             <div className="p-3 bg-yellow-50 rounded-full">
-              <FileText className="h-6 w-6 text-yellow-600" />
+              {error ? (
+                <AlertCircle className="h-6 w-6 text-red-600" />
+              ) : (
+                <Calendar className="h-6 w-6 text-yellow-600" />
+              )}
             </div>
           </div>
         </div>
@@ -185,28 +253,32 @@ export default function AdminCategories() {
                   <FolderOpen className="h-5 w-5 text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">{category.name}</h3>
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    category.status === 'active' 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-gray-100 text-gray-800'
-                  }`}>
-                    {category.status === 'active' ? 'Hoạt động' : 'Không hoạt động'}
-                  </span>
+                  <h3 className="text-lg font-semibold text-gray-900">{category.category}</h3>
+                  <span className="text-xs text-gray-500">{category.slug}</span>
                 </div>
               </div>
               <div className="flex items-center space-x-2">
-                <button 
+                <button
                   onClick={() => handleEditCategory(category)}
-                  className="text-gray-400 hover:text-blue-600"
+                  disabled={updateCategoryMutation.isPending}
+                  className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors disabled:opacity-50"
                 >
-                  <Edit className="h-4 w-4" />
+                  {updateCategoryMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Edit className="h-4 w-4" />
+                  )}
                 </button>
-                <button 
+                <button
                   onClick={() => handleDeleteCategory(category.id)}
-                  className="text-gray-400 hover:text-red-600"
+                  disabled={deleteCategoryMutation.isPending}
+                  className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors disabled:opacity-50"
                 >
-                  <Trash2 className="h-4 w-4" />
+                  {deleteCategoryMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Trash2 className="h-4 w-4" />
+                  )}
                 </button>
               </div>
             </div>
@@ -214,24 +286,21 @@ export default function AdminCategories() {
             <p className="text-gray-600 text-sm mb-4 line-clamp-2">{category.description}</p>
 
             <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-              <div className="flex items-center space-x-2">
-                <FileText className="h-4 w-4" />
-                <span>{category.postCount} bài viết</span>
-              </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-1">
                 <Calendar className="h-4 w-4" />
-                <span>{new Date(category.createdAt).toLocaleDateString('vi-VN')}</span>
+                <span>ID: {category.id}</span>
               </div>
             </div>
 
-            <div className="pt-4 border-t border-gray-100">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-500">
-                  Cập nhật: {new Date(category.updatedAt).toLocaleDateString('vi-VN')}
-                </span>
-                <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                  Xem bài viết →
-                </button>
+            <div className="mt-3 pt-3 border-t border-gray-100">
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div
+                  className="h-2 rounded-full transition-all duration-300"
+                  style={{
+                    backgroundColor: category.backgroundColor || '#3B82F6',
+                    width: '100%'
+                  }}
+                />
               </div>
             </div>
           </div>

@@ -113,3 +113,27 @@ export const getFilePreview = (file: File): string => {
 export const cleanupPreview = (url: string): void => {
   URL.revokeObjectURL(url);
 };
+
+// Export as uploadsApi for consistency with other API modules
+export const uploadsApi = {
+  uploadImage: async (file: File): Promise<{ data: UploadResponse }> => {
+    const url = await upload(file);
+    return {
+      data: {
+        url,
+        filename: file.name,
+        size: file.size,
+        contentType: file.type,
+      }
+    };
+  },
+
+  uploadMultipleImages: async (files: File[]): Promise<{ data: { urls: string[] } }> => {
+    const urls = await uploadMultiple(files);
+    return { data: { urls } };
+  },
+
+  validateFile,
+  getFilePreview,
+  cleanupPreview,
+};

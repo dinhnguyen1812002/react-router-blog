@@ -1,0 +1,216 @@
+{
+  "overview": {
+    "stats": {
+      "totalUsers": {
+        "value": 1247,
+        "change": 12.5,
+        "changeType": "increase",
+        "period": "so với tháng trước"
+      },
+      "totalPosts": {
+        "value": 856,
+        "change": 8.3,
+        "changeType": "increase", 
+        "period": "so với tháng trước"
+      },
+      "totalCategories": {
+        "value": 12,
+        "change": 0,
+        "changeType": "neutral",
+        "period": "so với tháng trước"
+      },
+      "totalTags": {
+        "value": 45,
+        "change": 15.4,
+        "changeType": "increase",
+        "period": "so với tháng trước"
+      },
+      "newsletterSubscribers": {
+        "value": 2341,
+        "change": 23.1,
+        "changeType": "increase",
+        "period": "so với tháng trước"
+      },
+      "monthlyTraffic": {
+        "value": 45678,
+        "change": 18.7,
+        "changeType": "increase",
+        "period": "so với tháng trước"
+      }
+    },
+    "topPosts": {
+      "mostViewed": [
+        {
+          "id": 1,
+          "title": "Hướng dẫn React Hook Form với TypeScript",
+          "views": 15420,
+          "author": "Nguyễn Văn A",
+          "publishedAt": "2024-01-15T10:30:00Z",
+          "category": "Frontend"
+        },
+        {
+          "id": 2,
+          "title": "Tối ưu hóa hiệu suất ứng dụng Next.js",
+          "views": 12350,
+          "author": "Trần Thị B",
+          "publishedAt": "2024-01-12T14:20:00Z",
+          "category": "Performance"
+        },
+        {
+          "id": 3,
+          "title": "Xây dựng API RESTful với Node.js và Express",
+          "views": 9876,
+          "author": "Lê Văn C",
+          "publishedAt": "2024-01-10T09:15:00Z",
+          "category": "Backend"
+        },
+        {
+          "id": 4,
+          "title": "Thiết kế UI/UX với Tailwind CSS",
+          "views": 8765,
+          "author": "Phạm Thị D",
+          "publishedAt": "2024-01-08T16:45:00Z",
+          "category": "Design"
+        },
+        {
+          "id": 5,
+          "title": "Docker và Kubernetes cho người mới bắt đầu",
+          "views": 7654,
+          "author": "Hoàng Văn E",
+          "publishedAt": "2024-01-05T11:30:00Z",
+          "category": "DevOps"
+        }
+      ],
+      "mostLiked": [
+        {
+          "id": 6,
+          "title": "Clean Code: Nguyên tắc viết code sạch",
+          "likes": 342,
+          "author": "Nguyễn Văn F",
+          "publishedAt": "2024-01-14T13:20:00Z",
+          "category": "Best Practices"
+        },
+        {
+          "id": 7,
+          "title": "Microservices Architecture Pattern",
+          "likes": 298,
+          "author": "Trần Thị G",
+          "publishedAt": "2024-01-11T10:15:00Z",
+          "category": "Architecture"
+        },
+        {
+          "id": 8,
+          "title": "GraphQL vs REST API: So sánh chi tiết",
+          "likes": 276,
+          "author": "Lê Văn H",
+          "publishedAt": "2024-01-09T15:30:00Z",
+          "category": "API"
+        },
+        {
+          "id": 9,
+          "title": "Testing Strategy cho ứng dụng React",
+          "likes": 254,
+          "author": "Phạm Thị I",
+          "publishedAt": "2024-01-07T12:45:00Z",
+          "category": "Testing"
+        },
+        {
+          "id": 10,
+          "title": "Security Best Practices cho Web Apps",
+          "likes": 231,
+          "author": "Hoàng Văn J",
+          "publishedAt": "2024-01-04T09:20:00Z",
+          "category": "Security"
+        }
+      ]
+    },
+    "userGrowthChart": {
+      "labels": ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12"],
+      "datasets": [
+        {
+          "label": "Người dùng mới",
+          "data": [45, 52, 48, 61, 55, 67, 73, 69, 78, 85, 92, 98],
+          "borderColor": "#3B82F6",
+          "backgroundColor": "rgba(59, 130, 246, 0.1)"
+        },
+        {
+          "label": "Người dùng hoạt động",
+          "data": [120, 135, 142, 158, 165, 178, 185, 192, 205, 218, 235, 247],
+          "borderColor": "#10B981",
+          "backgroundColor": "rgba(16, 185, 129, 0.1)"
+        }
+      ]
+    },
+    "trafficChart": {
+      "labels": ["Tuần 1", "Tuần 2", "Tuần 3", "Tuần 4"],
+      "datasets": [
+        {
+          "label": "Lượt xem trang",
+          "data": [8500, 9200, 8800, 10500],
+          "borderColor": "#8B5CF6",
+          "backgroundColor": "rgba(139, 92, 246, 0.1)"
+        },
+        {
+          "label": "Phiên làm việc",
+          "data": [3200, 3600, 3400, 4100],
+          "borderColor": "#F59E0B",
+          "backgroundColor": "rgba(245, 158, 11, 0.1)"
+        }
+      ]
+    },
+    "categoryDistribution": {
+      "labels": ["Frontend", "Backend", "DevOps", "Design", "Mobile", "AI/ML", "Others"],
+      "datasets": [
+        {
+          "data": [25, 20, 15, 12, 10, 8, 10],
+          "backgroundColor": [
+            "#3B82F6",
+            "#10B981", 
+            "#F59E0B",
+            "#EF4444",
+            "#8B5CF6",
+            "#06B6D4",
+            "#6B7280"
+          ]
+        }
+      ]
+    },
+    "recentActivities": [
+      {
+        "id": 1,
+        "type": "post_published",
+        "message": "Bài viết mới 'React Performance Tips' đã được xuất bản",
+        "user": "Nguyễn Văn A",
+        "timestamp": "2024-01-15T10:30:00Z"
+      },
+      {
+        "id": 2,
+        "type": "user_registered",
+        "message": "Người dùng mới đã đăng ký",
+        "user": "Trần Thị B",
+        "timestamp": "2024-01-15T09:45:00Z"
+      },
+      {
+        "id": 3,
+        "type": "newsletter_sent",
+        "message": "Newsletter tháng 1 đã được gửi đến 2,341 người đăng ký",
+        "user": "System",
+        "timestamp": "2024-01-15T08:00:00Z"
+      },
+      {
+        "id": 4,
+        "type": "comment_added",
+        "message": "Bình luận mới trên bài 'Node.js Best Practices'",
+        "user": "Lê Văn C",
+        "timestamp": "2024-01-15T07:20:00Z"
+      },
+      {
+        "id": 5,
+        "type": "category_created",
+        "message": "Danh mục mới 'Machine Learning' đã được tạo",
+        "user": "Admin",
+        "timestamp": "2024-01-14T16:30:00Z"
+      }
+    ]
+  }
+}

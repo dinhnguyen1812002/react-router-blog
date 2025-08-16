@@ -1,8 +1,8 @@
-// services/newsletterService.js
+// Enhanced Newsletter API with CRUD operations following author.ts patterns
 import { useMutation, useQuery } from '@tanstack/react-query';
 import axiosInstance from '~/config/axios';
 
-interface subscribe {
+interface SubscribeData {
     name?: string
     email: string
 }
@@ -38,6 +38,92 @@ export interface UpdateStatusData {
   status: 'active' | 'unsubscribed' | 'pending';
 }
 
+// Enhanced interfaces for newsletter management following author.ts patterns
+export interface NewsletterTemplate {
+  id: number;
+  name: string;
+  subject: string;
+  content: string;
+  isDefault: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface NewsletterCampaign {
+  id: number;
+  subject: string;
+  content: string;
+  recipientType: 'all' | 'active';
+  status: 'draft' | 'scheduled' | 'sent' | 'failed';
+  scheduledAt?: string;
+  sentAt?: string;
+  recipientCount: number;
+  openCount: number;
+  clickCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateNewsletterTemplateRequest {
+  name: string;
+  subject: string;
+  content: string;
+  isDefault?: boolean;
+}
+
+export interface UpdateNewsletterTemplateRequest {
+  name?: string;
+  subject?: string;
+  content?: string;
+  isDefault?: boolean;
+}
+
+export interface CreateNewsletterCampaignRequest {
+  subject: string;
+  content: string;
+  recipientType: 'all' | 'active';
+  scheduledAt?: string;
+  templateId?: number;
+}
+
+export interface UpdateNewsletterCampaignRequest {
+  subject?: string;
+  content?: string;
+  recipientType?: 'all' | 'active';
+  scheduledAt?: string;
+  status?: 'draft' | 'scheduled' | 'sent' | 'failed';
+}
+
+export interface NewsletterAnalytics {
+  totalSubscribers: number;
+  activeSubscribers: number;
+  pendingSubscribers: number;
+  unsubscribedCount: number;
+  campaignsSent: number;
+  averageOpenRate: number;
+  averageClickRate: number;
+  subscriberGrowth: {
+    period: string;
+    count: number;
+  }[];
+}
+
+export interface ApiResponse<T> {
+  data: T;
+  message: string;
+  success: boolean;
+}
+
+export interface PaginatedResponse<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+  first: boolean;
+  last: boolean;
+}
+
 // ==================== API Functions ====================
 
 /**
@@ -46,7 +132,7 @@ export interface UpdateStatusData {
  * @param {string} data.email - Email address (required)
  * @param {string} [data.name] - Name (optional)
  */
-export const subscribeNewsletter = async (data : subscribe) => {
+export const subscribeNewsletter = async (data: SubscribeData) => {
   const response = await axiosInstance.post('/newsletter/subscribe', data);
   return response.data;
 };
@@ -137,71 +223,346 @@ export const updateSubscriberStatus = async (data: UpdateStatusData) => {
   return response.data;
 };
 
+// ==================== Enhanced CRUD Operations (Following author.ts patterns) ====================
+
+/**
+ * Create newsletter template (Admin only)
+ * Following the pattern from authorApi.createPost
+ */
+export const createNewsletterTemplate = async (data: CreateNewsletterTemplateRequest): Promise<ApiResponse<NewsletterTemplate>> => {
+  try {
+    const response = await axiosInstance.post('/newsletter/templates', data);
+    console.log('✅ Create template success:', response.data);
+
+    if (response.data && response.data.data) {
+      return response.data;
+    } else if (response.data) {
+      return {
+        data: response.data,
+        message: 'Template created successfully',
+        success: true
+      };
+    }
+
+    throw new Error('Invalid response format');
+  } catch (error) {
+    console.error('❌ Create template error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Update newsletter template (Admin only)
+ * Following the pattern from authorApi.updatePost
+ */
+export const updateNewsletterTemplate = async (templateId: number, data: UpdateNewsletterTemplateRequest): Promise<ApiResponse<NewsletterTemplate>> => {
+  try {
+    const response = await axiosInstance.put(`/newsletter/templates/${templateId}`, data);
+    console.log('✅ Update template success:', response.data);
+
+    if (response.data && response.data.data) {
+      return response.data;
+    } else if (response.data) {
+      return {
+        data: response.data,
+        message: 'Template updated successfully',
+        success: true
+      };
+    }
+
+    throw new Error('Invalid response format');
+  } catch (error) {
+    console.error('❌ Update template error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Delete newsletter template (Admin only)
+ * Following the pattern from authorApi.deletePost
+ */
+export const deleteNewsletterTemplate = async (templateId: number): Promise<void> => {
+  try {
+    await axiosInstance.delete(`/newsletter/templates/${templateId}`);
+    console.log('✅ Delete template success:', templateId);
+  } catch (error) {
+    console.error('❌ Delete template error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get newsletter template by ID (Admin only)
+ * Following the pattern from authorApi.getPostById
+ */
+export const getNewsletterTemplateById = async (templateId: number): Promise<ApiResponse<NewsletterTemplate>> => {
+  try {
+    const response = await axiosInstance.get(`/newsletter/templates/${templateId}`);
+    return response.data;
+  } catch (error) {
+    console.error('❌ Get template error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get all newsletter templates (Admin only)
+ */
+export const getNewsletterTemplates = async (page: number = 0, size: number = 10): Promise<PaginatedResponse<NewsletterTemplate>> => {
+  try {
+    const response = await axiosInstance.get('/newsletter/templates', {
+      params: { page, size }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('❌ Get templates error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Create newsletter campaign (Admin only)
+ */
+export const createNewsletterCampaign = async (data: CreateNewsletterCampaignRequest): Promise<ApiResponse<NewsletterCampaign>> => {
+  try {
+    const response = await axiosInstance.post('/newsletter/campaigns', data);
+    console.log('✅ Create campaign success:', response.data);
+
+    if (response.data && response.data.data) {
+      return response.data;
+    } else if (response.data) {
+      return {
+        data: response.data,
+        message: 'Campaign created successfully',
+        success: true
+      };
+    }
+
+    throw new Error('Invalid response format');
+  } catch (error) {
+    console.error('❌ Create campaign error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Update newsletter campaign (Admin only)
+ */
+export const updateNewsletterCampaign = async (campaignId: number, data: UpdateNewsletterCampaignRequest): Promise<ApiResponse<NewsletterCampaign>> => {
+  try {
+    const response = await axiosInstance.put(`/newsletter/campaigns/${campaignId}`, data);
+    console.log('✅ Update campaign success:', response.data);
+
+    if (response.data && response.data.data) {
+      return response.data;
+    } else if (response.data) {
+      return {
+        data: response.data,
+        message: 'Campaign updated successfully',
+        success: true
+      };
+    }
+
+    throw new Error('Invalid response format');
+  } catch (error) {
+    console.error('❌ Update campaign error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Delete newsletter campaign (Admin only)
+ */
+export const deleteNewsletterCampaign = async (campaignId: number): Promise<void> => {
+  try {
+    await axiosInstance.delete(`/newsletter/campaigns/${campaignId}`);
+    console.log('✅ Delete campaign success:', campaignId);
+  } catch (error) {
+    console.error('❌ Delete campaign error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get newsletter campaign by ID (Admin only)
+ */
+export const getNewsletterCampaignById = async (campaignId: number): Promise<ApiResponse<NewsletterCampaign>> => {
+  try {
+    const response = await axiosInstance.get(`/newsletter/campaigns/${campaignId}`);
+    return response.data;
+  } catch (error) {
+    console.error('❌ Get campaign error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get all newsletter campaigns (Admin only)
+ */
+export const getNewsletterCampaigns = async (page: number = 0, size: number = 10): Promise<PaginatedResponse<NewsletterCampaign>> => {
+  try {
+    const response = await axiosInstance.get('/newsletter/campaigns', {
+      params: { page, size }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('❌ Get campaigns error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Send newsletter campaign (Admin only)
+ */
+export const sendNewsletterCampaign = async (campaignId: number): Promise<ApiResponse<NewsletterCampaign>> => {
+  try {
+    const response = await axiosInstance.post(`/newsletter/campaigns/${campaignId}/send`);
+    console.log('✅ Send campaign success:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('❌ Send campaign error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get newsletter analytics (Admin only)
+ */
+export const getNewsletterAnalytics = async (): Promise<ApiResponse<NewsletterAnalytics>> => {
+  try {
+    const response = await axiosInstance.get('/newsletter/analytics');
+    return response.data;
+  } catch (error) {
+    console.error('❌ Get analytics error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Delete subscriber (Admin only)
+ */
+export const deleteSubscriber = async (subscriberId: number): Promise<void> => {
+  try {
+    await axiosInstance.delete(`/newsletter/subscribers/${subscriberId}`);
+    console.log('✅ Delete subscriber success:', subscriberId);
+  } catch (error) {
+    console.error('❌ Delete subscriber error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Bulk delete subscribers (Admin only)
+ */
+export const bulkDeleteSubscribers = async (subscriberIds: number[]): Promise<void> => {
+  try {
+    await axiosInstance.delete('/newsletter/subscribers/bulk', {
+      data: { subscriberIds }
+    });
+    console.log('✅ Bulk delete subscribers success:', subscriberIds);
+  } catch (error) {
+    console.error('❌ Bulk delete subscribers error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Export subscribers (Admin only)
+ */
+export const exportSubscribers = async (format: 'csv' | 'xlsx' = 'csv'): Promise<Blob> => {
+  try {
+    const response = await axiosInstance.get(`/newsletter/subscribers/export`, {
+      params: { format },
+      responseType: 'blob'
+    });
+    return response.data;
+  } catch (error) {
+    console.error('❌ Export subscribers error:', error);
+    throw error;
+  }
+};
+
+// ==================== Query Keys ====================
+
+export const newsletterKeys = {
+  all: ['newsletter'] as const,
+  subscribers: () => [...newsletterKeys.all, 'subscribers'] as const,
+  subscribersCount: () => [...newsletterKeys.all, 'subscribers', 'count'] as const,
+  templates: () => [...newsletterKeys.all, 'templates'] as const,
+  campaigns: () => [...newsletterKeys.all, 'campaigns'] as const,
+  analytics: () => [...newsletterKeys.all, 'analytics'] as const,
+};
+
 // ==================== React Query Hooks ====================
 
 /**
- * Hook for newsletter subscription
+ * Hook to subscribe to newsletter
  */
-export const useSubscribeNewsletter = (options = {}) => {
+export const useSubscribeNewsletter = (options?: any) => {
   return useMutation({
     mutationFn: subscribeNewsletter,
-    mutationKey: ['newsletter', 'subscribe'],
     ...options,
   });
 };
 
 /**
- * Hook for confirming subscription
+ * Hook to resend confirmation email (Admin only)
  */
-export const useConfirmSubscription = (options = {}) => {
+export const useResendConfirmation = (options?: any) => {
+  return useMutation({
+    mutationFn: resendConfirmation,
+    ...options,
+  });
+};
+
+/**
+ * Hook to confirm subscription
+ */
+export const useConfirmSubscription = (options?: any) => {
   return useMutation({
     mutationFn: confirmSubscription,
-    mutationKey: ['newsletter', 'confirm'],
     ...options,
   });
 };
 
 /**
- * Hook for unsubscribing
+ * Hook to unsubscribe from newsletter
  */
-export const useUnsubscribeNewsletter = (options = {}) => {
+export const useUnsubscribeNewsletter = (options?: any) => {
   return useMutation({
     mutationFn: unsubscribeNewsletter,
-    mutationKey: ['newsletter', 'unsubscribe'],
     ...options,
   });
 };
 
-// ==================== Admin Hooks ====================
-
 /**
- * Hook for getting all subscribers (Admin)
+ * Hook to get all subscribers (Admin only)
  */
-export const useGetAllSubscribers = (params = {}, options = {}) => {
+export const useGetAllSubscribers = (params: { page: number; size: number }, options?: any) => {
   return useQuery({
-    queryKey: ['newsletter', 'subscribers', 'all', params],
+    queryKey: ['newsletter', 'subscribers', params.page, params.size],
     queryFn: () => getAllSubscribers(params),
-    staleTime: 30 * 1000, // 30 seconds
+    staleTime: 5 * 60 * 1000, // 5 minutes
     ...options,
   });
 };
 
 /**
- * Hook for getting active subscribers (Admin)
+ * Hook to get active subscribers only (Admin only)
  */
-export const useGetActiveSubscribers = (params = {}, options = {}) => {
+export const useGetActiveSubscribers = (params: { page: number; size: number }, options?: any) => {
   return useQuery({
-    queryKey: ['newsletter', 'subscribers', 'active', params],
+    queryKey: ['newsletter', 'subscribers', 'active', params.page, params.size],
     queryFn: () => getActiveSubscribers(params),
-    staleTime: 30 * 1000, // 30 seconds
+    staleTime: 5 * 60 * 1000, // 5 minutes
     ...options,
   });
 };
 
 /**
- * Hook for getting active subscribers count (Admin)
+ * Hook to get active subscribers count (Admin only)
  */
-export const useGetActiveSubscribersCount = (options = {}) => {
+export const useGetActiveSubscribersCount = (options?: any) => {
   return useQuery({
     queryKey: ['newsletter', 'subscribers', 'count'],
     queryFn: getActiveSubscribersCount,
@@ -211,43 +572,230 @@ export const useGetActiveSubscribersCount = (options = {}) => {
 };
 
 /**
- * Hook for sending newsletter (Admin)
+ * Hook to send newsletter (Admin only)
  */
-export const useSendNewsletter = (options = {}) => {
+export const useSendNewsletter = (options?: any) => {
   return useMutation({
     mutationFn: sendNewsletter,
-    mutationKey: ['newsletter', 'send'],
     ...options,
   });
 };
 
 /**
- * Hook for resending confirmation (Admin)
+ * Hook to update subscriber status (Admin only)
  */
-export const useResendConfirmation = (options = {}) => {
-  return useMutation({
-    mutationFn: resendConfirmation,
-    mutationKey: ['newsletter', 'resend-confirmation'],
-    ...options,
-  });
-};
-
-/**
- * Hook for updating subscriber status (Admin)
- */
-export const useUpdateSubscriberStatus = (options = {}) => {
+export const useUpdateSubscriberStatus = (options?: any) => {
   return useMutation({
     mutationFn: updateSubscriberStatus,
-    mutationKey: ['newsletter', 'update-status'],
     ...options,
   });
 };
 
-// ==================== Query Keys ====================
-export const newsletterKeys = {
-  all: ['newsletter'],
-  subscribers: () => [...newsletterKeys.all, 'subscribers'],
-  subscribersAll: (params: any) => [...newsletterKeys.subscribers(), 'all', params],
-  subscribersActive: (params : any) => [...newsletterKeys.subscribers(), 'active', params],
-  subscribersCount: () => [...newsletterKeys.subscribers(), 'count'],
+/**
+ * Hook to create newsletter template (Admin only)
+ */
+export const useCreateNewsletterTemplate = () => {
+  return useMutation({
+    mutationFn: createNewsletterTemplate,
+    onSuccess: (data) => {
+      console.log('Newsletter template created successfully:', data);
+    },
+    onError: (error) => {
+      console.error('Newsletter template creation failed:', error);
+    },
+  });
+};
+
+/**
+ * Hook to update newsletter template (Admin only)
+ */
+export const useUpdateNewsletterTemplate = () => {
+  return useMutation({
+    mutationFn: ({ templateId, data }: { templateId: number; data: UpdateNewsletterTemplateRequest }) =>
+      updateNewsletterTemplate(templateId, data),
+    onSuccess: (data) => {
+      console.log('Newsletter template updated successfully:', data);
+    },
+    onError: (error) => {
+      console.error('Newsletter template update failed:', error);
+    },
+  });
+};
+
+/**
+ * Hook to delete newsletter template (Admin only)
+ */
+export const useDeleteNewsletterTemplate = () => {
+  return useMutation({
+    mutationFn: deleteNewsletterTemplate,
+    onSuccess: (data) => {
+      console.log('Newsletter template deleted successfully:', data);
+    },
+    onError: (error) => {
+      console.error('Newsletter template deletion failed:', error);
+    },
+  });
+};
+
+/**
+ * Hook to get newsletter templates (Admin only)
+ */
+export const useGetNewsletterTemplates = (page: number = 0, size: number = 10) => {
+  return useQuery({
+    queryKey: ['newsletter', 'templates', page, size],
+    queryFn: () => getNewsletterTemplates(page, size),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+/**
+ * Hook to get newsletter template by ID (Admin only)
+ */
+export const useGetNewsletterTemplateById = (templateId: number) => {
+  return useQuery({
+    queryKey: ['newsletter', 'templates', templateId],
+    queryFn: () => getNewsletterTemplateById(templateId),
+    enabled: !!templateId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+/**
+ * Hook to create newsletter campaign (Admin only)
+ */
+export const useCreateNewsletterCampaign = () => {
+  return useMutation({
+    mutationFn: createNewsletterCampaign,
+    onSuccess: (data) => {
+      console.log('Newsletter campaign created successfully:', data);
+    },
+    onError: (error) => {
+      console.error('Newsletter campaign creation failed:', error);
+    },
+  });
+};
+
+/**
+ * Hook to update newsletter campaign (Admin only)
+ */
+export const useUpdateNewsletterCampaign = () => {
+  return useMutation({
+    mutationFn: ({ campaignId, data }: { campaignId: number; data: UpdateNewsletterCampaignRequest }) =>
+      updateNewsletterCampaign(campaignId, data),
+    onSuccess: (data) => {
+      console.log('Newsletter campaign updated successfully:', data);
+    },
+    onError: (error) => {
+      console.error('Newsletter campaign update failed:', error);
+    },
+  });
+};
+
+/**
+ * Hook to delete newsletter campaign (Admin only)
+ */
+export const useDeleteNewsletterCampaign = () => {
+  return useMutation({
+    mutationFn: deleteNewsletterCampaign,
+    onSuccess: (data) => {
+      console.log('Newsletter campaign deleted successfully:', data);
+    },
+    onError: (error) => {
+      console.error('Newsletter campaign deletion failed:', error);
+    },
+  });
+};
+
+/**
+ * Hook to get newsletter campaigns (Admin only)
+ */
+export const useGetNewsletterCampaigns = (page: number = 0, size: number = 10) => {
+  return useQuery({
+    queryKey: ['newsletter', 'campaigns', page, size],
+    queryFn: () => getNewsletterCampaigns(page, size),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+/**
+ * Hook to get newsletter campaign by ID (Admin only)
+ */
+export const useGetNewsletterCampaignById = (campaignId: number) => {
+  return useQuery({
+    queryKey: ['newsletter', 'campaigns', campaignId],
+    queryFn: () => getNewsletterCampaignById(campaignId),
+    enabled: !!campaignId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+/**
+ * Hook to send newsletter campaign (Admin only)
+ */
+export const useSendNewsletterCampaign = () => {
+  return useMutation({
+    mutationFn: sendNewsletterCampaign,
+    onSuccess: (data) => {
+      console.log('Newsletter campaign sent successfully:', data);
+    },
+    onError: (error) => {
+      console.error('Newsletter campaign sending failed:', error);
+    },
+  });
+};
+
+/**
+ * Hook to get newsletter analytics (Admin only)
+ */
+export const useGetNewsletterAnalytics = () => {
+  return useQuery({
+    queryKey: ['newsletter', 'analytics'],
+    queryFn: getNewsletterAnalytics,
+    staleTime: 10 * 60 * 1000, // 10 minutes
+  });
+};
+
+/**
+ * Hook to delete subscriber (Admin only)
+ */
+export const useDeleteSubscriber = () => {
+  return useMutation({
+    mutationFn: deleteSubscriber,
+    onSuccess: (data) => {
+      console.log('Subscriber deleted successfully:', data);
+    },
+    onError: (error) => {
+      console.error('Subscriber deletion failed:', error);
+    },
+  });
+};
+
+/**
+ * Hook to bulk delete subscribers (Admin only)
+ */
+export const useBulkDeleteSubscribers = () => {
+  return useMutation({
+    mutationFn: bulkDeleteSubscribers,
+    onSuccess: (data) => {
+      console.log('Subscribers bulk deleted successfully:', data);
+    },
+    onError: (error) => {
+      console.error('Subscribers bulk deletion failed:', error);
+    },
+  });
+};
+
+/**
+ * Hook to export subscribers (Admin only)
+ */
+export const useExportSubscribers = () => {
+  return useMutation({
+    mutationFn: exportSubscribers,
+    onSuccess: (data) => {
+      console.log('Subscribers exported successfully:', data);
+    },
+    onError: (error) => {
+      console.error('Subscribers export failed:', error);
+    },
+  });
 };

@@ -1,137 +1,136 @@
 import { useState } from "react";
-import { Search, Plus, Edit, Trash2, Tags, FileText, TrendingUp, Hash } from "lucide-react";
+import { Search, Plus, Edit, Trash2, Tags, FileText, TrendingUp, Hash, Loader2, AlertCircle, RefreshCw } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import TagModal from "~/components/admin/TagModal";
-
-const tags = [
-  {
-    id: 1,
-    name: "React",
-    description: "Thư viện JavaScript để xây dựng giao diện người dùng",
-    postCount: 25,
-    color: "#61DAFB",
-    createdAt: "2024-01-15",
-    trending: true
-  },
-  {
-    id: 2,
-    name: "JavaScript",
-    description: "Ngôn ngữ lập trình phổ biến cho web development",
-    postCount: 32,
-    color: "#F7DF1E",
-    createdAt: "2024-01-10",
-    trending: true
-  },
-  {
-    id: 3,
-    name: "TypeScript",
-    description: "Superset của JavaScript với static typing",
-    postCount: 18,
-    color: "#3178C6",
-    createdAt: "2024-01-12",
-    trending: false
-  },
-  {
-    id: 4,
-    name: "Node.js",
-    description: "Runtime environment cho JavaScript",
-    postCount: 15,
-    color: "#339933",
-    createdAt: "2024-01-18",
-    trending: false
-  },
-  {
-    id: 5,
-    name: "CSS",
-    description: "Cascading Style Sheets cho styling",
-    postCount: 22,
-    color: "#1572B6",
-    createdAt: "2024-01-08",
-    trending: true
-  },
-  {
-    id: 6,
-    name: "HTML",
-    description: "HyperText Markup Language",
-    postCount: 20,
-    color: "#E34F26",
-    createdAt: "2024-01-05",
-    trending: false
-  },
-  {
-    id: 7,
-    name: "Vue.js",
-    description: "Progressive JavaScript framework",
-    postCount: 12,
-    color: "#4FC08D",
-    createdAt: "2024-01-20",
-    trending: false
-  },
-  {
-    id: 8,
-    name: "Python",
-    description: "Ngôn ngữ lập trình đa năng",
-    postCount: 8,
-    color: "#3776AB",
-    createdAt: "2024-01-22",
-    trending: false
-  }
-];
-
-const colorOptions = [
-  "#61DAFB", "#F7DF1E", "#3178C6", "#339933", "#1572B6", "#E34F26", 
-  "#4FC08D", "#3776AB", "#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4",
-  "#FFEAA7", "#DDA0DD", "#98D8C8", "#F7DC6F"
-];
+import { tagsApi } from "~/api/tags";
+import type { Tag } from "~/types";
 
 export default function AdminTags() {
+  const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("postCount");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [selectedTag, setSelectedTag] = useState(null);
-  const [newTag, setNewTag] = useState({
-    name: "",
-    description: "",
-    color: colorOptions[0]
+  const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
+
+  // Fetch tags
+  const {
+    data: tags = [],
+    isLoading,
+    error,
+    refetch,
+    isFetching
+  } = useQuery({
+    queryKey: ['tags'],
+    queryFn: tagsApi.getAll,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  const filteredTags = tags
-    .filter(tag =>
-      tag.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      tag.description.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .sort((a, b) => {
-      if (sortBy === "postCount") return b.postCount - a.postCount;
-      if (sortBy === "name") return a.name.localeCompare(b.name);
-      if (sortBy === "createdAt") return new Date(b.createdAt) - new Date(a.createdAt);
-      return 0;
-    });
+  // Create tag mutation
+  const createTagMutation = useMutation({
+    mutationFn: tagsApi.create,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tags'] });
+      toast.success("Thẻ đã được tạo thành công!");
+      setShowAddModal(false);
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Có lỗi xảy ra khi tạo thẻ");
+    },
+  });
 
-  const trendingTags = tags.filter(tag => tag.trending);
-  const totalPosts = tags.reduce((sum, tag) => sum + tag.postCount, 0);
+  // Update tag mutation
+  const updateTagMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<Tag> }) =>
+      tagsApi.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tags'] });
+      toast.success("Thẻ đã được cập nhật thành công!");
+      setShowEditModal(false);
+      setSelectedTag(null);
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Có lỗi xảy ra khi cập nhật thẻ");
+    },
+  });
+
+  // Delete tag mutation
+  const deleteTagMutation = useMutation({
+    mutationFn: tagsApi.delete,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tags'] });
+      toast.success("Thẻ đã được xóa thành công!");
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Có lỗi xảy ra khi xóa thẻ");
+    },
+  });
+  // Filter tags based on search term
+  const filteredTags = tags.filter(tag =>
+    tag.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    tag.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleAddTag = () => {
     setSelectedTag(null);
     setShowAddModal(true);
   };
 
-  const handleEditTag = (tag) => {
+  const handleEditTag = (tag: Tag) => {
     setSelectedTag(tag);
     setShowEditModal(true);
   };
 
-  const handleDeleteTag = (tagId) => {
+  const handleDeleteTag = (tagId: string) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa thẻ này?")) {
-      console.log("Delete tag:", tagId);
+      deleteTagMutation.mutate(tagId);
     }
   };
 
-  const handleSubmitTag = (tagData) => {
-    console.log("Submit tag:", tagData);
-    setShowAddModal(false);
-    setShowEditModal(false);
+  const handleSubmitTag = (tagData: Partial<Tag>) => {
+    if (selectedTag) {
+      // Update existing tag
+      updateTagMutation.mutate({
+        id: selectedTag.uuid,
+        data: tagData
+      });
+    } else {
+      // Create new tag
+      createTagMutation.mutate(tagData);
+    }
   };
 
+  const handleRefresh = () => {
+    refetch();
+  };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+        <span className="ml-2 text-gray-600">Đang tải thẻ...</span>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64">
+        <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
+        <h3 className="text-lg font-medium text-gray-900 mb-2">Có lỗi xảy ra</h3>
+        <p className="text-gray-600 mb-4">Không thể tải danh sách thẻ</p>
+        <button
+          onClick={handleRefresh}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
+        >
+          <RefreshCw className="h-4 w-4" />
+          <span>Thử lại</span>
+        </button>
+      </div>
+    );
+  }
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -140,13 +139,28 @@ export default function AdminTags() {
           <h1 className="text-2xl font-bold text-gray-900">Quản lý thẻ</h1>
           <p className="text-gray-600">Quản lý các thẻ để phân loại bài viết</p>
         </div>
-        <button 
-          onClick={handleAddTag}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Thêm thẻ</span>
-        </button>
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={handleRefresh}
+            disabled={isFetching}
+            className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+          >
+            <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
+            <span>Làm mới</span>
+          </button>
+          <button
+            onClick={handleAddTag}
+            disabled={createTagMutation.isPending}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+          >
+            {createTagMutation.isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Plus className="h-4 w-4" />
+            )}
+            <span>Thêm thẻ</span>
+          </button>
+        </div>
       </div>
 
       {/* Stats */}
@@ -166,8 +180,8 @@ export default function AdminTags() {
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Thẻ trending</p>
-              <p className="text-2xl font-bold text-gray-900">{trendingTags.length}</p>
+              <p className="text-sm font-medium text-gray-600">Kết quả tìm kiếm</p>
+              <p className="text-2xl font-bold text-gray-900">{filteredTags.length}</p>
             </div>
             <div className="p-3 bg-green-50 rounded-full">
               <TrendingUp className="h-6 w-6 text-green-600" />
@@ -178,11 +192,13 @@ export default function AdminTags() {
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Tổng bài viết</p>
-              <p className="text-2xl font-bold text-gray-900">{totalPosts}</p>
+              <p className="text-sm font-medium text-gray-600">Đang tải</p>
+              <p className="text-2xl font-bold text-gray-900">
+                {isFetching ? "..." : "✓"}
+              </p>
             </div>
             <div className="p-3 bg-purple-50 rounded-full">
-              <FileText className="h-6 w-6 text-purple-600" />
+              <RefreshCw className={`h-6 w-6 text-purple-600 ${isFetching ? 'animate-spin' : ''}`} />
             </div>
           </div>
         </div>
@@ -190,39 +206,19 @@ export default function AdminTags() {
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Trung bình/thẻ</p>
+              <p className="text-sm font-medium text-gray-600">Trạng thái</p>
               <p className="text-2xl font-bold text-gray-900">
-                {Math.round(totalPosts / tags.length)}
+                {error ? "Lỗi" : "OK"}
               </p>
             </div>
             <div className="p-3 bg-yellow-50 rounded-full">
-              <Hash className="h-6 w-6 text-yellow-600" />
+              {error ? (
+                <AlertCircle className="h-6 w-6 text-red-600" />
+              ) : (
+                <Hash className="h-6 w-6 text-yellow-600" />
+              )}
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Trending Tags */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-          <TrendingUp className="h-5 w-5 mr-2 text-green-500" />
-          Thẻ đang trending
-        </h2>
-        <div className="flex flex-wrap gap-3">
-          {trendingTags.map(tag => (
-            <div
-              key={tag.id}
-              className="flex items-center space-x-2 px-3 py-2 rounded-full border-2 border-dashed"
-              style={{ borderColor: tag.color, backgroundColor: `${tag.color}20` }}
-            >
-              <div
-                className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: tag.color }}
-              />
-              <span className="text-sm font-medium text-gray-700">{tag.name}</span>
-              <span className="text-xs text-gray-500">({tag.postCount})</span>
-            </div>
-          ))}
         </div>
       </div>
 
@@ -239,78 +235,97 @@ export default function AdminTags() {
               className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="postCount">Sắp xếp theo số bài viết</option>
-            <option value="name">Sắp xếp theo tên</option>
-            <option value="createdAt">Sắp xếp theo ngày tạo</option>
-          </select>
           <div className="text-sm text-gray-500">
-            {filteredTags.length} thẻ
+            Tìm thấy {filteredTags.length} thẻ
           </div>
         </div>
       </div>
 
       {/* Tags Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {filteredTags.map((tag) => (
-          <div key={tag.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-4">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center space-x-2">
-                <div
-                  className="w-4 h-4 rounded-full"
-                  style={{ backgroundColor: tag.color }}
-                />
-                <h3 className="text-lg font-semibold text-gray-900">#{tag.name}</h3>
-                {tag.trending && (
-                  <TrendingUp className="h-4 w-4 text-green-500" />
-                )}
+      {filteredTags.length === 0 ? (
+        <div className="bg-white rounded-lg shadow p-12 text-center">
+          <Tags className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            {searchTerm ? "Không tìm thấy thẻ" : "Chưa có thẻ nào"}
+          </h3>
+          <p className="text-gray-600 mb-4">
+            {searchTerm
+              ? `Không có thẻ nào phù hợp với "${searchTerm}"`
+              : "Hãy tạo thẻ đầu tiên để bắt đầu"
+            }
+          </p>
+          {!searchTerm && (
+            <button
+              onClick={handleAddTag}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 mx-auto"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Tạo thẻ đầu tiên</span>
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {filteredTags.map((tag) => (
+            <div key={tag.uuid} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center space-x-2">
+                  <div
+                    className="w-4 h-4 rounded-full"
+                    style={{ backgroundColor: tag.color }}
+                  />
+                  <h3 className="text-lg font-semibold text-gray-900">#{tag.name}</h3>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <button
+                    onClick={() => handleEditTag(tag)}
+                    disabled={updateTagMutation.isPending}
+                    className="text-gray-400 hover:text-blue-600 p-1 disabled:opacity-50"
+                  >
+                    {updateTagMutation.isPending ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      <Edit className="h-3 w-3" />
+                    )}
+                  </button>
+                  <button
+                    onClick={() => handleDeleteTag(tag.uuid)}
+                    disabled={deleteTagMutation.isPending}
+                    className="text-gray-400 hover:text-red-600 p-1 disabled:opacity-50"
+                  >
+                    {deleteTagMutation.isPending ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      <Trash2 className="h-3 w-3" />
+                    )}
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center space-x-1">
-                <button 
-                  onClick={() => handleEditTag(tag)}
-                  className="text-gray-400 hover:text-blue-600 p-1"
-                >
-                  <Edit className="h-3 w-3" />
-                </button>
-                <button 
-                  onClick={() => handleDeleteTag(tag.id)}
-                  className="text-gray-400 hover:text-red-600 p-1"
-                >
-                  <Trash2 className="h-3 w-3" />
-                </button>
+
+              <p className="text-gray-600 text-sm mb-3 line-clamp-2">{tag.description}</p>
+
+              <div className="flex items-center justify-between text-sm">
+                <div className="flex items-center space-x-1 text-gray-500">
+                  <Hash className="h-3 w-3" />
+                  <span>{tag.slug}</span>
+                </div>
+              </div>
+
+              <div className="mt-3 pt-3 border-t border-gray-100">
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    className="h-2 rounded-full transition-all duration-300"
+                    style={{
+                      backgroundColor: tag.color,
+                      width: '100%'
+                    }}
+                  />
+                </div>
               </div>
             </div>
-
-            <p className="text-gray-600 text-sm mb-3 line-clamp-2">{tag.description}</p>
-
-            <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center space-x-1 text-gray-500">
-                <FileText className="h-3 w-3" />
-                <span>{tag.postCount} bài viết</span>
-              </div>
-              <span className="text-xs text-gray-400">
-                {new Date(tag.createdAt).toLocaleDateString('vi-VN')}
-              </span>
-            </div>
-
-            <div className="mt-3 pt-3 border-t border-gray-100">
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="h-2 rounded-full" 
-                  style={{ 
-                    backgroundColor: tag.color,
-                    width: `${Math.min((tag.postCount / Math.max(...tags.map(t => t.postCount))) * 100, 100)}%`
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Add Tag Modal */}
       <TagModal

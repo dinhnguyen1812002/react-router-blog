@@ -10,6 +10,7 @@ export interface User {
   email: string;
   roles: string[];
   avatar: string | null;
+  socialMediaLinks: socialMediaLinks[];
 }
 
 export interface LoginResponse {

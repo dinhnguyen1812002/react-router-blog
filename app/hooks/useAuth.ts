@@ -49,7 +49,14 @@ export const useAuth = () => {
 
         const response = await authApi.login(credentials);
         const { id, username, email, roles, accessToken } = response;
-        const usr = { id, username, email, roles, avatar: null };
+        const usr = {
+          id,
+          username,
+          email,
+          roles,
+          avatar: null,
+          socialMediaLinks: [],
+        };
 
         console.log("✅ Login successful:", {
           user: usr.username,
@@ -90,7 +97,14 @@ export const useAuth = () => {
 
         const response: LoginResponse = await authApi.register(userData);
         const { id, username, email, roles, accessToken } = response;
-        const user = { id, username, email, roles, avatar: null };
+        const user = {
+          id,
+          username,
+          email,
+          roles,
+          avatar: null,
+          socialMediaLinks: [],
+        };
 
         console.log("✅ Registration successful, auto-logging in...");
 

@@ -39,18 +39,55 @@ export default function MyPostsPage() {
     enabled: !!user
   });
 
-  // Delete post mutation
+  // Enhanced Delete post mutation following author.ts patterns
   const deleteMutation = useMutation({
-    mutationFn: userPostsApi.deletePost,
-    onSuccess: () => {
+    mutationFn: async (postId: string) => {
+      console.log('🗑️ Starting delete operation for post:', postId);
+      return await userPostsApi.deletePost(postId);
+    },
+    onSuccess: (data, postId) => {
+      console.log('✅ Post deleted successfully:', { postId, data });
+
+      // Invalidate multiple related queries
       queryClient.invalidateQueries({ queryKey: ['user-posts'] });
       queryClient.invalidateQueries({ queryKey: ['user-stats'] });
-    }
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
+      queryClient.invalidateQueries({ queryKey: ['featured-posts'] });
+
+      // Show success notification
+      if (typeof window !== 'undefined' && window.alert) {
+        window.alert('Bài viết đã được xóa thành công!');
+      }
+    },
+    onError: (error, postId) => {
+      console.error('❌ Delete post failed:', { postId, error });
+
+      // Show error notification
+      if (typeof window !== 'undefined' && window.alert) {
+        window.alert(`Không thể xóa bài viết: ${error.message || 'Lỗi không xác định'}`);
+      }
+    },
   });
 
+  // Enhanced delete handler with better UX
   const handleDelete = async (postId: string, title: string) => {
-    if (window.confirm(`Bạn có chắc muốn xóa bài viết "${title}"?`)) {
-      deleteMutation.mutate(postId);
+    // Enhanced confirmation dialog
+    const confirmMessage = `Bạn có chắc muốn xóa bài viết "${title}"?\n\nHành động này không thể hoàn tác và sẽ xóa vĩnh viễn:
+    • Nội dung bài viết
+    • Tất cả bình luận và tương tác
+    • Thống kê lượt xem
+    • Bookmark của người dùng khác`;
+
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+
+    try {
+      console.log('🗑️ User confirmed deletion for post:', { postId, title });
+      await deleteMutation.mutateAsync(postId);
+    } catch (error) {
+      console.error('❌ Delete operation failed:', error);
+      // Error is already handled in onError callback
     }
   };
 

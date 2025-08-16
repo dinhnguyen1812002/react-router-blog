@@ -56,4 +56,42 @@ export function formatDateSimple(dateString: string) {
   }
 }
 
+// Calculate reading time based on content
+export function calculateReadingTime(content: string, wordsPerMinute: number = 200): number {
+  if (!content) return 0;
 
+  // Remove HTML tags and count words
+  const plainText = content.replace(/<[^>]*>/g, '');
+  const words = plainText.trim().split(/\s+/).length;
+
+  return Math.ceil(words / wordsPerMinute);
+}
+
+// Format numbers with K, M suffixes
+export function formatNumber(num: number): string {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + 'M';
+  }
+  if (num >= 1000) {
+    return (num / 1000).toFixed(1) + 'K';
+  }
+  return num.toString();
+}
+
+// Truncate text with ellipsis
+export function truncateText(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength).trim() + '...';
+}
+
+// Generate slug from title
+export function generateSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
+    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single
+    .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+}

@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader } from '~/components/ui/Card';
 import { Avatar } from '~/components/ui/Avatar';
 import { userApi } from '~/api/user';
 import {Button} from "~/components/ui/button";
+import { useAuthStore } from '~/store/authStore';
 
 const profileSchema = z.object({
   displayName: z.string().max(100, 'Tên hiển thị không được quá 100 ký tự').optional(),
@@ -151,7 +152,7 @@ export default function ProfileSettingsPage() {
                 {/* Avatar Section */}
                 <div className="flex items-center space-x-6">
                   <Avatar
-                    src={profileData?.data?.avatarUrl}
+                    src={profileData?.data?.avatarUrl || ''}
                     fallback={user.username.charAt(0)}
                     alt={user.username}
                     // size="xl"

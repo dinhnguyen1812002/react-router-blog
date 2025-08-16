@@ -23,36 +23,53 @@ export const BookmarkButton = ({
   const { isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [isBookmarked, setIsBookmarked] = useState(initialBookmarked);
+  const [ isSavedByCurrentUser, setIsSavedByCurrentUser ] = useState(initialBookmarked);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Update local state when props change
   useEffect(() => {
-    setIsBookmarked(initialBookmarked);
+    setIsSavedByCurrentUser(initialBookmarked);
   }, [initialBookmarked]);
 
   const bookmarkMutation = useMutation({
     mutationFn: async () => {
-      // Backend uses same endpoint for both add and remove (toggle behavior)
-      return await bookmarksApi.toggleBookmark(postId);
+      // Use explicit add/remove instead of toggle to avoid race conditions
+      // if (isSavedByCurrentUser) {
+      //   return await bookmarksApi.removeBookmark(postId);
+      // } else {
+      //   return await bookmarksApi.addBookmark(postId);
+      // }
+       return await bookmarksApi.addBookmark(postId);
     },
     onMutate: async () => {
+      // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+      await queryClient.cancelQueries({ queryKey: ["bookmarks"] });
+      await queryClient.cancelQueries({ queryKey: ["posts"] });
+
+      // Snapshot the previous value for rollback
+      const previousBookmarked = isSavedByCurrentUser;
+
       // Optimistic update
-      setIsBookmarked(!isBookmarked);
+      setIsSavedByCurrentUser(!isSavedByCurrentUser);
+
+      // Return a context object with the snapshotted value
+      return { previousBookmarked };
     },
     onSuccess: (data) => {
       // Update state based on server response if available
-      if (data && typeof (data as any).isBookmarked === 'boolean') {
-        setIsBookmarked((data as any).isBookmarked as boolean);
+      if (data && typeof (data as any).isSavedByCurrentUser === 'boolean') {
+        setIsSavedByCurrentUser((data as any).isSavedByCurrentUser as boolean);
       }
 
       // Invalidate bookmarks queries
       queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
       queryClient.invalidateQueries({ queryKey: ["posts"] });
     },
-    onError: (error: any) => {
-      // Revert optimistic update
-      setIsBookmarked(isBookmarked);
+    onError: (error: any, variables, context) => {
+      // Revert optimistic update using the previous value from context
+      if (context?.previousBookmarked !== undefined) {
+        setIsSavedByCurrentUser(context.previousBookmarked);
+      }
       console.error("Bookmark error:", error);
       setErrorMessage(error.message || "Có lỗi xảy ra khi xử lý bookmark");
     },
@@ -79,11 +96,11 @@ export const BookmarkButton = ({
           onClick={handleClick}
           disabled={bookmarkMutation.isPending}
           className={`p-2 h-auto ${className}`}
-          title={isBookmarked ? "Bỏ lưu" : "Lưu bài viết"}
+          title={isSavedByCurrentUser ? "Bỏ lưu" : "Lưu bài viết"}
         >
           <Bookmark
             className={`w-4 h-4 transition-all duration-200 ${
-              isBookmarked
+              isSavedByCurrentUser
                 ? "fill-current text-blue-600 dark:text-blue-400"
                 : "text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
             }`}
@@ -108,7 +125,7 @@ export const BookmarkButton = ({
       >
         <Bookmark
           className={`w-4 h-4 transition-all duration-200 ${
-            isBookmarked
+            isSavedByCurrentUser
               ? "fill-current text-blue-600 dark:text-blue-400"
               : "text-gray-500 dark:text-gray-400"
           }`}
@@ -116,7 +133,7 @@ export const BookmarkButton = ({
         <span className="text-sm">
           {bookmarkMutation.isPending
             ? "Đang xử lý..."
-            : isBookmarked
+            : isSavedByCurrentUser
               ? "Đã lưu"
               : "Lưu"}
         </span>

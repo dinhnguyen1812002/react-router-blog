@@ -62,11 +62,23 @@
 
 
 
+## 7. Tìm kiếm bài viết
+
+- **Method:** `GET`
+- **URL:** `http://localhost:8080/api/v1/post/search`
+- **Authorization:** Không bắt buộc (API công khai).
+- **Query Params:**
+    -   `title`: Tiêu đề bài viết.
+    -   `categoryId`: ID của danh mục.
 
 
+example for seach
+
+
+http://localhost:8080/api/v1/post/search?title=java&categoryId=1
 [
     {
-        "id": "2072c388-da93-4081-adb2-022751dcfe8d",
+        "id": "62af4add-7b9a-4216-bf7f-735a08380a37",
         "user": {
             "id": "193c6e38-59a3-4c5f-b41c-5c020b0d6188",
             "username": "yyyy",
@@ -74,94 +86,13 @@
             "avatar": null,
             "roles": null
         },
-        "title": "this is fuck abc",
-        "slug": "this-is-fuck-abc",
-        "createdAt": "2025-08-08T02:29:35.495+00:00",
-        "featured": true,
-        "content": "this is fuck abc",
-        "thumbnail": null,
-        "categories": [
-            {
-                "id": 2,
-                "category": "travle",
-                "backgroundColor": "#FFFF66"
-            }
-        ],
-        "tags": [
-            {
-                "uuid": "c4408bd9-3934-44d6-b8f2-26d30ce152c1",
-                "name": "Go",
-                "slug": "go",
-                "description": "Ngôn ngữ hiệu quả từ Google",
-                "color": "#00ADD8"
-            }
-        ],
-        "commentCount": 0,
-        "viewCount": 1,
-        "likeCount": 0,
-        "averageRating": 0.0,
-        "isLikedByCurrentUser": null,
-        "isSavedByCurrentUser": null,
-        "userRating": null,
-        "comments": null
-    },
-    
-    {
-        "id": "50deb4bf-8616-4879-9bc0-acb589a5beaf",
-        "user": {
-            "id": "193c6e38-59a3-4c5f-b41c-5c020b0d6188",
-            "username": "yyyy",
-            "email": "yyy@email.com",
-            "avatar": null,
-            "roles": null
-        },
-        "title": "java virtual thread ",
-        "slug": "java-virtual-thread-",
-        "createdAt": "2025-08-08T02:34:16.981+00:00",
-        "featured": true,
-        "content": "java virtual thread  là gì",
-        "thumbnail": null,
-        "categories": [
-            {
-                "id": 2,
-                "category": "travle",
-                "backgroundColor": "#FFFF66"
-            }
-        ],
-        "tags": [
-            {
-                "uuid": "c4408bd9-3934-44d6-b8f2-26d30ce152c1",
-                "name": "Go",
-                "slug": "go",
-                "description": "Ngôn ngữ hiệu quả từ Google",
-                "color": "#00ADD8"
-            }
-        ],
-        "commentCount": 0,
-        "viewCount": 0,
-        "likeCount": 0,
-        "averageRating": 0.0,
-        "isLikedByCurrentUser": null,
-        "isSavedByCurrentUser": null,
-        "userRating": null,
-        "comments": null
-    },
-   
-    {
-        "id": "d9d34b24-119c-4a6f-8fe4-a097e65ed939",
-        "user": {
-            "id": "193c6e38-59a3-4c5f-b41c-5c020b0d6188",
-            "username": "yyyy",
-            "email": "yyy@email.com",
-            "avatar": null,
-            "roles": null
-        },
-        "title": "test 1",
-        "slug": "test-1",
-        "createdAt": "2025-08-08T02:35:07.424+00:00",
+        "title": "test 1hfdhffh",
+        "slug": "test-1hfdhffh",
+        "excerpt": null,
+        "createdAt": "2025-08-08T02:35:48.078+00:00",
         "featured": false,
-        "content": "tetst 123 alo alo ",
-        "thumbnail": null,
+        "content": null,
+        "thumbnail": "http://localhost:8888/uploads/thumbnail/638902163329370000_wallpaper2.jpg",
         "categories": [
             {
                 "id": 1,
@@ -179,11 +110,11 @@
             }
         ],
         "commentCount": 0,
-        "viewCount": 0,
+        "viewCount": 1,
         "likeCount": 0,
         "averageRating": 0.0,
-        "isLikedByCurrentUser": null,
-        "isSavedByCurrentUser": null,
+        "isLikedByCurrentUser": false,
+        "isSavedByCurrentUser": false,
         "userRating": null,
         "comments": null
     }

@@ -10,6 +10,14 @@ import {
   PieChart,
   Settings2,
   SquareTerminal,
+  Users,
+  FileText,
+  Tags,
+  FolderOpen,
+  Mail,
+  BarChart3,
+  Shield,
+  Home
 } from "lucide-react"
 
 import { NavMain } from "~/components/nav-main"
@@ -60,51 +68,71 @@ const data = {
   ],
   navMain: [
     {
-      title: "Playground",
-      url: "#",
-      icon: SquareTerminal,
+      title: "Tổng quan",
+      url: "/admin",
+      icon: Home,
       isActive: true,
       items: [
         {
-          title: "Overview",
-          url: "/admin/",
+          title: "Dashboard",
+          url: "/admin",
         },
         {
-          title: "User",
-          url: "/admin/users",
-        },
-        {
-          title: "tag",
-          url: "/admin/tags",
-        },
-
-         {
-          title: "newletter",
-          url: "/admin/newsletter",
-        },
-        {
-          title: "settings",
-          url: "/admin/settings",
+          title: "Thống kê",
+          url: "/admin/analytics",
         },
       ],
     },
     {
-      title: "Role and permission",
+      title: "Quản lý nội dung",
       url: "#",
-      icon: Bot,
+      icon: FileText,
       items: [
         {
-          title: "Roles",
+          title: "Danh mục",
+          url: "/admin/categories",
+        },
+        {
+          title: "Thẻ",
+          url: "/admin/tags",
+        },
+      ],
+    },
+    {
+      title: "Quản lý người dùng",
+      url: "#",
+      icon: Users,
+      items: [
+        {
+          title: "Người dùng",
+          url: "/admin/users",
+        },
+        {
+          title: "Vai trò",
           url: "/admin/roles",
         },
-        // {
-        //   title: "Explorer",
-        //   url: "#",
-        // },
-        // {
-        //   title: "Quantum",
-        //   url: "#",
-        // },
+      ],
+    },
+    {
+      title: "Marketing",
+      url: "#",
+      icon: Mail,
+      items: [
+        {
+          title: "Newsletter",
+          url: "/admin/newsletter",
+        },
+      ],
+    },
+    {
+      title: "Cài đặt",
+      url: "#",
+      icon: Settings2,
+      items: [
+        {
+          title: "Cài đặt hệ thống",
+          url: "/admin/settings",
+        },
       ],
     },
     // {
@@ -171,6 +199,7 @@ const data = {
   //     icon: Map,
   //   },
   // ],
+  
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -184,7 +213,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {/* <NavProjects projects={data.projects} /> */}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

@@ -25,6 +25,7 @@ import { Button } from "~/components/ui/button";
 const loginSchema = z.object({
   email: z.string().email("Email không hợp lệ"),
   password: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
+  rememberMe: z.boolean().optional(),
 });
 
 type LoginForm = z.infer<typeof loginSchema>;
@@ -163,6 +164,7 @@ export default function LoginPage() {
                           <input
                             type="checkbox"
                             className="w-5 h-5 text-blue-600 border-2 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
+                            {...register("rememberMe")}
                           />
                           <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg opacity-0 group-hover:opacity-10 transition-opacity duration-200"></div>
                         </div>

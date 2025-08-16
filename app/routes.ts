@@ -18,10 +18,18 @@ route("dashboard", "routes/dashboard/_layout.tsx", [
   route("posts/new", "routes/dashboard/posts/new.tsx"),
   route("analytics", "routes/dashboard/analytics.tsx"),
   route("profile", "routes/dashboard/profile.tsx"),
+  route("newsletter", "routes/dashboard/newsletter.tsx"), // Newsletter management for users
 ]),
 
   route("posts", "routes/posts._index.tsx"),
-  route("posts/:slug", "routes/posts.$slug.tsx"),
+  route("posts/:slug", "routes/posts.slug.tsx"),
+  route("search", "routes/search.tsx"),
+  route("auth-error-test", "routes/auth-error-test.tsx"),
+
+  // Dashboard routes
+  route("dashboard/my-posts", "routes/dashboard.my-posts.tsx"),
+  route("dashboard/posts/new", "routes/dashboard.posts.new.tsx"),
+  route("dashboard/posts/edit/:id", "routes/dashboard.posts.edit.$id.tsx"),
   route("memes", "routes/memes._index.tsx"),
   route("memes/:slug", "routes/memes.$slug.tsx"),
 

@@ -9,12 +9,15 @@ import {
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useAuthInit } from '~/hooks/useAuthInit';
+import { Toaster, toast } from 'sonner'
+
 
 
 import type { Route } from "./+types/root";
 import stylesheet from "./app.css?url";
 import animations from "./styles/animations.css?url";
 import theme from "./styles/theme.css?url";
+
 
 export const links: Route.LinksFunction = () => [
  
@@ -34,7 +37,7 @@ export const links: Route.LinksFunction = () => [
   },
   { rel: "stylesheet", href: theme },
   { rel: "stylesheet", href: stylesheet },
-  { rel: "stylesheet", href: animations },
+  // { rel: "stylesheet", href: animations },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -60,6 +63,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
       <QueryClientProvider client={queryClient}>
+        <Toaster />
        {children}
       </QueryClientProvider>
       <ScrollRestoration />

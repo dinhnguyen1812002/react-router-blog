@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useAuthStore } from '~/store/authStore';
+import { handleAuthError } from '~/lib/auth-utils';
 import { env } from './env';
 
 const axiosInstance = axios.create({
@@ -47,17 +48,16 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
-    const { logout } = useAuthStore.getState();
-    
-    if (error.response?.status === 401) {
-      // Token expired or invalid
-      console.log('🔒 Token expired or invalid, logging out...');
+    // Handle authentication errors (401 Unauthorized, 403 Forbidden)
+    if (error.response?.status === 401 ) {
+      console.log(`🔒 Authentication failed (${error.response.status}), clearing session...`);
+
+      // Use centralized auth error handler
+      handleAuthError(error);
+
+      // Also clear auth store
+      const { logout } = useAuthStore.getState();
       logout();
-      
-      // Redirect to login
-      if (typeof window !== 'undefined') {
-        window.location.href = '/login';
-      }
     }
 
     // Log errors in development
@@ -65,7 +65,9 @@ axiosInstance.interceptors.response.use(
       console.error('❌ API Error:', {
         status: error.response?.status,
         url: error.config?.url,
+        method: error.config?.method?.toUpperCase(),
         message: error.response?.data?.message || error.message,
+        data: error.response?.data,
       });
     }
 

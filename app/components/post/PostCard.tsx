@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import { Card, CardContent, CardHeader } from "~/components/ui/Card";
 import { formatDateSimple } from "~/lib/utils";
-import { Avatar } from "~/components/ui/Avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/Avatar";
 import {
   Heart,
   Eye,
@@ -58,14 +58,15 @@ export const PostCard = ({ post }: PostCardProps) => {
         </div>
 
         {/* Bookmark */}
-        <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <BookmarkButton
-            postId={post.id}
-            initialBookmarked={post.isSavedByCurrentUser}
-            variant="compact"
-            className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm"
-          />
-        </div>
+       <div className="absolute bottom-2 right-2">
+  <BookmarkButton
+    postId={post.id}
+    initialBookmarked={post.isSavedByCurrentUser}
+    variant="compact"
+    className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm"
+  />
+</div>
+
       </div>
 
       {/* Nội dung */}
@@ -87,12 +88,12 @@ export const PostCard = ({ post }: PostCardProps) => {
         {/* Thông tin tác giả + Stats */}
         <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-3">
           <div className="flex items-center space-x-2">
-            <Avatar
-              src={post.user.avatar || ""}
-              fallback={post.user.username.charAt(0)}
-              alt={post.user.username}
-              size="sm"
+           <Avatar>
+            <AvatarImage 
+              src={post.user.avatar || ''}
             />
+            <AvatarFallback >{post.user.username.charAt(0)}</AvatarFallback>
+           </Avatar>
             <span className="font-medium truncate max-w-[80px]">
               {post.user.username}
             </span>

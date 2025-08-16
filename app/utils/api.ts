@@ -104,32 +104,30 @@ export const apiEndpoints = {
   },
 
   // Bookmark endpoints (aligned with docs/BOOKMARKS.md)
-  bookmarks: {
-    // Paginated saved posts
-    list: (page?: number, size?: number) => {
-      const params = new URLSearchParams();
-      if (page !== undefined) params.append("page", page.toString());
-      if (size !== undefined) params.append("size", size.toString());
-      return buildApiUrl(
-        `post/saved-posts${params.toString() ? `?${params.toString()}` : ""}`
-      );
-    },
+bookmarks: {
     // Add bookmark (POST)
     add: (postId: string) => buildApiUrl(`post/${postId}/bookmark`),
+
     // Remove bookmark (DELETE)
-    remove: (postId: string) => buildApiUrl(`post/${postId}/bookmark`),
-    // Check if post is bookmarked (new path per docs)
+    remove: (postId: string) => buildApiUrl(`post/${postId}/bookmark/delete`),
+
+    // Check if post is bookmarked
     status: (postId: string) => buildApiUrl(`post/check/${postId}`),
-    // Legacy status endpoint (for backward compatibility)
-    legacyStatus: (postId: string) => buildApiUrl(`post/${postId}/bookmark/status`),
-    // Get all bookmarked posts (non-paginated)
-    listAll: () => buildApiUrl(`post/list`),
-    // Get user's bookmarked posts count
+
+    // Get paginated saved posts
+    list: (page: number, size: number) =>
+      buildApiUrl(`post/saved-posts?page=${page}&size=${size}`),
+
+
+    // Get user's saved posts count
     countUser: () => buildApiUrl(`post/count`),
-    // Get a post's bookmark count
-    countPost: (postId: string) => buildApiUrl(`post/post/${postId}/count`),
+
+    // Get a post's saved count
+    countPost: (postId: string) => buildApiUrl(`post/${postId}/count`),
+
     // Update notes for a saved post
-    updateNotes: (savedPostId: string) => buildApiUrl(`post/notes/${savedPostId}`),
+    updateNotes: (savedPostId: string) =>
+      buildApiUrl(`post/notes/${savedPostId}`),
   },
 } as const;
 
