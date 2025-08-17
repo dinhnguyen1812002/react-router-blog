@@ -252,9 +252,9 @@ export default function MyPostsPage() {
 
                     {/* Actions */}
                     <div className="flex items-center space-x-2 ml-4">
-                      <Link to={`/dashboard/posts/${post.id}/edit`}>
+                      <Link to={`/dashboard/posts/${post.slug}/edit`}>
                         <Button variant="outline" size="sm">
-                          <Edit3 className="w-4 h-4 mr-1" />
+                          
                           Sửa
                         </Button>
                       </Link>

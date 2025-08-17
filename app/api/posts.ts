@@ -1,3 +1,4 @@
+import type { s } from 'node_modules/react-router/dist/development/components-CjQijYga.mjs';
 import axiosInstance from '~/config/axios';
 import type {ApiResponse, PaginatedResponse, Post} from '~/types';
 
@@ -171,74 +172,74 @@ export const postsApi = {
   },
 
   // Create new post
-  createPost: async (postData: any): Promise<ApiResponse<Post>> => {
-    try {
-      const response = await axiosInstance.post('/post', postData);
-      console.log('✅ Create post success:', response.data);
+  // createPost: async (postData: any): Promise<ApiResponse<Post>> => {
+  //   try {
+  //     const response = await axiosInstance.post('/post', postData);
+  //     console.log('✅ Create post success:', response.data);
 
-      // Handle different response formats
-      if (response.data && response.data.data) {
-        return response.data;
-      } else if (response.data) {
-        return {
-          data: response.data,
-          message: 'Post created successfully',
-          success: true
-        };
-      }
+  //     // Handle different response formats
+  //     if (response.data && response.data.data) {
+  //       return response.data;
+  //     } else if (response.data) {
+  //       return {
+  //         data: response.data,
+  //         message: 'Post created successfully',
+  //         success: true
+  //       };
+  //     }
 
-      throw new Error('Invalid response format');
-    } catch (error) {
-      console.error('❌ Create post error:', error);
-      throw error;
-    }
-  },
+  //     throw new Error('Invalid response format');
+  //   } catch (error) {
+  //     console.error('❌ Create post error:', error);
+  //     throw error;
+  //   }
+  // },
 
   // Update existing post
-  updatePost: async (postId: number, postData: any): Promise<ApiResponse<Post>> => {
-    try {
-      const response = await axiosInstance.put(`/post/${postId}`, postData);
-      console.log('✅ Update post success:', response.data);
+  // updatePost: async (postId: number, postData: any): Promise<ApiResponse<Post>> => {
+  //   try {
+  //     const response = await axiosInstance.put(`/post/${postId}`, postData);
+  //     console.log('✅ Update post success:', response.data);
 
-      // Handle different response formats
-      if (response.data && response.data.data) {
-        return response.data;
-      } else if (response.data) {
-        return {
-          data: response.data,
-          message: 'Post updated successfully',
-          success: true
-        };
-      }
+  //     // Handle different response formats
+  //     if (response.data && response.data.data) {
+  //       return response.data;
+  //     } else if (response.data) {
+  //       return {
+  //         data: response.data,
+  //         message: 'Post updated successfully',
+  //         success: true
+  //       };
+  //     }
 
-      throw new Error('Invalid response format');
-    } catch (error) {
-      console.error('❌ Update post error:', error);
-      throw error;
-    }
-  },
+  //     throw new Error('Invalid response format');
+  //   } catch (error) {
+  //     console.error('❌ Update post error:', error);
+  //     throw error;
+  //   }
+  // },
 
   // Delete post
-  deletePost: async (postId: number): Promise<ApiResponse<any>> => {
-    try {
-      const response = await axiosInstance.delete(`/post/${postId}`);
-      console.log('✅ Delete post success:', response.data);
+  // deletePost: async (postId: string): Promise<ApiResponse<any>> => {
+  //   try {
+  //     const response = await axiosInstance.delete(`/post/${postId}`);
+  //     console.log('✅ Delete post success:', response.data);
 
-      return {
-        data: response.data,
-        message: 'Post deleted successfully',
-        success: true
-      };
-    } catch (error) {
-      console.error('❌ Delete post error:', error);
-      throw error;
-    }
-  },
+  //     return {
+  //       data: response.data,
+  //       message: 'Post deleted successfully',
+  //       success: true
+  //     };
+  //   } catch (error) {
+  //     console.error('❌ Delete post error:', error);
+  //     throw error;
+  //   }
+  // },
 
   // Get post by ID (for editing)
-  getPostById: async (postId: number): Promise<ApiResponse<Post>> => {
+  getPostById: async (slug: string): Promise<ApiResponse<Post>> => {
     try {
-      const response = await axiosInstance.get(`/post/${postId}`);
+      const response = await axiosInstance.get(`/post/${slug}`);
       console.log('✅ Get post by ID success:', response.data);
 
       // Handle different response formats

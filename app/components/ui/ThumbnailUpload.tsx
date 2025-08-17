@@ -144,7 +144,9 @@ export default function ThumbnailUpload({
             alt="Thumbnail" 
             className="w-full h-48 object-cover rounded-lg border-2 border-gray-200 dark:border-gray-600" 
           />
-          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 rounded-lg flex items-center justify-center">
+          <div className="absolute inset-0  bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 rounded-lg flex items-center justify-center">
+            
+            
             <Button
               type="button"
               variant="secondary"

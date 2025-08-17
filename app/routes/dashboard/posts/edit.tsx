@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 
 import { Card, CardContent, CardHeader } from '~/components/ui/Card';
 import { postsApi } from '~/api/posts';
@@ -11,7 +11,7 @@ import { categoriesApi } from '~/api/categories';
 import { tagsApi } from '~/api/tags';
 import { useAuthStore } from '~/store/authStore';
 import { Button } from '~/components/ui/button';
-import { Settings, Tag, Image, FileText, Save, Send, AlertCircle, Eye, X } from 'lucide-react';
+import { Settings, Tag, Image, FileText, Save, Send, AlertCircle, Eye, X, History } from 'lucide-react';
 import ThumbnailUpload from '~/components/ui/ThumbnailUpload';
 import PostPreview from '~/components/post/PostPreview';
 import EditorWrapper from '~/components/editors/EditorWrapper';
@@ -34,6 +34,8 @@ type PostForm = z.infer<typeof postSchema>;
 
 export default function NewPostPage() {
   const navigate = useNavigate();
+  const { slug } = useParams();
+  const [postId, setPostId] = useState<string | null>(null);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [showSidebar, setShowSidebar] = useState(true);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -56,6 +58,28 @@ export default function NewPostPage() {
   const contentType = watch('contentType');
   const contentValue = watch('content');
 
+  // Fetch post by slug for editing
+  const { data: postResp, isLoading: postLoading, refetch: refetchPost } = useQuery({
+    queryKey: ['post', slug],
+    queryFn: () => postsApi.getPostBySlug(slug!),
+    enabled: !!slug,
+  });
+
+  // Populate form when post loads
+  useEffect(() => {
+    const p = postResp?.data;
+    if (!p) return;
+    setPostId(p.id);
+    setValue('title', p.title || '');
+    setValue('excerpt', p.summary || p.excerpt || '');
+    setValue('summary', p.summary || '');
+    setValue('content', p.content || '');
+    setValue('categoryId', p.categories && p.categories.length > 0 ? String(p.categories[0].id) : '');
+    setValue('thumbnailUrl', p.thumbnail || p.thumbnailUrl || '');
+    setValue('contentType', p.contentType || 'RICHTEXT');
+    setSelectedTags(p.tags?.map((t: any) => t.uuid) || []);
+  }, [postResp]);
+
   // Fetch categories and tags
   const { data: categories, isLoading: categoriesLoading } = useQuery({
     queryKey: ['categories'],
@@ -75,6 +99,28 @@ export default function NewPostPage() {
     onError: (error: any) => {
       console.error('Error creating post:', error);
       setSubmitError(error.response?.data?.message || 'Có lỗi xảy ra khi tạo bài viết');
+    },
+  });
+
+  const updatePostMutation = useMutation({
+    mutationFn: async (data: PostForm) => {
+      if (!postId) throw new Error('Missing post id');
+      const payload: any = {
+        title: data.title,
+        excerpt: data.excerpt,
+        content: data.content,
+        categories: [Number(data.categoryId)],
+        tags: selectedTags,
+        thumbnail: data.thumbnailUrl || undefined,
+      };
+      return authorApi.updatePost(String(postId), payload);
+    },
+    onSuccess: () => {
+      refetchPost();
+    },
+    onError: (error: any) => {
+      console.error('Error updating post:', error);
+      setSubmitError(error.response?.data?.message || 'Có lỗi xảy ra khi cập nhật bài viết');
     },
   });
 
@@ -112,10 +158,10 @@ export default function NewPostPage() {
   };
 
   return (
-    <div className=" bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <div className=" bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
-        <div className=" px-4 sm:px-6 lg:px-8">
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
               <button
@@ -145,7 +191,7 @@ export default function NewPostPage() {
                 <Eye className="w-4 h-4 mr-2" />
                 Xem trước
               </Button>
-              <Button
+              {/* <Button
                 type="submit"
                 variant="secondary"
                 onClick={() => {
@@ -156,9 +202,31 @@ export default function NewPostPage() {
                 className="text-sm"
               >
                 <Save className="w-4 h-4 mr-2" />
-                Lưu nháp
+                Cập nhật
+              </Button> */}
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => {
+                  if (!postId) return;
+                  handleSubmit((data) => updatePostMutation.mutate(data))();
+                }}
+                disabled={updatePostMutation.isPending}
+                className="text-sm"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                Cập nhật
               </Button>
               <Button
+                type="button"
+                variant="secondary"
+                onClick={() => refetchPost()}
+                className="text-sm"
+              >
+                <History className="w-4 h-4 mr-2" />
+                Tải lại
+              </Button>
+              {/* <Button
                 type="submit"
                 onClick={() => {
                   setValue('status', 'PUBLISHED');
@@ -169,13 +237,13 @@ export default function NewPostPage() {
               >
                 <Send className="w-4 h-4 mr-2" />
                 Xuất bản
-              </Button>
+              </Button> */}
             </div>
           </div>
         </div>
       </div>
 
-      <div className=" container px-4 sm:px-6 lg:px-8 py-6">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex gap-6">
           {/* Main Content */}
           <div className="flex-1">
@@ -195,8 +263,8 @@ export default function NewPostPage() {
               </div>
 
               {/* Content Editor */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm ">
-                <div >
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                <div className="p-6">
                   <EditorWrapper
                     contentType={contentType}
                     value={contentValue || ''}

@@ -12,8 +12,10 @@ interface CategoryData {
   id?: number;
   name: string;
   description: string;
-  status: string;
+
 }
+
+
 
 interface CategoryModalProps {
   isOpen: boolean;
@@ -33,7 +35,7 @@ export default function CategoryModal({
   const [formData, setFormData] = useState<CategoryData>({
     name: "",
     description: "",
-    status: "active"
+    
   });
 
   useEffect(() => {
@@ -43,7 +45,7 @@ export default function CategoryModal({
       setFormData({
         name: "",
         description: "",
-        status: "active"
+        
       });
     }
   }, [initialData, mode, isOpen]);
@@ -58,7 +60,7 @@ export default function CategoryModal({
     setFormData({
       name: "",
       description: "",
-      status: "active"
+      
     });
     onClose();
   };
@@ -101,19 +103,7 @@ export default function CategoryModal({
               />
             </div>
             
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Trạng thái
-              </label>
-              <select
-                value={formData.status}
-                onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="active">Hoạt động</option>
-                <option value="inactive">Không hoạt động</option>
-              </select>
-            </div>
+           
           </div>
           
           <DialogFooter>

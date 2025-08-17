@@ -258,7 +258,7 @@ export default function MyPostsPage() {
                       </div>
                     </div>
                     <div className="flex items-center space-x-1">
-                      <Link to={`/dashboard/posts/edit/${post.id}`}>
+                      <Link to={`/dashboard/posts/${post.slug}/edit`}>
                         <Button variant="ghost" size="sm">
                           <Edit3 className="w-4 h-4" />
                         </Button>
@@ -328,7 +328,7 @@ export default function MyPostsPage() {
                       </div>
                     </div>
                     <div className="flex items-center space-x-1">
-                      <Link to={`/dashboard/posts/edit/${post.id}`}>
+                      <Link to={`/dashboard/posts/${post.slug}/edit`}>
                         <Button variant="ghost" size="sm">
                           <Edit3 className="w-4 h-4" />
                         </Button>

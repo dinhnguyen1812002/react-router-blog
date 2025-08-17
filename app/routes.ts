@@ -19,6 +19,7 @@ route("dashboard", "routes/dashboard/_layout.tsx", [
   route("analytics", "routes/dashboard/analytics.tsx"),
   route("profile", "routes/dashboard/profile.tsx"),
   route("newsletter", "routes/dashboard/newsletter.tsx"), // Newsletter management for users
+  route("posts/:slug/edit", "routes/dashboard/posts/edit.tsx"),
 ]),
 
   route("posts", "routes/posts._index.tsx"),
@@ -29,7 +30,7 @@ route("dashboard", "routes/dashboard/_layout.tsx", [
   // Dashboard routes
   route("dashboard/my-posts", "routes/dashboard.my-posts.tsx"),
   route("dashboard/posts/new", "routes/dashboard.posts.new.tsx"),
-  route("dashboard/posts/edit/:id", "routes/dashboard.posts.edit.$id.tsx"),
+    // route("dashboard/posts/:slug/edit", "routes/dashboard.posts.edit.tsx"),
   route("memes", "routes/memes._index.tsx"),
   route("memes/:slug", "routes/memes.$slug.tsx"),
 
