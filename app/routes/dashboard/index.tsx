@@ -18,6 +18,10 @@ import {
   Calendar,
   Clock
 } from 'lucide-react';
+import { ChartAreaIcons } from '~/components/chart/Chart-area-icons';
+import { ChartRadialText } from '~/components/chart/Chart-radial-text';
+
+
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
@@ -155,6 +159,9 @@ export default function DashboardPage() {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <ChartAreaIcons />
+        <ChartRadialText />
         <Link to="/dashboard/posts/new">
           <Card className="h-full card-hover cursor-pointer border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 group">
             <CardContent className="flex flex-col items-center justify-center p-8 text-center h-full">

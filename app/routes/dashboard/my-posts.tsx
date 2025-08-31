@@ -24,6 +24,7 @@ import {
   List
 } from 'lucide-react';
 import { formatDateSimple } from "~/lib/utils";
+import { authorApi } from '~/api/author';
 
 export default function MyPostsPage() {
   const { user } = useAuthStore();
@@ -44,7 +45,7 @@ export default function MyPostsPage() {
   const deleteMutation = useMutation({
     mutationFn: async (postId: string) => {
       console.log('🗑️ Starting delete operation for post:', postId);
-      return await userPostsApi.deletePost(postId);
+      return await authorApi.deletePost(postId);
     },
     onSuccess: (data, postId) => {
       console.log('✅ Post deleted successfully:', { postId, data });

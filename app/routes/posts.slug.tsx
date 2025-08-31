@@ -106,6 +106,7 @@ export default function PostDetailPage() {
       }
     }
     setShowShareMenu(false);
+
   };
 
   // Handle post actions
@@ -124,6 +125,7 @@ export default function PostDetailPage() {
     // TODO: Implement report functionality
     console.log("Report post:", post?.id);
   };
+
 
   // Check if current user can edit/delete this post
   const canEditPost =
@@ -227,7 +229,7 @@ export default function PostDetailPage() {
                 </li>
               </ol>
             </nav>
-  {/* Featured Image */}
+    {/* Featured Image */}
             {(post.thumbnail || post.thumbnailUrl) && (
               <div className="mb-8">
                 <img
@@ -426,7 +428,11 @@ export default function PostDetailPage() {
             {/* Post Content */}
             <article
               ref={contentRef}
-              className="prose prose-lg max-w-none dark:prose-invert mb-12 prose-headings:scroll-mt-20"
+              className="prose prose-lg 
+              max-w-none dark:prose-invert mb-12
+               prose-headings:scroll-mt-20 
+               dark:text-white
+               "
             >
               <div dangerouslySetInnerHTML={{ __html: post.content }} />
             </article>
@@ -504,17 +510,8 @@ export default function PostDetailPage() {
           </div>
 
           {/* Sidebar */}
-          <div className="lg:col-span-1 sticky top-20 ">
+          {/* <div className="lg:col-span-1 sticky top-20 ">
             <div className=" space-y-6">
-              {/* Table of Contents */}
-              {/* <TableOfContents
-                content={post.content}
-                className="bg-white dark:bg-gray-800 border
-                 border-gray-200 dark:border-gray-700 rounded-lg p-4"
-              /> */}
-
-             
-              {/* Related Posts */}
               {relatedPosts.length > 0 && (
                 <div className=" bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
                   <h3 className="font-semibold text-gray-900 dark:text-white mb-4">
@@ -544,35 +541,9 @@ export default function PostDetailPage() {
                   </div>
                 </div>
               )}
-
-              {/* Quick Actions */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-4">
-                  Quick Actions
-                </h3>
-                <div className="space-y-3">
-                  <LikeButton
-                    postId={post.id}
-                    initialLiked={post.isLikedByCurrentUser}
-                    initialLikeCount={post.likeCount}
-                    className="w-full justify-start"
-                  />
-                  <BookmarkButton
-                    postId={post.id}
-                    initialBookmarked={post.isSavedByCurrentUser}
-                    className="w-full justify-start"
-                  />
-                  <button
-                    onClick={() => handleShare()}
-                    className="w-full flex items-center space-x-2 px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                  >
-                    <Share2 className="h-4 w-4" />
-                    <span>Share Post</span>
-                  </button>
-                </div>
-              </div>
+            
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </MainLayout>

@@ -5,22 +5,23 @@ import { z } from 'zod';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router';
 
+// UI Components
 import { Card, CardContent, CardHeader } from '~/components/ui/Card';
-import { postsApi } from '~/api/posts';
-import { categoriesApi } from '~/api/categories';
-import { tagsApi } from '~/api/tags';
-import { useAuthStore } from '~/store/authStore';
 import { Button } from '~/components/ui/button';
-import { Settings, Tag, Image, FileText, Save, Send, AlertCircle, Eye, X, History } from 'lucide-react';
+import { Settings, Tag, Image as ImageIcon, FileText, Save, Send, AlertCircle, Eye, X, History } from 'lucide-react';
 import ThumbnailUpload from '~/components/ui/ThumbnailUpload';
 import PostPreview from '~/components/post/PostPreview';
 import EditorWrapper from '~/components/editors/EditorWrapper';
-import { authApi } from '~/api/auth';
+
+// API
+import { postsApi } from '~/api/posts';
+import { categoriesApi } from '~/api/categories';
+import { tagsApi } from '~/api/tags';
 import { authorApi, type CreateAuthorPostRequest } from '~/api/author';
 
 const postSchema = z.object({
   title: z.string().min(5, 'Tiêu đề là bắt buộc').max(200, 'Tiêu đề không được quá 200 ký tự'),
-  excerpt: z.string().min(5, 'Hãy thêm tóm tắt ').max(200, 'không được quá 200 ký tự'),
+  excerpt: z.string().min(5, 'Hãy thêm tóm tắt').max(200, 'Tóm tắt không được quá 200 ký tự'),
   summary: z.string().max(500, 'Tóm tắt không được quá 500 ký tự').optional(),
   content: z.string().min(1, 'Nội dung là bắt buộc'),
   categoryId: z.string().min(1, 'Danh mục là bắt buộc'),
@@ -28,6 +29,20 @@ const postSchema = z.object({
   thumbnailUrl: z.string().optional(),
   contentType: z.enum(['MARKDOWN', 'RICHTEXT']),
   status: z.enum(['DRAFT', 'PUBLISHED']),
+  public_date: z
+    .string()
+    .refine(
+      (value) => {
+        // Skip validation if value is empty (optional field)
+        if (!value) return true;
+        // Check if the value is a valid date
+        return !isNaN(new Date(value).getTime());
+      },
+      {
+        message: 'Ngày xuất bản không hợp lệ',
+      }
+    )
+    .optional(),
 });
 
 type PostForm = z.infer<typeof postSchema>;
@@ -40,7 +55,7 @@ export default function NewPostPage() {
   const [showSidebar, setShowSidebar] = useState(true);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
-  
+
   const {
     register,
     handleSubmit,
@@ -77,8 +92,10 @@ export default function NewPostPage() {
     setValue('categoryId', p.categories && p.categories.length > 0 ? String(p.categories[0].id) : '');
     setValue('thumbnailUrl', p.thumbnail || p.thumbnailUrl || '');
     setValue('contentType', p.contentType || 'RICHTEXT');
+
+    setValue('public_date', p.public_date ? new Date(p.public_date).toISOString().slice(0, 16) : '');
     setSelectedTags(p.tags?.map((t: any) => t.uuid) || []);
-  }, [postResp]);
+  }, [postResp, setValue]);
 
   // Fetch categories and tags
   const { data: categories, isLoading: categoriesLoading } = useQuery({
@@ -105,18 +122,20 @@ export default function NewPostPage() {
   const updatePostMutation = useMutation({
     mutationFn: async (data: PostForm) => {
       if (!postId) throw new Error('Missing post id');
-      const payload: any = {
+      const payload: CreateAuthorPostRequest = {
         title: data.title,
         excerpt: data.excerpt,
         content: data.content,
         categories: [Number(data.categoryId)],
         tags: selectedTags,
         thumbnail: data.thumbnailUrl || undefined,
+        public_date: data.public_date ? new Date(data.public_date).toISOString() : undefined,
       };
       return authorApi.updatePost(String(postId), payload);
     },
     onSuccess: () => {
       refetchPost();
+      navigate('/dashboard/content');
     },
     onError: (error: any) => {
       console.error('Error updating post:', error);
@@ -126,21 +145,28 @@ export default function NewPostPage() {
 
   const onSubmit = (data: PostForm) => {
     setSubmitError(null);
-    const payload: CreateAuthorPostRequest = {
-      title: data.title,
-      excerpt:data.excerpt,
-      content: data.content,
-      categories: [Number(data.categoryId)],
-      tags: selectedTags,
-      thumbnail: data.thumbnailUrl || undefined,
-    };
-    createPostMutation.mutate(payload);
+    if (postId) {
+      // Update existing post
+      updatePostMutation.mutate(data);
+    } else {
+      // Create new post
+      const payload: CreateAuthorPostRequest = {
+        title: data.title,
+        excerpt: data.excerpt,
+        content: data.content,
+        categories: [Number(data.categoryId)],
+        tags: selectedTags,
+        thumbnail: data.thumbnailUrl || undefined,
+        public_date: data.public_date ? new Date(data.public_date).toISOString() : undefined,
+      };
+      createPostMutation.mutate(payload);
+    }
   };
 
   const handleTagToggle = (tagUuid: string) => {
-    setSelectedTags(prev =>
+    setSelectedTags((prev) =>
       prev.includes(tagUuid)
-        ? prev.filter(uuid => uuid !== tagUuid)
+        ? prev.filter((uuid) => uuid !== tagUuid)
         : [...prev, tagUuid]
     );
   };
@@ -154,12 +180,12 @@ export default function NewPostPage() {
   };
 
   const handleContentChange = (value: string) => {
-    setValue('content', value);
+    setValue('content', value, { shouldValidate: true, shouldDirty: true });
   };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
+      {/* Header*/} 
       <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -170,9 +196,11 @@ export default function NewPostPage() {
               >
                 <Settings className="w-5 h-5" />
               </button>
-              <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Viết bài mới</h1>
+              <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                {postId ? 'Chỉnh sửa bài viết' : 'Viết bài mới'}
+              </h1>
             </div>
-            
+
             <div className="flex items-center space-x-3">
               <Button
                 type="button"
@@ -191,53 +219,42 @@ export default function NewPostPage() {
                 <Eye className="w-4 h-4 mr-2" />
                 Xem trước
               </Button>
-              {/* <Button
+              <Button
                 type="submit"
                 variant="secondary"
                 onClick={() => {
-                  setValue('status', 'DRAFT');
+                  setValue('status', 'DRAFT', { shouldValidate: true });
                   handleSubmit(onSubmit)();
                 }}
-                disabled={createPostMutation.isPending}
+                disabled={createPostMutation.isPending || updatePostMutation.isPending}
                 className="text-sm"
               >
                 <Save className="w-4 h-4 mr-2" />
-                Cập nhật
-              </Button> */}
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => {
-                  if (!postId) return;
-                  handleSubmit((data) => updatePostMutation.mutate(data))();
-                }}
-                disabled={updatePostMutation.isPending}
-                className="text-sm"
-              >
-                <Save className="w-4 h-4 mr-2" />
-                Cập nhật
+                {postId ? 'Cập nhật' : 'Lưu nháp'}
               </Button>
+              {postId && (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => refetchPost()}
+                  className="text-sm"
+                >
+                  <History className="w-4 h-4 mr-2" />
+                  Tải lại
+                </Button>
+              )}
               <Button
-                type="button"
-                variant="secondary"
-                onClick={() => refetchPost()}
-                className="text-sm"
-              >
-                <History className="w-4 h-4 mr-2" />
-                Tải lại
-              </Button>
-              {/* <Button
                 type="submit"
                 onClick={() => {
-                  setValue('status', 'PUBLISHED');
+                  setValue('status', 'PUBLISHED', { shouldValidate: true });
                   handleSubmit(onSubmit)();
                 }}
-                disabled={createPostMutation.isPending}
+                disabled={createPostMutation.isPending || updatePostMutation.isPending}
                 className="text-sm"
               >
                 <Send className="w-4 h-4 mr-2" />
                 Xuất bản
-              </Button> */}
+              </Button>
             </div>
           </div>
         </div>
@@ -269,7 +286,7 @@ export default function NewPostPage() {
                     contentType={contentType}
                     value={contentValue || ''}
                     onChange={handleContentChange}
-                    placeholder={contentType === 'RICHTEXT' ? "Viết nội dung bài viết..." : "# Tiêu đề\n\nViết nội dung bài viết bằng Markdown..."}
+                    placeholder={contentType === 'RICHTEXT' ? 'Viết nội dung bài viết...' : '# Tiêu đề\n\nViết nội dung bài viết bằng Markdown...'}
                   />
                   {errors.content && (
                     <p className="mt-2 text-sm text-red-600 dark:text-red-400">{errors.content.message}</p>
@@ -297,8 +314,8 @@ export default function NewPostPage() {
                     className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 resize-none"
                     placeholder="Viết tóm tắt ngắn gọn về bài viết..."
                   />
-                  {errors.summary && (
-                    <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.summary.message}</p>
+                  {errors.excerpt && (
+                    <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.excerpt.message}</p>
                   )}
                 </CardContent>
               </Card>
@@ -312,6 +329,19 @@ export default function NewPostPage() {
                   </h3>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Ngày xuất bản
+                    </label>
+                    <input
+                      type="datetime-local"
+                      {...register('public_date')}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                    />
+                    {errors.public_date && (
+                      <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.public_date.message}</p>
+                    )}
+                  </div>
                   <div>
                     <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Danh mục
@@ -332,7 +362,6 @@ export default function NewPostPage() {
                       <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.categoryId.message}</p>
                     )}
                   </div>
-
                   <div>
                     <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Loại nội dung
@@ -352,7 +381,7 @@ export default function NewPostPage() {
               <Card>
                 <CardHeader className="pb-3">
                   <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 flex items-center">
-                    <Image className="w-4 h-4 mr-2" />
+                    <ImageIcon className="w-4 h-4 mr-2" />
                     Ảnh đại diện
                   </h3>
                 </CardHeader>
@@ -365,9 +394,7 @@ export default function NewPostPage() {
                     allowedTypes={['image/jpeg', 'image/png', 'image/gif', 'image/webp']}
                   />
                   {errors.thumbnailUrl && (
-                    <p className="mt-2 text-xs text-red-600 dark:text-red-400">
-                      {errors.thumbnailUrl.message}
-                    </p>
+                    <p className="mt-2 text-xs text-red-600 dark:text-red-400">{errors.thumbnailUrl.message}</p>
                   )}
                 </CardContent>
               </Card>
@@ -416,11 +443,9 @@ export default function NewPostPage() {
             <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
             <div>
               <h4 className="text-sm font-medium text-red-800 dark:text-red-200">
-                Lỗi tạo bài viết
+                {postId ? 'Lỗi cập nhật bài viết' : 'Lỗi tạo bài viết'}
               </h4>
-              <p className="text-sm text-red-700 dark:text-red-300 mt-1">
-                {submitError}
-              </p>
+              <p className="text-sm text-red-700 dark:text-red-300 mt-1">{submitError}</p>
             </div>
             <button
               onClick={() => setSubmitError(null)}

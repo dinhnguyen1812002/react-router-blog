@@ -10,6 +10,7 @@ export interface CreateAuthorPostRequest {
   categories: number[]; // category IDs
   tags: string[]; // tag UUIDs
   thumbnail?: string; // thumbnail URL
+  public_date?: string;
 }
 
 export const authorApi = {

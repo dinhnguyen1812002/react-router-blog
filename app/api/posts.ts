@@ -237,27 +237,27 @@ export const postsApi = {
   // },
 
   // Get post by ID (for editing)
-  getPostById: async (slug: string): Promise<ApiResponse<Post>> => {
-    try {
-      const response = await axiosInstance.get(`/post/${slug}`);
-      console.log('✅ Get post by ID success:', response.data);
+  // getPostById: async (slug: string): Promise<ApiResponse<Post>> => {
+  //   try {
+  //     const response = await axiosInstance.get(`/post/${slug}`);
+  //     console.log('✅ Get post by ID success:', response.data);
 
-      // Handle different response formats
-      if (response.data && response.data.data) {
-        return response.data;
-      } else if (response.data) {
-        return {
-          data: response.data,
-          message: 'Post retrieved successfully',
-          success: true
-        };
-      }
+  //     // Handle different response formats
+  //     if (response.data && response.data.data) {
+  //       return response.data;
+  //     } else if (response.data) {
+  //       return {
+  //         data: response.data,
+  //         message: 'Post retrieved successfully',
+  //         success: true
+  //       };
+  //     }
 
-      throw new Error('Invalid response format');
-    } catch (error) {
-      console.error('❌ Get post by ID error:', error);
-      throw error;
-    }
-  },
+  //     throw new Error('Invalid response format');
+  //   } catch (error) {
+  //     console.error('❌ Get post by ID error:', error);
+  //     throw error;
+  //   }
+  // },
 
 };

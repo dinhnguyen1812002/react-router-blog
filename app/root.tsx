@@ -7,9 +7,10 @@ import {
   ScrollRestoration,
 } from "react-router";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuthInit } from '~/hooks/useAuthInit';
-import { Toaster, toast } from 'sonner'
+import { Toaster, toast } from 'sonner';
+import { useThemeStore } from '~/store/themeStore';
 
 
 
@@ -54,23 +55,36 @@ export function Layout({ children }: { children: React.ReactNode }) {
   }));
 
   return (
-      <html lang="vi">
+      <html lang="vi" className={useThemeStore(state => state.actualTheme)}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="bg-bg-primary text-text-primary transition-colors duration-200">
       <QueryClientProvider client={queryClient}>
-        <Toaster />
-       {children}
+        <Toaster position="top-right" theme={useThemeStore(state => state.actualTheme) as any} />
+        <ThemeInitializer />
+        {children}
       </QueryClientProvider>
       <ScrollRestoration />
       <Scripts />
       </body>
       </html>
   );
+}
+
+// Component to initialize theme on mount
+function ThemeInitializer() {
+  const { theme } = useThemeStore();
+  
+  useEffect(() => {
+    // Apply theme class to html element
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+  }, [theme]);
+  
+  return null;
 }
 
 export default function App() {

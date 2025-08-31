@@ -3,6 +3,7 @@ import { Button } from '../ui/button';
 import { useAuthStore } from '~/store/authStore';
 import { useHydration } from '~/hooks/useHydration';
 import { UserDropdown } from './UserDropdown';
+import { ThemeSwitch } from '../ui/ThemeToggle';
 
 import NotificationCenter from '../notification/NotificationCenter';
 
@@ -27,7 +28,7 @@ export const Header = () => {
           </Link>
 
           {/* Navigation */}
-          <nav className="hidden md:flex space-x-8">
+          <nav className="hidden md:flex items-center space-x-6">
             <Link to="/" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
               Trang chủ
             </Link>
@@ -47,6 +48,9 @@ export const Header = () => {
             {/*  Responsive Test*/}
             {/*</Link>*/}
 
+            <div className="flex items-center">
+              <ThemeSwitch />
+            </div>
 
           </nav>
 

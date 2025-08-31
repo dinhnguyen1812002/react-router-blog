@@ -95,3 +95,13 @@ export function generateSlug(title: string): string {
     .replace(/-+/g, '-') // Replace multiple hyphens with single
     .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
 }
+
+
+// export function normalizeDateTime(value?: string): string | undefined {
+//   if (!value) return undefined;
+//   // nếu người dùng nhập "2025-09-01T10:00" → thêm ":00"
+//   if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value)) {
+//     return value + ":00";
+//   }
+//   return value; // đã có giây thì giữ nguyên
+// }

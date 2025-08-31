@@ -1,13 +1,13 @@
-// Auth Store với Zustand - Single source of truth
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import { clearAllAuthData } from '~/lib/auth-utils';
-import type { User } from '~/types';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import { clearAllAuthData } from "~/lib/auth-utils";
+import { authApi } from "~/api/auth"; // ⬅️ cần có hàm refreshToken trong authApi
+import type { User } from "~/types";
 
 // Helper function to decode JWT and check expiration
 const isTokenExpired = (token: string): boolean => {
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
+    const payload = JSON.parse(atob(token.split(".")[1]));
     const currentTime = Date.now() / 1000;
     return payload.exp < currentTime;
   } catch {
@@ -19,10 +19,9 @@ interface AuthState {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
-  isLoading: boolean; // To show loading state during login/register API calls
+  isLoading: boolean;
   error: string | null;
-  _hasHydrated: boolean; // To check if the store has been rehydrated
-  
+  _hasHydrated: boolean;
 }
 
 interface AuthActions {
@@ -33,6 +32,7 @@ interface AuthActions {
   clearError: () => void;
   checkTokenValidity: () => boolean;
   setHasHydrated: (hydrated: boolean) => void;
+  refreshToken: () => Promise<string | null>; // ⬅️ thêm
 }
 
 type AuthStore = AuthState & AuthActions;
@@ -44,9 +44,9 @@ export const useAuthStore = create<AuthStore>()(
       user: null,
       token: null,
       isAuthenticated: false,
-      isLoading: false, // Not for initialization, but for API calls
+      isLoading: false,
       error: null,
-      _hasHydrated: false, // Default hydration state
+      _hasHydrated: false,
 
       // Actions
       setLoading: (loading: boolean) => set({ isLoading: loading }),
@@ -64,8 +64,8 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       logout: () => {
-        console.log('👋 Logging out user...');
-        clearAllAuthData(); // Clear localStorage
+        console.log("👋 Logging out user...");
+        clearAllAuthData();
         set({
           user: null,
           token: null,
@@ -78,15 +78,39 @@ export const useAuthStore = create<AuthStore>()(
         const { token } = get();
         if (!token) return false;
         if (isTokenExpired(token)) {
-          console.log('Token expired, logging out...');
+          console.log("Token expired, logging out...");
           get().logout();
           return false;
         }
         return true;
       },
+
+      // ⬇️ Hàm refresh token
+      refreshToken: async () => {
+        try {
+          const response = await authApi.refreshToken();
+          const { accessToken } = response;
+
+          // Update lại token
+          const currentUser = get().user;
+          if (currentUser) {
+            set({
+              token: accessToken,
+              isAuthenticated: true,
+            });
+          }
+
+          console.log("🔄 Token refreshed successfully");
+          return accessToken;
+        } catch (error) {
+          console.error("❌ Refresh token failed:", error);
+          get().logout();
+          return null;
+        }
+      },
     }),
     {
-      name: 'auth-storage',
+      name: "auth-storage",
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         user: state.user,
@@ -94,9 +118,9 @@ export const useAuthStore = create<AuthStore>()(
       }),
       onRehydrateStorage: () => (state) => {
         if (state) {
-          console.log('✅ Auth store has been rehydrated');
+          console.log("✅ Auth store has been rehydrated");
           if (state.token && isTokenExpired(state.token)) {
-            console.log('Token expired on rehydration, clearing state.');
+            console.log("Token expired on rehydration, clearing state.");
             state.user = null;
             state.token = null;
             state.isAuthenticated = false;

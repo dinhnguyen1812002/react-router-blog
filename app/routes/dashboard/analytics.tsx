@@ -17,6 +17,8 @@ import {
   Activity,
   RefreshCw,
 } from "lucide-react";
+import { ChartAreaLegend } from "~/components/chart/Chart-area-legend";
+
 
 // Mock data
 const mockAnalytics = {
@@ -258,7 +260,7 @@ export default function AnalyticsPage() {
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Views Chart */}
-        <Card className="hover-lift">
+        {/* <Card className="hover-lift">
           <CardHeader>
             <h3 className="text-lg font-semibold flex items-center">
               <TrendingUp className="w-5 h-5 mr-2 text-blue-500" />
@@ -309,7 +311,9 @@ export default function AnalyticsPage() {
               )}
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
+
+        <ChartAreaLegend />
 
         {/* Top Posts */}
         <Card className="hover-lift">

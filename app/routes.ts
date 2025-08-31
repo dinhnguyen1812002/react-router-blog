@@ -17,7 +17,8 @@ route("dashboard", "routes/dashboard/_layout.tsx", [
   route("settings", "routes/dashboard/settings.tsx"),
   route("posts/new", "routes/dashboard/posts/new.tsx"),
   route("analytics", "routes/dashboard/analytics.tsx"),
-  route("profile", "routes/dashboard/profile.tsx"),
+  route("profile", "routes/dashboard/profile/index.tsx"),
+  route("profile/edit", "routes/dashboard/profile/edit.tsx"),
   route("newsletter", "routes/dashboard/newsletter.tsx"), // Newsletter management for users
   route("posts/:slug/edit", "routes/dashboard/posts/edit.tsx"),
 ]),

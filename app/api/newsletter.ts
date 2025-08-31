@@ -9,12 +9,13 @@ interface SubscribeData {
 
 // TypeScript interfaces
 export interface Subscriber {
-  id: number;
+  id: string;
   email: string;
-  name?: string;
+  name?: string | null;
   status: 'active' | 'pending' | 'unsubscribed';
   subscribedAt: string;
-  confirmedAt?: string;
+  confirmedAt?: string | null;
+  unsubscribedAt?: string | null;
 }
 
 export interface PaginatedSubscribers {
@@ -124,6 +125,38 @@ export interface PaginatedResponse<T> {
   last: boolean;
 }
 
+export interface ApiSubscriber {
+  id: string;
+  email: string;
+  name?: string | null;
+  isActive: boolean;
+  isConfirmed: boolean;
+  subscribedAt: string;
+  confirmedAt?: string | null;
+  unsubscribedAt?: string | null;
+}
+
+export interface ApiPaginatedResponse<T> {
+  content: T[];
+  pageable: {
+    pageNumber: number;
+    pageSize: number;
+    sort: { empty: boolean; sorted: boolean; unsorted: boolean };
+    offset: number;
+    unpaged: boolean;
+    paged: boolean;
+  };
+  last: boolean;
+  totalElements: number;
+  totalPages: number;
+  first: boolean;
+  size: number;
+  number: number;
+  sort: { empty: boolean; sorted: boolean; unsorted: boolean };
+  numberOfElements: number;
+  empty: boolean;
+}
+
 // ==================== API Functions ====================
 
 /**
@@ -167,7 +200,24 @@ export const getAllSubscribers = async ({ page = 0, size = 10 } = {}): Promise<P
   const response = await axiosInstance.get('/newsletter/subscribers', {
     params: { page, size }
   });
-  return response.data;
+  const data: ApiPaginatedResponse<ApiSubscriber> = response.data;
+  return {
+    content: data.content.map((s) => ({
+      id: s.id,
+      email: s.email,
+      name: s.name ?? null,
+      status: s.unsubscribedAt ? 'unsubscribed' : (s.isConfirmed && s.isActive ? 'active' : 'pending'),
+      subscribedAt: s.subscribedAt,
+      confirmedAt: s.confirmedAt ?? null,
+      unsubscribedAt: s.unsubscribedAt ?? null,
+    })),
+    totalElements: data.totalElements,
+    totalPages: data.totalPages,
+    size: data.size,
+    number: data.number,
+    first: data.first,
+    last: data.last,
+  };
 };
 
 /**
@@ -180,7 +230,24 @@ export const getActiveSubscribers = async ({ page = 0, size = 10 } = {}): Promis
   const response = await axiosInstance.get('/newsletter/subscribers/active', {
     params: { page, size }
   });
-  return response.data;
+  const data: ApiPaginatedResponse<ApiSubscriber> = response.data;
+  return {
+    content: data.content.map((s) => ({
+      id: s.id,
+      email: s.email,
+      name: s.name ?? null,
+      status: s.unsubscribedAt ? 'unsubscribed' : (s.isConfirmed && s.isActive ? 'active' : 'pending'),
+      subscribedAt: s.subscribedAt,
+      confirmedAt: s.confirmedAt ?? null,
+      unsubscribedAt: s.unsubscribedAt ?? null,
+    })),
+    totalElements: data.totalElements,
+    totalPages: data.totalPages,
+    size: data.size,
+    number: data.number,
+    first: data.first,
+    last: data.last,
+  };
 };
 
 /**
@@ -441,7 +508,7 @@ export const getNewsletterAnalytics = async (): Promise<ApiResponse<NewsletterAn
 /**
  * Delete subscriber (Admin only)
  */
-export const deleteSubscriber = async (subscriberId: number): Promise<void> => {
+export const deleteSubscriber = async (subscriberId: string): Promise<void> => {
   try {
     await axiosInstance.delete(`/newsletter/subscribers/${subscriberId}`);
     console.log('✅ Delete subscriber success:', subscriberId);
@@ -454,7 +521,7 @@ export const deleteSubscriber = async (subscriberId: number): Promise<void> => {
 /**
  * Bulk delete subscribers (Admin only)
  */
-export const bulkDeleteSubscribers = async (subscriberIds: number[]): Promise<void> => {
+export const bulkDeleteSubscribers = async (subscriberIds: string[]): Promise<void> => {
   try {
     await axiosInstance.delete('/newsletter/subscribers/bulk', {
       data: { subscriberIds }
@@ -539,7 +606,7 @@ export const useUnsubscribeNewsletter = (options?: any) => {
  * Hook to get all subscribers (Admin only)
  */
 export const useGetAllSubscribers = (params: { page: number; size: number }, options?: any) => {
-  return useQuery({
+  return useQuery<PaginatedSubscribers>({
     queryKey: ['newsletter', 'subscribers', params.page, params.size],
     queryFn: () => getAllSubscribers(params),
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -551,7 +618,7 @@ export const useGetAllSubscribers = (params: { page: number; size: number }, opt
  * Hook to get active subscribers only (Admin only)
  */
 export const useGetActiveSubscribers = (params: { page: number; size: number }, options?: any) => {
-  return useQuery({
+  return useQuery<PaginatedSubscribers>({
     queryKey: ['newsletter', 'subscribers', 'active', params.page, params.size],
     queryFn: () => getActiveSubscribers(params),
     staleTime: 5 * 60 * 1000, // 5 minutes

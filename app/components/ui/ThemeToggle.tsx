@@ -1,6 +1,6 @@
-// components/ThemeSwitch.tsx
 import { useThemeStore } from '~/store/themeStore';
 import { useState, useEffect } from 'react';
+import { Moon, Sun } from 'lucide-react';
 
 export const ThemeSwitch = ({ className = '' }: { className?: string }) => {
   const { theme, setTheme } = useThemeStore();
@@ -10,23 +10,31 @@ export const ThemeSwitch = ({ className = '' }: { className?: string }) => {
     setMounted(true);
   }, []);
 
-  if (!mounted) return null;
+  const toggleTheme = () => {
+    setTheme(theme === 'light' ? 'dark' : 'light');
+  };
+
+  if (!mounted) {
+    return (
+      <div className="w-8 h-8 flex items-center justify-center">
+        <div className="w-5 h-5 rounded-full bg-gray-200 dark:bg-gray-600"></div>
+      </div>
+    );
+  }
 
   const isDark = theme === 'dark';
 
   return (
-    <label className={`relative inline-flex items-center cursor-pointer ${className}`}>
-      <input
-        type="checkbox"
-        checked={isDark}
-        onChange={(e) => setTheme(e.target.checked ? 'dark' : 'light')}
-        className="sr-only peer"
-      />
-      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500 dark:peer-focus:ring-blue-300 rounded-full peer dark:bg-gray-600 peer-checked:bg-blue-600 transition-colors"></div>
-      <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full peer-checked:translate-x-5 transition-transform"></div>
-      <span className="ml-3 text-sm text-gray-700 dark:text-gray-300">
-        {isDark ? 'Tối' : 'Sáng'}
-      </span>
-    </label>
+    <button
+      onClick={toggleTheme}
+      className={`p-2 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${className}`}
+      aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+    >
+      {isDark ? (
+        <Sun className="w-5 h-5" />
+      ) : (
+        <Moon className="w-5 h-5" />
+      )}
+    </button>
   );
 };

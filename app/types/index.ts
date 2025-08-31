@@ -53,6 +53,8 @@ export interface Post {
   isSavedByCurrentUser: boolean;
   userRating: number | null;
   comments?: Comment[];
+  public_date: string,
+  
 }
 
 export type Category = {
@@ -115,6 +117,8 @@ export interface ProfileUser {
   avatar: string;
   roles: string[];
   bio?: string;
+  website?: string;
+  customProfileMarkdown?: string | null;
   socialMediaLinks: {
     LINKEDIN?: string;
     TWITTER?: string;
@@ -125,7 +129,6 @@ export interface ProfileUser {
   postsCount: number;
   savedPostsCount: number;
   commentsCount: number;
-  customProfileMarkdown: string | null;
 }
 
 export interface Upload {

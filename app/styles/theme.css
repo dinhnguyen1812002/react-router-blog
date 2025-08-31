@@ -1,119 +1,5 @@
 /* Modern Theme System */
 :root {
-  /* Color Palette */
-  /* Theme Colors */
-  .theme-blue {
-    --color-primary-50: #eff6ff;
-    --color-primary-100: #dbeafe;
-    --color-primary-200: #bfdbfe;
-    --color-primary-300: #93c5fd;
-    --color-primary-400: #60a5fa;
-    --color-primary-500: #3b82f6;
-    --color-primary-600: #2563eb;
-    --color-primary-700: #1d4ed8;
-    --color-primary-800: #1e40af;
-    --color-primary-900: #1e3a8a;
-    --color-primary-950: #172554;
-  }
-  
-  .theme-purple {
-    --color-primary-50: #faf5ff;
-    --color-primary-100: #f3e8ff;
-    --color-primary-200: #e9d5ff;
-    --color-primary-300: #d8b4fe;
-    --color-primary-400: #c084fc;
-    --color-primary-500: #a855f7;
-    --color-primary-600: #9333ea;
-    --color-primary-700: #7e22ce;
-    --color-primary-800: #6b21a8;
-    --color-primary-900: #581c87;
-    --color-primary-950: #3b0764;
-  }
-  
-  .theme-green {
-    --color-primary-50: #f0fdf4;
-    --color-primary-100: #dcfce7;
-    --color-primary-200: #bbf7d0;
-    --color-primary-300: #86efac;
-    --color-primary-400: #4ade80;
-    --color-primary-500: #22c55e;
-    --color-primary-600: #16a34a;
-    --color-primary-700: #15803d;
-    --color-primary-800: #166534;
-    --color-primary-900: #14532d;
-    --color-primary-950: #052e16;
-  }
-  
-  .theme-red {
-    --color-primary-50: #fef2f2;
-    --color-primary-100: #fee2e2;
-    --color-primary-200: #fecaca;
-    --color-primary-300: #fca5a5;
-    --color-primary-400: #f87171;
-    --color-primary-500: #ef4444;
-    --color-primary-600: #dc2626;
-    --color-primary-700: #b91c1c;
-    --color-primary-800: #991b1b;
-    --color-primary-900: #7f1d1d;
-    --color-primary-950: #450a0a;
-  }
-  
-  .theme-orange {
-    --color-primary-50: #fff7ed;
-    --color-primary-100: #ffedd5;
-    --color-primary-200: #fed7aa;
-    --color-primary-300: #fdba74;
-    --color-primary-400: #fb923c;
-    --color-primary-500: #f97316;
-    --color-primary-600: #ea580c;
-    --color-primary-700: #c2410c;
-    --color-primary-800: #9a3412;
-    --color-primary-900: #7c2d12;
-    --color-primary-950: #431407;
-  }
-  
-  .theme-pink {
-    --color-primary-50: #fdf2f8;
-    --color-primary-100: #fce7f3;
-    --color-primary-200: #fbcfe8;
-    --color-primary-300: #f9a8d4;
-    --color-primary-400: #f472b6;
-    --color-primary-500: #ec4899;
-    --color-primary-600: #db2777;
-    --color-primary-700: #be185d;
-    --color-primary-800: #9d174d;
-    --color-primary-900: #831843;
-    --color-primary-950: #500724;
-  }
-  
-  .theme-indigo {
-    --color-primary-50: #eef2ff;
-    --color-primary-100: #e0e7ff;
-    --color-primary-200: #c7d2fe;
-    --color-primary-300: #a5b4fc;
-    --color-primary-400: #818cf8;
-    --color-primary-500: #6366f1;
-    --color-primary-600: #4f46e5;
-    --color-primary-700: #4338ca;
-    --color-primary-800: #3730a3;
-    --color-primary-900: #312e81;
-    --color-primary-950: #1e1b4b;
-  }
-  
-  .theme-yellow {
-    --color-primary-50: #fefce8;
-    --color-primary-100: #fef9c3;
-    --color-primary-200: #fef08a;
-    --color-primary-300: #fde047;
-    --color-primary-400: #facc15;
-    --color-primary-500: #eab308;
-    --color-primary-600: #ca8a04;
-    --color-primary-700: #a16207;
-    --color-primary-800: #854d0e;
-    --color-primary-900: #713f12;
-    --color-primary-950: #422006;
-  }
-
   /* Secondary Colors */
   --color-secondary-50: #f8fafc;
   --color-secondary-100: #f1f5f9;
@@ -125,20 +11,17 @@
   --color-secondary-700: #334155;
   --color-secondary-800: #1e293b;
   --color-secondary-900: #0f172a;
-
   /* Accent Colors */
   --color-accent-purple: #8b5cf6;
   --color-accent-pink: #ec4899;
   --color-accent-green: #10b981;
   --color-accent-orange: #f59e0b;
   --color-accent-red: #ef4444;
-
   /* Semantic Colors */
   --color-success: #10b981;
   --color-warning: #f59e0b;
   --color-error: #ef4444;
   --color-info: #3b82f6;
-
   /* Background Colors */
   --bg-primary: #ffffff;
   --bg-secondary: #f8fafc;
@@ -148,19 +31,16 @@
   --bg-page: #f8fafc;
   --bg-gradient-light: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   --bg-gradient-primary: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 50%, #faf5ff 100%);
-
   /* Text Colors */
   --text-primary: #0f172a;
   --text-secondary: #475569;
   --text-tertiary: #64748b;
   --text-muted: #94a3b8;
   --text-inverse: #ffffff;
-
   /* Border Colors */
   --border-primary: #e2e8f0;
   --border-secondary: #cbd5e1;
   --border-accent: #3b82f6;
-
   /* Shadow System */
   --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
@@ -168,7 +48,6 @@
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
   --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
-
   /* Spacing System */
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
@@ -177,7 +56,6 @@
   --space-xl: 2rem;
   --space-2xl: 3rem;
   --space-3xl: 4rem;
-
   /* Border Radius */
   --radius-xs: 0.125rem;
   --radius-sm: 0.25rem;
@@ -186,11 +64,9 @@
   --radius-xl: 0.75rem;
   --radius-2xl: 1rem;
   --radius-full: 9999px;
-
   /* Typography */
   --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-family-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
-
   /* Font Sizes */
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
@@ -200,17 +76,14 @@
   --text-2xl: 1.5rem;
   --text-3xl: 1.875rem;
   --text-4xl: 2.25rem;
-
   /* Line Heights */
   --leading-tight: 1.25;
   --leading-normal: 1.5;
   --leading-relaxed: 1.625;
-
   /* Transitions */
   --transition-fast: 150ms ease-in-out;
   --transition-normal: 250ms ease-in-out;
   --transition-slow: 350ms ease-in-out;
-
   /* Z-Index Scale */
   --z-dropdown: 1000;
   --z-sticky: 1020;
@@ -231,17 +104,14 @@
   --bg-page: #0f172a;
   --bg-gradient-light: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
   --bg-gradient-primary: linear-gradient(135deg, #1e3a8a 0%, #1e293b 50%, #581c87 100%);
-
   --text-primary: #f8fafc;
   --text-secondary: #cbd5e1;
   --text-tertiary: #94a3b8;
   --text-muted: #64748b;
   --text-inverse: #0f172a;
-
   --border-primary: #334155;
   --border-secondary: #475569;
   --border-accent: #3b82f6;
-
   /* Dark mode shadows */
   --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.3);
   --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.4), 0 1px 2px -1px rgb(0 0 0 / 0.4);
@@ -249,6 +119,120 @@
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4), 0 8px 10px -6px rgb(0 0 0 / 0.4);
   --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.6);
+}
+
+/* Color Palette */
+/* Theme Colors */
+.theme-blue {
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+  --color-primary-950: #172554;
+}
+
+.theme-purple {
+  --color-primary-50: #faf5ff;
+  --color-primary-100: #f3e8ff;
+  --color-primary-200: #e9d5ff;
+  --color-primary-300: #d8b4fe;
+  --color-primary-400: #c084fc;
+  --color-primary-500: #a855f7;
+  --color-primary-600: #9333ea;
+  --color-primary-700: #7e22ce;
+  --color-primary-800: #6b21a8;
+  --color-primary-900: #581c87;
+  --color-primary-950: #3b0764;
+}
+
+.theme-green {
+  --color-primary-50: #f0fdf4;
+  --color-primary-100: #dcfce7;
+  --color-primary-200: #bbf7d0;
+  --color-primary-300: #86efac;
+  --color-primary-400: #4ade80;
+  --color-primary-500: #22c55e;
+  --color-primary-600: #16a34a;
+  --color-primary-700: #15803d;
+  --color-primary-800: #166534;
+  --color-primary-900: #14532d;
+  --color-primary-950: #052e16;
+}
+
+.theme-red {
+  --color-primary-50: #fef2f2;
+  --color-primary-100: #fee2e2;
+  --color-primary-200: #fecaca;
+  --color-primary-300: #fca5a5;
+  --color-primary-400: #f87171;
+  --color-primary-500: #ef4444;
+  --color-primary-600: #dc2626;
+  --color-primary-700: #b91c1c;
+  --color-primary-800: #991b1b;
+  --color-primary-900: #7f1d1d;
+  --color-primary-950: #450a0a;
+}
+
+.theme-orange {
+  --color-primary-50: #fff7ed;
+  --color-primary-100: #ffedd5;
+  --color-primary-200: #fed7aa;
+  --color-primary-300: #fdba74;
+  --color-primary-400: #fb923c;
+  --color-primary-500: #f97316;
+  --color-primary-600: #ea580c;
+  --color-primary-700: #c2410c;
+  --color-primary-800: #9a3412;
+  --color-primary-900: #7c2d12;
+  --color-primary-950: #431407;
+}
+
+.theme-pink {
+  --color-primary-50: #fdf2f8;
+  --color-primary-100: #fce7f3;
+  --color-primary-200: #fbcfe8;
+  --color-primary-300: #f9a8d4;
+  --color-primary-400: #f472b6;
+  --color-primary-500: #ec4899;
+  --color-primary-600: #db2777;
+  --color-primary-700: #be185d;
+  --color-primary-800: #9d174d;
+  --color-primary-900: #831843;
+  --color-primary-950: #500724;
+}
+
+.theme-indigo {
+  --color-primary-50: #eef2ff;
+  --color-primary-100: #e0e7ff;
+  --color-primary-200: #c7d2fe;
+  --color-primary-300: #a5b4fc;
+  --color-primary-400: #818cf8;
+  --color-primary-500: #6366f1;
+  --color-primary-600: #4f46e5;
+  --color-primary-700: #4338ca;
+  --color-primary-800: #3730a3;
+  --color-primary-900: #312e81;
+  --color-primary-950: #1e1b4b;
+}
+
+.theme-yellow {
+  --color-primary-50: #fefce8;
+  --color-primary-100: #fef9c3;
+  --color-primary-200: #fef08a;
+  --color-primary-300: #fde047;
+  --color-primary-400: #facc15;
+  --color-primary-500: #eab308;
+  --color-primary-600: #ca8a04;
+  --color-primary-700: #a16207;
+  --color-primary-800: #854d0e;
+  --color-primary-900: #713f12;
+  --color-primary-950: #422006;
 }
 
 /* Base Styles */
@@ -271,41 +255,36 @@ body {
 
 /* Global theme transition classes */
 .theme-transition {
-  transition: 
-    background-color var(--transition-normal),
-    border-color var(--transition-normal),
-    color var(--transition-normal),
-    box-shadow var(--transition-normal);
+  transition: background-color var(--transition-normal), border-color var(--transition-normal), color var(--transition-normal), box-shadow var(--transition-normal);
 }
 
 /* Apply theme transitions to common elements */
-div, section, article, aside, nav, header, footer, main {
-  transition: 
-    background-color var(--transition-normal),
-    border-color var(--transition-normal),
-    color var(--transition-normal);
+div,
+section,
+article,
+nav,
+header,
+footer,
+main {
+  transition: background-color var(--transition-normal), border-color var(--transition-normal), color var(--transition-normal);
 }
 
 /* Card and component transitions */
-.theme-card,
+/* .theme-card,
 [class*="bg-"],
 [class*="border-"],
 [class*="text-"] {
-  transition: 
-    background-color var(--transition-normal),
-    border-color var(--transition-normal),
-    color var(--transition-normal),
-    box-shadow var(--transition-normal);
-}
+  transition: background-color var(--transition-normal), border-color var(--transition-normal), color var(--transition-normal), box-shadow var(--transition-normal);
+} */
 
 /* Utility Classes */
-.theme-card {
+/* .theme-card {
   background-color: var(--bg-primary);
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   transition: all var(--transition-normal);
-}
+} */
 
 .theme-card:hover {
   box-shadow: var(--shadow-md);
@@ -328,17 +307,13 @@ div, section, article, aside, nav, header, footer, main {
 }
 
 .theme-bg-pattern {
-  background-image: 
-    radial-gradient(circle at 25px 25px, rgba(59, 130, 246, 0.1) 2px, transparent 0),
-    radial-gradient(circle at 75px 75px, rgba(139, 92, 246, 0.1) 2px, transparent 0);
+  background-image: radial-gradient(circle at 25px 25px, rgba(59, 130, 246, 0.1) 2px, transparent 0), radial-gradient(circle at 75px 75px, rgba(139, 92, 246, 0.1) 2px, transparent 0);
   background-size: 100px 100px;
   background-position: 0 0, 50px 50px;
 }
 
 .dark .theme-bg-pattern {
-  background-image: 
-    radial-gradient(circle at 25px 25px, rgba(59, 130, 246, 0.2) 2px, transparent 0),
-    radial-gradient(circle at 75px 75px, rgba(139, 92, 246, 0.2) 2px, transparent 0);
+  background-image: radial-gradient(circle at 25px 25px, rgba(59, 130, 246, 0.2) 2px, transparent 0), radial-gradient(circle at 75px 75px, rgba(139, 92, 246, 0.2) 2px, transparent 0);
 }
 
 .theme-button-primary {
@@ -454,11 +429,7 @@ div, section, article, aside, nav, header, footer, main {
 }
 
 /* Selection */
-::selection {
-  background-color: var(--color-primary-200);
-  color: var(--color-primary-900);
-}
-
+/* ::selection { background-color: var(--color-primary-200); color: var(--color-primary-900); } */
 .dark ::selection {
   background-color: var(--color-primary-800);
   color: var(--color-primary-100);

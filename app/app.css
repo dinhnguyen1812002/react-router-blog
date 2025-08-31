@@ -103,9 +103,9 @@ body {
   }
 
   /* Better selection colors */
-  ::selection {
+  /* ::selection {
     @apply bg-blue-600/30 text-blue-100;
-  }
+  } */
 }
 
 /* Disable transitions during theme switch to prevent flash */

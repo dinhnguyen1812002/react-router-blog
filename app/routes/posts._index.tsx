@@ -129,16 +129,17 @@ export default function PostsPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <MainLayout> 
+<div className="container mx-auto px-4 py-8">
         <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Đang tải...</h1>
+         
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
-              <PostSkeleton key={i} />
-            ))}
+             <PostSkeleton/>
           </div>
         </div>
       </div>
+      </MainLayout>
+      
     );
   }
 

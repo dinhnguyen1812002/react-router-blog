@@ -31,6 +31,14 @@ export const userApi = {
     return response.data;
   },
 
+  // Update custom profile markdown content
+  updateCustomProfile: async (markdownContent: string): Promise<ApiResponse<any>> => {
+    const response = await apiClient.put('/users/profile/custom', {
+      markdownContent
+    });
+    return response.data;
+  },
+
   getUserPosts: async (userId: string, page: number = 0, size: number = 10): Promise<PaginatedResponse<Post>> => {
     const response = await apiClient.get(`/user/${userId}/posts?page=${page}&size=${size}`);
     return response.data;

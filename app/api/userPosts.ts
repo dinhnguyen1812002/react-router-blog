@@ -39,9 +39,6 @@ getUserPosts: async (page = 0, limit = 10): Promise<UserPostsResponse> => {
 },
 
 
-
-
-
   // Get user's post statistics
   getUserStats: async (): Promise<PostStats> => {
     try {
@@ -56,7 +53,7 @@ getUserPosts: async (page = 0, limit = 10): Promise<UserPostsResponse> => {
   // Delete user's post
   deletePost: async (postId: string): Promise<{ success: boolean; message: string }> => {
     try {
-      const response = await apiClient.delete(`/post/${postId}`);
+      const response = await apiClient.delete(`/author/${postId}`);
       return response.data;
     } catch (error) {
       console.error('Error deleting post:', error);
