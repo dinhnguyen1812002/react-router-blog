@@ -198,7 +198,7 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
   });
 
   return (
-    <div className="border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800">
+    <div className=" ">
       <MenuBar editor={editor} />
       <EditorContent 
         editor={editor} 

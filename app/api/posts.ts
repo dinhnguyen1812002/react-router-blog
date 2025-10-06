@@ -1,6 +1,7 @@
 import type { s } from 'node_modules/react-router/dist/development/components-CjQijYga.mjs';
 import axiosInstance from '~/config/axios';
 import type {ApiResponse, PaginatedResponse, Post} from '~/types';
+import type { FilterOptions } from '~/types/filters';
 
 export interface RatePostRequest {
   score: number; // 1-5
@@ -19,26 +20,42 @@ export interface RatingResponse {
 
 
 export const postsApi = {
-  getPosts: async (page = 0, size = 10): Promise<PaginatedResponse<Post>> => {
+  getPosts: async (
+    page = 0,
+    size = 10,
+    filters?: Partial<FilterOptions>
+  ): Promise<PaginatedResponse<Post>> => {
     try {
-      const response = await axiosInstance.get(`/post?page=${page}&size=${size}`);
+      const params: Record<string, any> = { page, size };
+      if (filters) {
+        if (filters.search) params.search = filters.search;
+        if (filters.sortBy) params.sort = filters.sortBy;
+        if (filters.timeRange && filters.timeRange !== 'all') params.time = filters.timeRange;
+        if (filters.featured && filters.featured !== 'all') params.featured = filters.featured;
+        if (typeof filters.minReadTime === 'number' && filters.minReadTime > 0) params.minRead = filters.minReadTime;
+        if (typeof filters.maxReadTime === 'number' && filters.maxReadTime > 0) params.maxRead = filters.maxReadTime;
+        if (filters.categories && filters.categories.length > 0) params.categories = filters.categories.join(',');
+        if (filters.tags && filters.tags.length > 0) params.tags = filters.tags.join(',');
+      }
+      const response = await axiosInstance.get(`/post`, { params });
       console.log('Posts API Response:', response.data);
       
       // Handle both formats
-      if (response.data && response.data.content) {
-        return response.data; // Already in PaginatedResponse format
-      } else if (response.data) {
-        // Direct array, wrap it in PaginatedResponse format
-        return {
-          content: response.data,
-          totalElements: response.data.length,
-          totalPages: 1,
-          size: response.data.length,
-          number: 0
-        };
-      } else {
-        throw new Error('Invalid response format');
-      }
+      // if (response.data && response.data.content) {
+        
+      // } else if (response.data) {
+      //   // Direct array, wrap it in PaginatedResponse format
+      //   return {
+      //     content: response.data,
+      //     totalElements: response.data.length,
+      //     totalPages: 1,
+      //     size: response.data.length,
+      //     number: 0
+      //   };
+      // } else {
+      //   throw new Error('Invalid response format');
+      // }
+      return response.data; // Already in PaginatedResponse format
     } catch (error) {
       console.error('Posts API Error:', error);
       throw error;

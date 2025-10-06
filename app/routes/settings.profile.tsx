@@ -8,6 +8,7 @@ import { MainLayout } from '~/components/layout/MainLayout';
 import { Input } from '~/components/ui/Input';
 import { Card, CardContent, CardHeader } from '~/components/ui/Card';
 import { Avatar } from '~/components/ui/Avatar';
+import { AvatarUpload } from '~/components/profile/AvatarUpload';
 import { userApi } from '~/api/user';
 import {Button} from "~/components/ui/button";
 import { useAuthStore } from '~/store/authStore';
@@ -33,7 +34,7 @@ type ProfileForm = z.infer<typeof profileSchema>;
 type PasswordForm = z.infer<typeof passwordSchema>;
 
 export default function ProfileSettingsPage() {
-  const { user, setUser } = useAuthStore();
+  const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<'profile' | 'password'>('profile');
 
@@ -72,7 +73,13 @@ export default function ProfileSettingsPage() {
     mutationFn: userApi.updateProfile,
     onSuccess: (response) => {
       if (response.success) {
-        setUser({ ...user!, ...response.data });
+        // Update user in auth store by calling login with updated user data
+        const updatedUser = { ...user!, ...response.data };
+        // We need to get the current token to maintain authentication
+        const currentToken = useAuthStore.getState().token;
+        if (currentToken) {
+          useAuthStore.getState().login(updatedUser, currentToken);
+        }
         queryClient.invalidateQueries({ queryKey: ['user', 'profile'] });
       }
     },
@@ -149,22 +156,15 @@ export default function ProfileSettingsPage() {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmitProfile(onSubmitProfile)} className="space-y-6">
-                {/* Avatar Section */}
-                <div className="flex items-center space-x-6">
-                  <Avatar
-                    src={profileData?.data?.avatarUrl || ''}
-                    fallback={user.username.charAt(0)}
-                    alt={user.username}
-                    // size="xl"
-                  />
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900">Ảnh đại diện</h3>
-                    <p className="text-sm text-gray-600">Tải lên ảnh đại diện mới</p>
-                    <Button variant="secondary" size="sm" className="mt-2">
-                      Thay đổi ảnh
-                    </Button>
-                  </div>
-                </div>
+                {/* Avatar Upload Section */}
+                <AvatarUpload
+                  currentAvatarUrl={profileData?.data?.avatarUrl}
+                  fallbackText={user.username.charAt(0).toUpperCase()}
+                  onSuccess={(avatarUrl) => {
+                    // Update the form data with new avatar URL
+                    queryClient.invalidateQueries({ queryKey: ['user', 'profile'] });
+                  }}
+                />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <Input

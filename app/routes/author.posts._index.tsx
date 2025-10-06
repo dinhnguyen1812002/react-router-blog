@@ -8,6 +8,7 @@ import { Spinner } from '~/components/ui/Spinner';
 import { authorApi } from '~/api/author';
 import { formatDateSimple } from '~/lib/utils';
 import { Button } from '~/components/ui/button';
+import { Eye, Pen } from 'lucide-react';
 
 export default function AuthorPostsPage() {
   // TODO: Add authentication check here
@@ -64,7 +65,7 @@ export default function AuthorPostsPage() {
           </div>
           <Link to="/author/posts/new">
             <Button size="lg">
-              ✏️ Viết bài mới
+               Viết bài mới
             </Button>
           </Link>
         </div>
@@ -92,7 +93,7 @@ export default function AuthorPostsPage() {
               <div className="text-3xl font-bold text-yellow-600 mb-2">
                 {postsData?.content?.filter(p => p.status === 'DRAFT').length || 0}
               </div>
-              <div className="text-gray-600">Bản nháp</div>
+              {/* <div className="text-gray-600">Bản nháp</div> */}
             </CardContent>
           </Card>
         </div>
@@ -134,7 +135,7 @@ export default function AuthorPostsPage() {
                             ? 'bg-green-100 text-green-800'
                             : 'bg-yellow-100 text-yellow-800'
                         }`}>
-                          {post.status === 'PUBLISHED' ? 'Đã xuất bản' : 'Bản nháp'}
+                          {post.published === true ? 'Đã xuất bản' : 'Bản nháp'}
                         </span>
                         {post.featured && (
                           <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
@@ -154,9 +155,9 @@ export default function AuthorPostsPage() {
                       )}
                       
                       <div className="flex items-center text-sm text-gray-500 space-x-4">
-                        <span>📅 {formatDateSimple(post.createdAt)}</span>
-                        <span>📂 {post.categories && post.categories.length > 0 ? post.categories[0].category : 'Uncategorized'}</span>
-                        <span>🏷️ {post.tags.length} tags</span>
+                        <span>{formatDateSimple(post.createdAt)}</span>
+                        <span>{post.categories && post.categories.length > 0 ? post.categories[0].category : 'Uncategorized'}</span>
+                        <span>{post.tags.length} tags</span>
                       </div>
                     </div>
                     
@@ -175,12 +176,12 @@ export default function AuthorPostsPage() {
                     <div className="flex items-center space-x-2">
                       <Link to={`/posts/${post.slug}`}>
                         <Button variant="secondary" size="sm">
-                          👁️ Xem
+                          <Eye className='w-4 h-4'/>
                         </Button>
                       </Link>
                       <Link to={`/author/posts/edit/${post.id}`}>
                         <Button variant="secondary" size="sm">
-                          ✏️ Sửa
+                         <Pen className='w-4 h-4'/>
                         </Button>
                       </Link>
                     </div>
@@ -192,7 +193,7 @@ export default function AuthorPostsPage() {
                       disabled={deleteMutation.isPending}
                       className="text-red-600 hover:text-red-700 hover:bg-red-50"
                     >
-                      🗑️ Xóa
+                       Xóa
                     </Button>
                   </div>
                 </CardContent>

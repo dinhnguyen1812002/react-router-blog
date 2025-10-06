@@ -1,17 +1,18 @@
-import { useQuery } from '@tanstack/react-query';
-import { MainLayout } from '~/components/layout/MainLayout';
-import { PostList } from '~/components/post/PostList';
-import { postsApi } from '~/api/posts';
-import { categoriesApi } from '~/api/categories';
-import { tagsApi } from '~/api/tags';
-import { Link } from 'react-router';
-import { useAuthStore } from '~/store/authStore';
-import { Button } from '~/components/ui/button';
-import { Badge } from '~/components/ui/badge';
-import HeroSection from '~/components/layout/Hero';
-import NewLetters from '~/components/NewLetters';
-import GlobalSearch from '~/components/search/GlobalSearch';
-import { formatNumber } from '~/lib/utils';
+import { useQuery } from "@tanstack/react-query";
+import { MainLayout } from "~/components/layout/MainLayout";
+import { PostList } from "~/components/post/PostList";
+import { postsApi } from "~/api/posts";
+import { categoriesApi } from "~/api/categories";
+import { tagsApi } from "~/api/tags";
+import { Link } from "react-router";
+import { useAuthStore } from "~/store/authStore";
+import { Button } from "~/components/ui/button";
+import { Badge } from "~/components/ui/badge";
+import HeroSection from "~/components/layout/Hero";
+import NewLetters from "~/components/NewLetters";
+import GlobalSearch from "~/components/search/GlobalSearch";
+import { formatNumber } from "~/lib/utils";
+
 import {
   TrendingUp,
   Users,
@@ -32,62 +33,105 @@ import {
   Coffee,
   Lightbulb,
   Rocket,
-} from 'lucide-react';
-import type { Category, Tag } from '~/types';
+} from "lucide-react";
+import type { Category, Tag } from "~/types";
+
+import { userApi } from "~/api/user";
+import Avatar from "boring-avatars";
+import UserAvatar from "~/components/ui/boring-avatar";
+import type { Route } from "../+types/root";
+
+
+
+export function meta({ }: Route.MetaArgs) {
+  return [
+    // Basic SEO Metadata
+    { title: "Blog App - Discover Inspiring Stories & Insights" },
+    {
+      name: "description",
+      content:
+        "Explore a vibrant community of writers sharing knowledge, tutorials, and insights. Discover trending articles, popular categories, and connect with creators on our blog platform.",
+    },
+    {
+      name: "keywords",
+      content:
+        "blog, articles, tutorials, writing community, trending topics, categories, insights, knowledge sharing",
+    },
+
+    // Open Graph (OG) Metadata for Social Media (e.g., Facebook, LinkedIn)
+    { property: "og:title", content: "Blog App - Your Source for Inspiring Content" },
+    {
+      property: "og:description",
+      content:
+        "Join our blog platform to read, write, and connect with a global community of writers and readers. Explore trending articles and diverse topics.",
+    },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: "https://your-blog-app.com" }, // Replace with your actual domain
+    { property: "og:image", content: "https://your-blog-app.com/og-image.jpg" }, // Replace with a relevant image URL
+    { property: "og:site_name", content: "Blog App" },
+
+    // Twitter Card Metadata
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: "Blog App - Discover Inspiring Stories" },
+    {
+      name: "twitter:description",
+      content:
+        "Read and share inspiring articles on our blog platform. Join a community of writers and explore trending topics today!",
+    },
+    { name: "twitter:image", content: "https://your-blog-app.com/twitter-image.jpg" }, // Replace with a relevant image URL
+    { name: "twitter:site", content: "@YourBlogHandle" }, // Replace with your Twitter handle
+
+    // Additional Metadata
+    { name: "robots", content: "index, follow" },
+    { name: "viewport", content: "width=device-width, initial-scale=1.0" },
+    { charset: "UTF-8" },
+  ];
+}
 
 export default function HomePage() {
   const { user, isAuthenticated } = useAuthStore();
 
   // Fetch featured posts
-  const {
-    data: featuredPosts,
-    isLoading: featuredLoading,
-  } = useQuery({
-    queryKey: ['posts', 'featured'],
+  const { data: featuredPosts, isLoading: featuredLoading } = useQuery({
+    queryKey: ["posts", "featured"],
     queryFn: () => postsApi.getFeaturedPosts(),
   });
 
   // Fetch latest posts
-  const {
-    data: latestPosts,
-    isLoading: latestLoading,
-  } = useQuery({
-    queryKey: ['posts', 'latest'],
-    queryFn: () => postsApi.getPosts(0, 8),
+  const { data: latestPosts, isLoading: latestLoading } = useQuery({
+    queryKey: ["posts", "latest"],
+    queryFn: () => postsApi.getPosts(0, 4),
   });
 
   // Fetch popular posts
-  const {
-    data: popularPosts,
-    isLoading: popularLoading,
-  } = useQuery({
-    queryKey: ['posts', 'popular'],
-    queryFn: () => postsApi.getPosts(0, 6), // TODO: Add popular sorting
+  const { data: popularPosts, isLoading: popularLoading } = useQuery({
+    queryKey: ["posts", "popular"],
+    queryFn: () => postsApi.getPosts(0, 4), // TODO: Add popular sorting
   });
 
   // Fetch categories
-  const {
-    data: categoriesData,
-    isLoading: categoriesLoading,
-  } = useQuery({
-    queryKey: ['categories'],
+  const { data: categoriesData, isLoading: categoriesLoading } = useQuery({
+    queryKey: ["categories"],
     queryFn: () => categoriesApi.getAll(),
   });
 
   // Fetch trending tags
-  const {
-    data: tagsData,
-    isLoading: tagsLoading,
-  } = useQuery({
-    queryKey: ['tags'],
+  const { data: tagsData, isLoading: tagsLoading } = useQuery({
+    queryKey: ["tags"],
     queryFn: () => tagsApi.getAll(),
+  });
+
+  const { data: topuserData, isLoading: topuserLoading } = useQuery({
+    queryKey: ["top-user"],
+    queryFn: () => userApi.getTopUser(),
   });
 
   // const categories = categoriesData?.?.slice(0, 8) || [];
   // const trendingTags = tagsData?.data?.slice(0, 12) || [];
-  const categories  = categoriesData
-  const trendingTags = tagsData
+  const categories = categoriesData;
 
+  const trendingTags = tagsData;
+  console.log( categories);
   return (
     <MainLayout>
       {/* Enhanced Hero Section */}
@@ -179,10 +223,10 @@ export default function HomePage() {
             </div>
             <Link to="/posts?featured=true">
               <Button variant="outline" className="flex items-center space-x-2">
-                <span>View All</span>
+                <span className="text-gray-600 dark:text-gray-400">View All</span>
                 <ArrowRight className="h-4 w-4" />
               </Button>
-            </Link>
+            </Link>       
           </div>
 
           <PostList
@@ -204,7 +248,7 @@ export default function HomePage() {
             </div>
             <Link to="/categories">
               <Button variant="outline" className="flex items-center space-x-2">
-                <span>All Categories</span>
+                <span className="text-gray-600 dark:text-gray-400">All Categories</span>
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
@@ -220,29 +264,32 @@ export default function HomePage() {
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {categories?.map((category :Category) => (
+              {categories?.map((category: Category) => (
                 <Link
                   key={category.id}
                   to={`/posts?category=${category.slug}`}
                   className="group p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105"
                 >
                   <div className="flex items-center space-x-3 mb-3">
-                    <div
-                      className="w-10 h-10 rounded-lg flex items-center justify-center"
-                      style={{ backgroundColor: category.backgroundColor || '#6B7280' }}
-                    >
-                      <Folder className="h-5 w-5 text-white" />
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                      <Folder className="h-5 w-5 text-gray-300" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
+                      <h3
+                        className="font-semibold  
+                      dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate"
+                        style={{
+                          border: category.backgroundColor || "#6B7280",
+                        }}
+                      >
                         {category.category}
                       </h3>
                     </div>
                   </div>
                   <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-2">
-                    {category.description || 'Explore articles in this category'}
+                    {category.description ||
+                      "Explore articles in this category"}
                   </p>
-                 
                 </Link>
               ))}
             </div>
@@ -262,7 +309,7 @@ export default function HomePage() {
             </div>
             <Link to="/posts">
               <Button variant="outline" className="flex items-center space-x-2">
-                <span>View All</span>
+                <span className="text-gray-600 dark:text-gray-400">View All</span>
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
@@ -287,7 +334,7 @@ export default function HomePage() {
             </div>
             <Link to="/tags">
               <Button variant="outline" className="flex items-center space-x-2">
-                <span>All Tags</span>
+                <span className="text-gray-600 dark:text-gray-400">All Tags</span>
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
@@ -339,7 +386,7 @@ export default function HomePage() {
             <Link to="/posts?sort=popular">
               <Button variant="outline" className="flex items-center space-x-2">
                 <TrendingUp className="h-4 w-4" />
-                <span>View Trending</span>
+                <span className="text-gray-600 dark:text-gray-400">View Trending</span>
               </Button>
             </Link>
           </div>
@@ -351,7 +398,7 @@ export default function HomePage() {
         </section>
 
         {/* Author Spotlight */}
-        <section className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl p-8">
+        <section className="">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
               Author Spotlight
@@ -361,254 +408,52 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              {
-                name: "Sarah Johnson",
-                role: "Tech Writer",
-                avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
-                posts: 45,
-                followers: 1200,
-                bio: "Passionate about web development and sharing knowledge with the community."
-              },
-              {
-                name: "Mike Chen",
-                role: "Full Stack Developer",
-                avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-                posts: 32,
-                followers: 890,
-                bio: "Building scalable applications and writing about modern development practices."
-              },
-              {
-                name: "Emily Rodriguez",
-                role: "UX Designer",
-                avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
-                posts: 28,
-                followers: 756,
-                bio: "Designing user experiences and sharing insights about design thinking."
-              }
-            ].map((author, index) => (
-              <div key={index} className="bg-white dark:bg-gray-800 rounded-lg p-6 text-center shadow-sm">
-                <img
-                  src={author.avatar}
-                  alt={author.name}
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {topuserData?.map((author) => (
+              <div
+                key={author.id}
+                className=" rounded-lg p-6 text-center shadow-sm"
+              >
+              
+                <UserAvatar
+                  src={author.avatar ?? "/avatar/avatar.jpg"}
+                  alt={author.username}
+                  name={author.username}
+                  size={80}
+                  variant="beam"
+                  colors={['#FF5733', '#FFC300', '#DAF7A6']}
                   className="w-20 h-20 rounded-full mx-auto mb-4 object-cover"
                 />
+
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
-                  {author.name}
+                  {author.username}
                 </h3>
-                <p className="text-sm text-blue-600 dark:text-blue-400 mb-3">
-                  {author.role}
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                  {author.email}
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
                   {author.bio}
                 </p>
                 <div className="flex justify-center space-x-4 text-xs text-gray-500 dark:text-gray-400 mb-4">
-                  <span>{author.posts} posts</span>
-                  <span>•</span>
-                  <span>{author.followers} followers</span>
+                  <span>{author.postCount} posts</span>
+                  {author.socialMediaLinks && (
+                    <>
+                      <span>•</span>
+                      <span>
+                        {Object.keys(author.socialMediaLinks).length} socials
+                      </span>
+                    </>
+                  )}
                 </div>
-                <Button size="sm" variant="outline">
+                {/* <Button size="sm" variant="outline" className="text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
                   Follow
-                </Button>
+                </Button> */}
               </div>
             ))}
           </div>
         </section>
 
-        {/* Features Showcase */}
-        {/* <section>
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-              Why Choose Our Platform?
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Discover the features that make our blogging platform the perfect place to share your ideas and connect with readers.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                icon: PenTool,
-                title: "Rich Editor",
-                description: "Write with our powerful editor supporting markdown, rich text, and media embeds.",
-                color: "blue"
-              },
-              {
-                icon: Users,
-                title: "Community Driven",
-                description: "Connect with like-minded writers and readers in our vibrant community.",
-                color: "green"
-              },
-              {
-                icon: Zap,
-                title: "Fast & Responsive",
-                description: "Lightning-fast loading times and mobile-optimized reading experience.",
-                color: "yellow"
-              },
-              {
-                icon: Target,
-                title: "SEO Optimized",
-                description: "Built-in SEO tools to help your content reach a wider audience.",
-                color: "purple"
-              },
-              {
-                icon: Globe,
-                title: "Global Reach",
-                description: "Share your content with readers from around the world.",
-                color: "indigo"
-              },
-              {
-                icon: Award,
-                title: "Recognition System",
-                description: "Earn badges and recognition for your contributions to the community.",
-                color: "orange"
-              }
-            ].map((feature, index) => (
-              <div key={index} className="text-center p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                <div className={`inline-flex items-center justify-center w-12 h-12 bg-${feature.color}-100 dark:bg-${feature.color}-900/30 rounded-lg mb-4`}>
-                  <feature.icon className={`h-6 w-6 text-${feature.color}-600 dark:text-${feature.color}-400`} />
-                </div>
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                  {feature.title}
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {feature.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section> */}
-
-        {/* Call to Action for Writers */}
-        {/* <section className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-700 dark:to-purple-700 rounded-2xl p-8 md:p-12 text-center text-white">
-          <div className="max-w-3xl mx-auto">
-            <Rocket className="h-16 w-16 mx-auto mb-6 opacity-90" />
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Ready to Share Your Story?
-            </h2>
-            <p className="text-xl mb-8 text-blue-100 dark:text-blue-200">
-              Join thousands of writers who are already sharing their knowledge and building their audience on our platform.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              {isAuthenticated ? (
-                <>
-                  <Link to="/dashboard/posts/new">
-                    <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
-                      <PenTool className="h-5 w-5 mr-2" />
-                      Write Your First Post
-                    </Button>
-                  </Link>
-                  <Link to="/dashboard">
-                    <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
-                      Go to Dashboard
-                    </Button>
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <Link to="/register">
-                    <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
-                      <Users className="h-5 w-5 mr-2" />
-                      Join Our Community
-                    </Button>
-                  </Link>
-                  <Link to="/login">
-                    <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
-                      Sign In
-                    </Button>
-                  </Link>
-                </>
-              )}
-            </div>
-          </div>
-        </section> */}
-
-        {/* Newsletter Signup */}
-        <section>
-          <NewLetters />
-        </section>
-
-        {/* Quick Tips */}
-        {/* <section className="bg-yellow-50 dark:bg-yellow-900/20 rounded-2xl p-8">
-          <div className="flex items-center justify-center mb-6">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
-              <Lightbulb className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
-            </div>
-          </div>
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              Writing Tips & Tricks
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400">
-              Quick tips to improve your writing and engage your audience
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              {
-                tip: "Start with a compelling headline that grabs attention",
-                category: "Headlines"
-              },
-              {
-                tip: "Use short paragraphs and bullet points for better readability",
-                category: "Formatting"
-              },
-              {
-                tip: "Include relevant images and media to break up text",
-                category: "Visuals"
-              },
-              {
-                tip: "End with a call-to-action to encourage engagement",
-                category: "Engagement"
-              }
-            ].map((item, index) => (
-              <div key={index} className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
-                <div className="text-xs font-medium text-yellow-600 dark:text-yellow-400 mb-2">
-                  {item.category}
-                </div>
-                <p className="text-sm text-gray-700 dark:text-gray-300">
-                  {item.tip}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section> */}
-
-        {/* Community Stats */}
-        {/* <section className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
-            Join Our Growing Community
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="p-6">
-              <div className="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">
-                10K+
-              </div>
-              <div className="text-gray-600 dark:text-gray-400">
-                Active Writers
-              </div>
-            </div>
-            <div className="p-6">
-              <div className="text-4xl font-bold text-green-600 dark:text-green-400 mb-2">
-                50K+
-              </div>
-              <div className="text-gray-600 dark:text-gray-400">
-                Published Articles
-              </div>
-            </div>
-            <div className="p-6">
-              <div className="text-4xl font-bold text-purple-600 dark:text-purple-400 mb-2">
-                1M+
-              </div>
-              <div className="text-gray-600 dark:text-gray-400">
-                Monthly Readers
-              </div>
-            </div>
-          </div>
-        </section> */}
+        <NewLetters />
       </div>
     </MainLayout>
   );

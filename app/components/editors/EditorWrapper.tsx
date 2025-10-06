@@ -68,7 +68,7 @@ export default function EditorWrapper({ contentType, value, onChange, placeholde
 
   // Fallback to basic textarea if editors fail to load
   return (
-    <div className="border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800">
+    <div className=" dark:border-gray-600 rounded-md bg-white ">
       <div className="p-4">
         <textarea
           value={value}

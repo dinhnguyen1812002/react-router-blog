@@ -76,13 +76,11 @@ export default function NewLetters() {
                          "Subscription successful! Please check your email to confirm.";
 
   return (
-    <section className="relative isolate overflow-hidden bg-gradient-to-br
-     from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 
-     dark:to-gray-900 py-16 sm:py-24 lg:py-32 rounded-lg mt-20">
+    <section className="relative isolate overflow-hidden  py-16 sm:py-24 lg:py-32 rounded-lg mt-20">
       {/* Background decoration */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full">
-          <div className="w-full h-full bg-gradient-to-r from-blue-400/10 via-purple-400/10 to-pink-400/10 dark:from-blue-600/5 dark:via-purple-600/5 dark:to-pink-600/5 blur-3xl"></div>
+          <div className="w-full h-full"></div>
         </div>
       </div>
 

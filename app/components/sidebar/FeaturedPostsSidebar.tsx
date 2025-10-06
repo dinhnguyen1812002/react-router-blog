@@ -62,14 +62,14 @@ export default function FeaturedPostsSidebar({
     <div className={className}>
       <div className="mb-6">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center space-x-2">
-          <Star className="h-5 w-5 text-yellow-500" />
+
           <span>Featured Posts</span>
         </h2>
-        
+
         <div className="space-y-4">
           {featuredPosts.map((post, index) => (
             <article key={post.id} className="group">
-              <Link 
+              <Link
                 to={`/posts/${post.slug}`}
                 className="block hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-lg p-3 -m-3 transition-colors"
               >
@@ -84,31 +84,25 @@ export default function FeaturedPostsSidebar({
                       />
                     </div>
                   )} */}
-                  
+
                   {/* Content */}
                   <div className="flex-1 min-w-0">
-                    {/* Post number for featured ranking */}
-                    <div className="flex items-start justify-between mb-1">
-                      <span className="inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-yellow-500 rounded-full flex-shrink-0">
-                        {index + 1}
-                      </span>
-                      {post.featured && (
-                        <TrendingUp className="h-4 w-4 text-yellow-500 flex-shrink-0" />
-                      )}
+                    {/* Title + số thứ tự */}
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-2 transition-colors">
+
+                        {post.title}
+                      </h3>
+
                     </div>
-                    
-                    {/* Title */}
-                    <h3 className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-2 mb-2 transition-colors">
-                      {post.title}
-                    </h3>
-                    
+
                     {/* Summary */}
                     {post.summary && (
                       <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 mb-2">
                         {post.summary}
                       </p>
                     )}
-                    
+
                     {/* Meta info */}
                     <div className="flex items-center space-x-3 text-xs text-gray-500 dark:text-gray-400">
                       <span>{formatDate(post.createdAt)}</span>
@@ -122,29 +116,22 @@ export default function FeaturedPostsSidebar({
                           <span>{post.viewCount || 0}</span>
                         </div>
                       )}
+                      {post.featured && (
+                        <TrendingUp className="h-4 w-4 text-yellow-500 flex-shrink-0" />
+                      )}
                     </div>
-                    
-                    {/* Categories */}
-                    {post.categories && post.categories.length > 0 && (
-                      <div className="mt-2">
-                        <span
-                          className="inline-block px-2 py-1 text-xs font-medium text-white rounded-full"
-                          style={{ backgroundColor: post.categories[0].backgroundColor || "#3B82F6" }}
-                        >
-                          {post.categories[0].category}
-                        </span>
-                      </div>
-                    )}
                   </div>
+
+
                 </div>
               </Link>
             </article>
           ))}
         </div>
-        
+
         {/* View all link */}
         <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-          <Link 
+          <Link
             to="/posts?featured=true"
             className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
           >

@@ -21,22 +21,33 @@ export const useAuth = () => {
     checkTokenValidity,
   } = useAuthStore();
 
-  // Check token validity periodically
+  // Check token validity periodically and auto-refresh
   useEffect(() => {
     if (!isAuthenticated || !token) return;
 
-    const checkToken = () => {
+    const checkAndRefreshToken = async () => {
       if (!checkTokenValidity()) {
-        console.log("Token expired, redirecting to login...");
-        navigate("/login", { replace: true });
+        console.log("Token expired, attempting refresh...");
+        try {
+          const newToken = await useAuthStore.getState().refreshToken();
+          if (!newToken) {
+            console.log(" Token refresh failed, redirecting to login...");
+            navigate("/login", { replace: true });
+          } else {
+            console.log("Token refreshed successfully");
+          }
+        } catch (error) {
+          console.error("Token refresh error:", error);
+          navigate("/login", { replace: true });
+        }
       }
     };
 
     // Check immediately
-    checkToken();
+    checkAndRefreshToken();
 
     // Check every 5 minutes
-    const interval = setInterval(checkToken, 5 * 60 * 1000);
+    const interval = setInterval(checkAndRefreshToken, 5 * 60 * 1000);
 
     return () => clearInterval(interval);
   }, [isAuthenticated, token, checkTokenValidity, navigate]);
@@ -48,23 +59,27 @@ export const useAuth = () => {
         setError(null);
 
         const response = await authApi.login(credentials);
-        const { id, username, email, roles, accessToken } = response;
+        const { id, username, email, roles, avatar, token } = response;
+        
+        // Tạo user object từ response data
         const usr = {
           id,
           username,
           email,
           roles,
-          avatar: null,
+          avatar,
           socialMediaLinks: [],
         };
 
-        console.log("✅ Login successful:", {
+        console.log("Login successful:", {
           user: usr.username,
-          token: accessToken ? accessToken.substring(0, 20) + "..." : "None",
+          token: token ? token.substring(0, 20) + "..." : "None",
+          hasUser: !!usr,
+          hasToken: !!token,
         });
 
         // Update store - Zustand's persist middleware handles localStorage
-        setAuthState(usr, accessToken);
+        setAuthState(usr, token);
 
         // Handle redirection
         const returnUrl = location.state?.returnUrl;
@@ -96,20 +111,20 @@ export const useAuth = () => {
         setError(null);
 
         const response: LoginResponse = await authApi.register(userData);
-        const { id, username, email, roles, accessToken } = response;
+        const { id, username, email, roles, avatar, token } = response;
         const user = {
           id,
           username,
           email,
           roles,
-          avatar: null,
+          avatar,
           socialMediaLinks: [],
         };
 
-        console.log("✅ Registration successful, auto-logging in...");
+        console.log("Registration successful, auto-logging in...");
 
         // Update store - Zustand's persist middleware handles localStorage
-        setAuthState(user, accessToken);
+        setAuthState(user, token);
 
         const from = location.state?.from?.pathname || "/dashboard";
         navigate(from, { replace: true });

@@ -1,11 +1,11 @@
-import { Link } from 'react-router';
-import { Button } from '../ui/button';
-import { useAuthStore } from '~/store/authStore';
-import { useHydration } from '~/hooks/useHydration';
-import { UserDropdown } from './UserDropdown';
-import { ThemeSwitch } from '../ui/ThemeToggle';
+import { Link } from "react-router";
+import { Button } from "../ui/button";
+import { useAuthStore } from "~/store/authStore";
+import { useHydration } from "~/hooks/useHydration";
+import { UserDropdown } from "./UserDropdown";
+import { ThemeSwitch } from "../ui/ThemeToggle";
 
-import NotificationCenter from '../notification/NotificationCenter';
+import NotificationCenter from "../notification/NotificationCenter";
 
 export const Header = () => {
   const { user, isAuthenticated } = useAuthStore();
@@ -21,23 +21,30 @@ export const Header = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center">
             {/* <h1 className="text-2xl font-bold text-blue-600 dark:text-blue-400">BlogPlatform</h1> */}
-            <img 
-              src='/blog_logo.png'
-              className='w-52 h-full object-contain '
-            />
+            <img src="/blog_logo.png" className="w-52 h-full object-contain " />
           </Link>
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
-            <Link to="/" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+            <Link
+              to="/"
+              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            >
               Trang chủ
             </Link>
-            <Link to="/posts" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+            <Link
+              to="/posts"
+              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            >
               Bài viết
             </Link>
-            <Link to="/memes" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+            <Link
+              to="/memes"
+              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            >
               Memes
             </Link>
+
             {/*<Link to="/comment-test" className="text-gray-700 hover:text-blue-600 transition-colors">*/}
             {/*  Comment Test*/}
             {/*</Link>*/}
@@ -48,14 +55,23 @@ export const Header = () => {
             {/*  Responsive Test*/}
             {/*</Link>*/}
 
-            <div className="flex items-center">
+            {/* <div className="flex items-center">
               <ThemeSwitch />
-            </div>
-
+            </div> */}
           </nav>
 
           {/* User Menu */}
           <div className="flex items-center space-x-4">
+            <Link to="/dashboard/posts/new" className="">
+              <Button
+                variant={"ghost"}
+                className="border border-dashed text-gray-700  
+                            transition-colors dark:text-white"
+              >
+                Viết bài
+              </Button>
+            </Link>
+              <ThemeSwitch />
             {showAuthState && user ? (
               <>
                 <NotificationCenter />
@@ -63,7 +79,6 @@ export const Header = () => {
               </>
             ) : (
               <div className="flex items-center space-x-2">
-                
                 <Link to="/login">
                   <Button variant="secondary" size="sm">
                     Đăng nhập

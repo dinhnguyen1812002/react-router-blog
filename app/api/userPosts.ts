@@ -18,25 +18,21 @@ export interface PostStats {
 
 export const userPostsApi = {
   // Get user's own posts
-    // http://localhost:8888/api/v1/author/posts
-getUserPosts: async (page = 0, limit = 10): Promise<UserPostsResponse> => {
-  try {
-    const response = await apiClient.get(`/author/posts?page=${page}&limit=${limit}`);
+  // http://localhost:8888/api/v1/author/posts
+  getUserPosts: async (page =  0, size: number): Promise<Post[]> => {
+    try {
+      const response = await apiClient.get(`/author/posts?page=${page}&size=${size}`);
 
-    // If response.data is just an array of posts
-    const posts = response.data;
+      // If response.data is just an array of posts
+      const posts = response.data;
 
-    return {
-      posts,
-      total: posts.length, // Replace with real total if paginated server-side
-      page,
-      limit
-    };
-  } catch (error) {
-    console.error('Error fetching user posts:', error);
-    throw error;
-  }
-},
+      return posts;
+
+    } catch (error) {
+      console.error('Error fetching user posts:', error);
+      throw error;
+    }
+  },
 
 
   // Get user's post statistics

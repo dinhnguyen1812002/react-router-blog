@@ -12,41 +12,31 @@ export default [
 route("dashboard", "routes/dashboard/_layout.tsx", [
   route("", "routes/dashboard/index.tsx"),
   route("bookmarks", "routes/dashboard/bookmarks.tsx"),
-  route("content", "routes/dashboard/content.tsx"),
   route("my-posts", "routes/dashboard/my-posts.tsx"), // Thêm route mới cho My Posts
   route("settings", "routes/dashboard/settings.tsx"),
   route("posts/new", "routes/dashboard/posts/new.tsx"),
+  route("posts/edit/:id", "routes/dashboard/posts/edit.tsx"), // ✅ Route edit post
   route("analytics", "routes/dashboard/analytics.tsx"),
   route("profile", "routes/dashboard/profile/index.tsx"),
   route("profile/edit", "routes/dashboard/profile/edit.tsx"),
   route("newsletter", "routes/dashboard/newsletter.tsx"), // Newsletter management for users
-  route("posts/:slug/edit", "routes/dashboard/posts/edit.tsx"),
 ]),
 
   route("posts", "routes/posts._index.tsx"),
   route("posts/:slug", "routes/posts.slug.tsx"),
+  route("categories", "routes/category.index.tsx"),
   route("search", "routes/search.tsx"),
-  route("auth-error-test", "routes/auth-error-test.tsx"),
+  // route("auth-error-test", "routes/auth-error-test.tsx"),
 
   // Dashboard routes
-  route("dashboard/my-posts", "routes/dashboard.my-posts.tsx"),
-  route("dashboard/posts/new", "routes/dashboard.posts.new.tsx"),
-    // route("dashboard/posts/:slug/edit", "routes/dashboard.posts.edit.tsx"),
+  // route("dashboard/my-posts", "routes/dashboard.my-posts.tsx"),
+  // route("dashboard/posts/new", "routes/dashboard.posts.new.tsx"),
+  // route("dashboard/posts/:slug/edit", "routes/dashboard.posts.edit.tsx"),
   route("memes", "routes/memes._index.tsx"),
   route("memes/:slug", "routes/memes.$slug.tsx"),
 
-  // route("meme-simple", "routes/meme-simple.tsx"),
-  // route("memes-simple", "routes/memes-simple.tsx"),
-  // route("memes-debug", "routes/memes-debug.tsx"),
-  // route("memes-basic", "routes/memes-basic.tsx"),
-
-
-
-
-  // Author routes
-  route("author/posts", "routes/author.posts._index.tsx"),
-  route("author/posts/new", "routes/author.posts.new.tsx"),
-  // route("author/posts/edit/:postId", "routes/author.posts.edit.$postId.tsx"),
+  // Public profile route
+  route("profile/:username", "routes/profile.$username.tsx"),
 
   // Admin routes
   route("admin", "routes/admin/_layout.tsx", [

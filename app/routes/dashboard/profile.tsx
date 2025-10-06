@@ -5,6 +5,7 @@ import { authApi } from '~/api/auth';
 import { ProfileSkeleton } from '~/components/skeleton/ProfileSkeleton';
  import Avatar from "boring-avatars";
 import type { ProfileUser } from '~/types';
+import { Link } from 'react-router';
 // Types
 interface User {
   id: string;
@@ -232,9 +233,15 @@ export default function Profile() {
 
             {/* Action Buttons */}
             <div className="mt-16 flex gap-2">
-              <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+              {/* <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
                 Edit Profile
-              </button>
+              </button> */}
+                 <Link 
+                  to="/dashboard/profile/edit"
+                  className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Edit Profile
+                </Link>
               <button className="bg-gray-100 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-200 transition-colors">
                 View Public Profile
               </button>

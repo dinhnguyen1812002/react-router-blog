@@ -1,5 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@plugin "@tailwindcss/typography";
+
 
 @custom-variant dark (&:is(.dark *));
 
@@ -9,6 +11,16 @@
   }
   to {
     width: 0%;
+  }
+}
+
+/* Shimmer animation for better loading experience */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
   }
 }
 
@@ -306,4 +318,14 @@ body {
 
 .btn-hover-scale:active {
   transform: scale(0.98);
+}
+
+.focus-mode {
+  background: #f8fafc;
+}
+.focus-mode .bg-gray-50 {
+  background: #f8fafc;
+}
+.focus-mode .dark\\:bg-gray-900 {
+  background: #0f172a;
 }

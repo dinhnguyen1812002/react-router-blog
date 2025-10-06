@@ -9,9 +9,9 @@ import { useAuthStore } from "~/store/authStore";
 
 
 const statusColors = {
-  active: "bg-green-100 text-green-800",
-  pending: "bg-yellow-100 text-yellow-800",
-  unsubscribed: "bg-red-100 text-red-800",
+  active: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
+  pending: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
+  unsubscribed: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
 };
 
 const statusLabels = {
@@ -108,8 +108,8 @@ export default function AdminNewsletter() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Quản lý Newsletter</h1>
-          <p className="text-gray-600">Quản lý người đăng ký nhận tin và gửi newsletter</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Quản lý Newsletter</h1>
+          <p className="text-gray-600 dark:text-gray-400">Quản lý người đăng ký nhận tin và gửi newsletter</p>
         </div>
         <div className="flex space-x-3">
           <button 
@@ -131,71 +131,71 @@ export default function AdminNewsletter() {
 
       {/* Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Tổng đăng ký</p>
-              <p className="text-2xl font-bold text-gray-900">{totalSubscribers}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Tổng đăng ký</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{totalSubscribers}</p>
             </div>
-            <div className="p-3 bg-blue-50 rounded-full">
+            <div className="p-3 bg-blue-50 dark:bg-blue-900/30 rounded-full">
               <Users className="h-6 w-6 text-blue-600" />
             </div>
           </div>
           <div className="mt-4">
-            <span className="text-sm text-gray-500">Tất cả người đăng ký</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400">Tất cả người đăng ký</span>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Đã kích hoạt</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Đã kích hoạt</p>
               <p className="text-2xl font-bold text-green-600">{activeSubscribers}</p>
             </div>
-            <div className="p-3 bg-green-50 rounded-full">
+            <div className="p-3 bg-green-50 dark:bg-green-900/30 rounded-full">
               <UserCheck className="h-6 w-6 text-green-600" />
             </div>
           </div>
           <div className="mt-4">
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-gray-500 dark:text-gray-400">
               {totalSubscribers > 0 ? Math.round((activeSubscribers / totalSubscribers) * 100) : 0}% tổng số
             </span>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Chờ xác nhận</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Chờ xác nhận</p>
               <p className="text-2xl font-bold text-yellow-600">{pendingSubscribers}</p>
             </div>
-            <div className="p-3 bg-yellow-50 rounded-full">
+            <div className="p-3 bg-yellow-50 dark:bg-yellow-900/30 rounded-full">
               <Mail className="h-6 w-6 text-yellow-600" />
             </div>
           </div>
           <div className="mt-4">
-            <span className="text-sm text-gray-500">Chưa xác nhận email</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400">Chưa xác nhận email</span>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Đã hủy</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Đã hủy</p>
               <p className="text-2xl font-bold text-red-600">{unsubscribedCount}</p>
             </div>
-            <div className="p-3 bg-red-50 rounded-full">
+            <div className="p-3 bg-red-50 dark:bg-red-900/30 rounded-full">
               <UserX className="h-6 w-6 text-red-600" />
             </div>
           </div>
           <div className="mt-4">
-            <span className="text-sm text-gray-500">Đã hủy đăng ký</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400">Đã hủy đăng ký</span>
           </div>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -204,7 +204,7 @@ export default function AdminNewsletter() {
               placeholder="Tìm kiếm email hoặc tên..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400 dark:placeholder-gray-500"
             />
           </div>
           
@@ -213,7 +213,7 @@ export default function AdminNewsletter() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
+              className="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
             >
               <option value="all">Tất cả trạng thái</option>
               <option value="active">Đã kích hoạt</option>
@@ -228,7 +228,7 @@ export default function AdminNewsletter() {
               setPageSize(Number(e.target.value));
               setCurrentPage(1);
             }}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="px-4 py-2 border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value={10}>10 / trang</option>
             <option value={25}>25 / trang</option>
@@ -236,43 +236,43 @@ export default function AdminNewsletter() {
             <option value={100}>100 / trang</option>
           </select>
 
-          <div className="text-sm text-gray-500 flex items-center">
+          <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center">
             Hiển thị {displayStart}-{displayEnd} của {totalCount}
           </div>
         </div>
       </div>
 
       {/* Subscribers Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
+            <thead className="bg-gray-50 dark:bg-slate-700">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Người đăng ký
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Trạng thái
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Ngày đăng ký
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Ngày xác nhận
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Thao tác
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-700">
               {!_hasHydrated ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-4 text-center text-gray-500">Đang khởi tạo...</td>
+                  <td colSpan={5} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">Đang khởi tạo...</td>
                 </tr>
               ) : !isAuthenticated || !token ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-4 text-center text-gray-500">Yêu cầu đăng nhập admin để xem danh sách.</td>
+                  <td colSpan={5} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">Yêu cầu đăng nhập admin để xem danh sách.</td>
                 </tr>
               ) : subscribersError ? (
                 <tr>
@@ -280,27 +280,27 @@ export default function AdminNewsletter() {
                 </tr>
               ) : subscribersLoading || subscribersFetching ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-4 text-center text-gray-500">Đang tải...</td>
+                  <td colSpan={5} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">Đang tải...</td>
                 </tr>
               ) : paginatedSubscribers.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-4 text-center text-gray-500">Không có người đăng ký</td>
+                  <td colSpan={5} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">Không có người đăng ký</td>
                 </tr>
               ) : (
                 paginatedSubscribers.map((subscriber) => (
-                <tr key={subscriber.id} className="hover:bg-gray-50">
+                <tr key={subscriber.id} className="hover:bg-gray-50 dark:hover:bg-slate-700">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-10 w-10">
-                        <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                        <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
                           <Mail className="h-5 w-5 text-blue-600" />
                         </div>
                       </div>
                       <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                           {subscriber.name || 'Không có tên'}
                         </div>
-                        <div className="text-sm text-gray-500">{subscriber.email}</div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">{subscriber.email}</div>
                       </div>
                     </div>
                   </td>
@@ -309,36 +309,36 @@ export default function AdminNewsletter() {
                       {statusLabels[subscriber.status]}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     <div className="flex items-center">
                       <Calendar className="h-4 w-4 mr-1" />
                       {formatDate(subscriber.subscribedAt)}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {subscriber.confirmedAt ? (
                       <div className="flex items-center">
                         <Calendar className="h-4 w-4 mr-1" />
                         {formatDate(subscriber.confirmedAt)}
                       </div>
                     ) : (
-                      <span className="text-gray-400">Chưa xác nhận</span>
+                      <span className="text-gray-400 dark:text-gray-500">Chưa xác nhận</span>
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex items-center space-x-2">
                       {subscriber.status === 'pending' && (
-                        <button className="text-blue-600 hover:text-blue-900">
+                        <button className="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400">
                           Gửi lại xác nhận
                         </button>
                       )}
                       {subscriber.status === 'active' && (
-                        <button className="text-red-600 hover:text-red-900">
+                        <button className="text-red-600 hover:text-red-900 dark:hover:text-red-400">
                           Hủy đăng ký
                         </button>
                       )}
                       {subscriber.status === 'unsubscribed' && (
-                        <button className="text-green-600 hover:text-green-900">
+                        <button className="text-green-600 hover:text-green-900 dark:hover:text-green-400">
                           Kích hoạt lại
                         </button>
                       )}
@@ -354,16 +354,16 @@ export default function AdminNewsletter() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="bg-white rounded-lg shadow p-4">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-4">
           <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-700">
+            <div className="text-sm text-gray-700 dark:text-gray-300">
               Trang {currentPage} của {totalPages}
             </div>
             <div className="flex space-x-2">
               <button
                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="px-3 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="px-3 py-1 border border-gray-300 dark:border-slate-700 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-slate-700"
               >
                 Trước
               </button>
@@ -378,7 +378,7 @@ export default function AdminNewsletter() {
                     className={`px-3 py-1 border rounded-md text-sm ${
                       currentPage === pageNum
                         ? 'bg-blue-600 text-white border-blue-600'
-                        : 'border-gray-300 hover:bg-gray-50'
+                        : 'border-gray-300 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700'
                     }`}
                   >
                     {pageNum}
@@ -389,7 +389,7 @@ export default function AdminNewsletter() {
               <button
                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
-                className="px-3 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="px-3 py-1 border border-gray-300 dark:border-slate-700 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-slate-700"
               >
                 Sau
               </button>
@@ -399,23 +399,23 @@ export default function AdminNewsletter() {
       )}
 
       {/* Quick Actions */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Thao tác nhanh</h2>
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Thao tác nhanh</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <button className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors">
+          <button className="p-4 border-2 border-dashed border-gray-300 dark:border-slate-700 rounded-lg hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
             <Send className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-            <p className="text-sm font-medium text-gray-700">Soạn Newsletter</p>
-            <p className="text-xs text-gray-500">Tạo và gửi newsletter mới</p>
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Soạn Newsletter</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Tạo và gửi newsletter mới</p>
           </button>
-          <button className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-500 hover:bg-green-50 transition-colors">
+          <button className="p-4 border-2 border-dashed border-gray-300 dark:border-slate-700 rounded-lg hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors">
             <Download className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-            <p className="text-sm font-medium text-gray-700">Xuất dữ liệu</p>
-            <p className="text-xs text-gray-500">Tải danh sách người đăng ký</p>
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Xuất dữ liệu</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Tải danh sách người đăng ký</p>
           </button>
-          <button className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors">
+          <button className="p-4 border-2 border-dashed border-gray-300 dark:border-slate-700 rounded-lg hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors">
             <Mail className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-            <p className="text-sm font-medium text-gray-700">Gửi lại xác nhận</p>
-            <p className="text-xs text-gray-500">Gửi email xác nhận hàng loạt</p>
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Gửi lại xác nhận</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Gửi email xác nhận hàng loạt</p>
           </button>
         </div>
       </div>

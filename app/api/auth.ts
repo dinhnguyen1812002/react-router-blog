@@ -1,11 +1,9 @@
-import { Avatar } from "./../components/ui/Avatar";
 import axiosInstance from "~/config/axios";
 import { useAuthStore } from "~/store/authStore";
 import type {
   User,
   ApiResponse,
   LoginResponse,
-  RegisterResponse,
   ProfileUser,
 } from "~/types";
 
@@ -49,57 +47,44 @@ export const authApi = {
 
     const { user, token, refreshToken } = response.data;
 
-    // Save to store
-    useAuthStore.getState().login(user, token);
-
-    // Save refresh token separately if provided
-    if (refreshToken && typeof window !== "undefined") {
-      localStorage.setItem("refresh-token", refreshToken);
-    }
-
+    // Save user + access token vào store
+    useAuthStore.getState().login(user, token, refreshToken );
+    // console.log(response.data)
     return response.data;
   },
 
-  // Register new user
-  register: async (userData: RegisterRequest): Promise<LoginResponse> => {
+  //Register
+  async register(userData: RegisterRequest): Promise<LoginResponse> {
     const response = await axiosInstance.post("/auth/register", userData);
     return response.data;
   },
 
-  // Get current user info
-  // getCurrentUser: async (): Promise<ApiResponse<User>> => {
-  //   const response = await axiosInstance.get("/users/me");
-  //   return response.data;
-  // },
-
-  // Forgot password
-  forgotPassword: async (
+  //Forgot password
+  async forgotPassword(
     data: ForgotPasswordRequest
-  ): Promise<ApiResponse<any>> => {
+  ): Promise<ApiResponse<any>> {
     const response = await axiosInstance.post("/auth/forgot-password", data);
     return response.data;
   },
 
-  // Reset password
-  resetPassword: async (
-    data: ResetPasswordRequest
-  ): Promise<ApiResponse<any>> => {
+  //Reset password
+  async resetPassword(data: ResetPasswordRequest): Promise<ApiResponse<any>> {
     const response = await axiosInstance.post("/auth/reset-password", data);
     return response.data;
   },
 
-  // Update password
-  updatePassword: async (
+  //Update password
+  async updatePassword(
     data: UpdatePasswordRequest
-  ): Promise<ApiResponse<any>> => {
+  ): Promise<ApiResponse<any>> {
     const response = await axiosInstance.post("/users/update-password", data);
     return response.data;
   },
 
-  // Logout (if needed for server-side logout)
+  //Logout (server xoá refresh token cookie)
   async logout(): Promise<void> {
     try {
-      await axiosInstance.post("/auth/logout");
+      await axiosInstance.post("/auth/logout", {}, { withCredentials: true });
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
@@ -107,13 +92,14 @@ export const authApi = {
     }
   },
 
-  // Update profile
-  updateProfile: async (data: any): Promise<ApiResponse<User>> => {
+  //Update profile
+  async updateProfile(data: UpdateProfileRequest): Promise<ApiResponse<User>> {
     const response = await axiosInstance.put("/user/profile", data);
     return response.data;
   },
 
-  profile: async (): Promise<ApiResponse<ProfileUser>> => {
+  //Get profile
+  async profile(): Promise<ApiResponse<ProfileUser>> {
     const response = await axiosInstance.get<ProfileUser>("/user/profile");
     return {
       data: response.data,
@@ -122,18 +108,24 @@ export const authApi = {
       slug: response.data.username,
     };
   },
-  changePassword: async (
+
+  //Change password
+  async changePassword(
     data: UpdatePasswordRequest
-  ): Promise<ApiResponse<any>> => {
+  ): Promise<ApiResponse<any>> {
     const response = await axiosInstance.post("/user/change-password", data);
     return response.data;
   },
-  refreshToken: async () => {
+
+  //Refresh access token by sending refreshToken in body
+  async refreshToken(refreshToken: string): Promise<string> {
     const res = await axiosInstance.post(
       "/auth/refresh-token",
-      {},
+      { refreshToken },
       { withCredentials: true }
     );
-    return res.data; // { accessToken, refreshToken }
+
+    const { token } = res.data; // backend trả về access token mới
+    return token;
   },
 };

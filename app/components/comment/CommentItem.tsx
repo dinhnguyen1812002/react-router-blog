@@ -26,6 +26,7 @@ import {
   Award,
   Zap
 } from 'lucide-react';
+import UserAvatar from '../ui/boring-avatar';
 
 interface CommentItemProps {
   comment: CommentType;
@@ -133,7 +134,7 @@ export const CommentItem = ({
         
         {/* Avatar with status */}
         <div className="relative flex-shrink-0">
-          <Avatar className="w-8 h-8 md:w-10 md:h-10 ring-2 ring-white dark:ring-gray-800 shadow-sm">
+          {/* <Avatar className="w-8 h-8 md:w-10 md:h-10 ring-2 ring-white dark:ring-gray-800 shadow-sm">
             <AvatarImage 
               src={comment.user.avatar || ''} 
               alt={comment.user.username}
@@ -142,8 +143,10 @@ export const CommentItem = ({
             <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-sm font-medium">
               {comment.user.username.charAt(0).toUpperCase()}
             </AvatarFallback>
-          </Avatar>
-          
+          </Avatar> */}
+          <UserAvatar 
+            src={comment.user.avatar || ''}
+          />
         </div>
         
         <div className="flex-1 min-w-0">

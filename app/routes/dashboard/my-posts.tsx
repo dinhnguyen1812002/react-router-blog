@@ -5,11 +5,11 @@ import { Card, CardContent, CardHeader } from '~/components/ui/Card';
 import { Button } from '~/components/ui/button';
 import { userPostsApi } from '~/api/userPosts';
 import { useAuthStore } from '~/store/authStore';
-import { 
-  Edit3, 
-  Eye, 
-  Heart, 
-  MessageCircle, 
+import {
+  Edit3,
+  Eye,
+  Heart,
+  MessageCircle,
   Star,
   Trash2,
   MoreHorizontal,
@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { formatDateSimple } from "~/lib/utils";
 import { authorApi } from '~/api/author';
+import { PostCard } from '~/components/post';
 
 export default function MyPostsPage() {
   const { user } = useAuthStore();
@@ -33,22 +34,23 @@ export default function MyPostsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState<'all' | 'published' | 'draft'>('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
+  const size = viewMode === 'grid' ? 6 : 6;
 
   // Fetch user posts
   const { data: postsData, isLoading, error } = useQuery({
     queryKey: ['user-posts', page, searchTerm, filter],
-    queryFn: () => userPostsApi.getUserPosts(page, viewMode === 'grid' ? 12 : 10),
+    queryFn: () => userPostsApi.getUserPosts(page, size),
     enabled: !!user
   });
 
   // Enhanced Delete post mutation following author.ts patterns
   const deleteMutation = useMutation({
     mutationFn: async (postId: string) => {
-      console.log('🗑️ Starting delete operation for post:', postId);
-      return await authorApi.deletePost(postId);
+      console.log(' Starting delete operation for post:', postId);
+      return await userPostsApi.deletePost(postId);
     },
     onSuccess: (data, postId) => {
-      console.log('✅ Post deleted successfully:', { postId, data });
+      console.log(' Post deleted successfully:', { postId, data });
 
       // Invalidate multiple related queries
       queryClient.invalidateQueries({ queryKey: ['user-posts'] });
@@ -62,7 +64,7 @@ export default function MyPostsPage() {
       }
     },
     onError: (error, postId) => {
-      console.error('❌ Delete post failed:', { postId, error });
+      console.error(' Delete post failed:', { postId, error });
 
       // Show error notification
       if (typeof window !== 'undefined' && window.alert) {
@@ -85,27 +87,26 @@ export default function MyPostsPage() {
     }
 
     try {
-      console.log('🗑️ User confirmed deletion for post:', { postId, title });
+      console.log('User confirmed deletion for post:', { postId, title });
       await deleteMutation.mutateAsync(postId);
     } catch (error) {
-      console.error('❌ Delete operation failed:', error);
+      console.error('Delete operation failed:', error);
       // Error is already handled in onError callback
     }
   };
 
-  const posts = postsData?.posts || [];
-  const totalPosts = postsData?.total || 0;
-  const totalPages = Math.ceil(totalPosts / (viewMode === 'grid' ? 12 : 10));
+  const posts = postsData || [];
+  const hasNextPage = posts.length >= size;
 
   // Filter posts based on search term and filter
   const filteredPosts = posts.filter(post => {
     const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       post.summary?.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     if (filter === 'all') return matchesSearch;
     if (filter === 'published') return matchesSearch && post.published;
     if (filter === 'draft') return matchesSearch && !post.published;
-    
+
     return matchesSearch;
   });
 
@@ -132,7 +133,7 @@ export default function MyPostsPage() {
       </div>
 
       {/* Filters and Search */}
-      <Card>
+      <div>
         <CardContent className="p-4">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="relative flex-1">
@@ -172,7 +173,7 @@ export default function MyPostsPage() {
             </div>
           </div>
         </CardContent>
-      </Card>
+      </div>
 
       {/* Content */}
       {isLoading ? (
@@ -212,69 +213,9 @@ export default function MyPostsPage() {
         )
       ) : filteredPosts.length > 0 ? (
         viewMode === 'grid' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
             {filteredPosts.map((post) => (
-              <Card key={post.id} className="overflow-hidden hover:shadow-md transition-shadow duration-200">
-                <div className="relative h-40 bg-gray-100 dark:bg-gray-800">
-                  {post.thumbnail ? (
-                    <img 
-                      src={post.thumbnail} 
-                      alt={post.title} 
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
-                      <FileText className="w-12 h-12" />
-                    </div>
-                  )}
-                  {!post.published && (
-                    <div className="absolute top-2 left-2 px-2 py-1 bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300 text-xs font-medium rounded">
-                      Bản nháp
-                    </div>
-                  )}
-                </div>
-                <CardContent className="p-4">
-                  <Link to={`/posts/${post.slug}`}>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 line-clamp-2">
-                      {post.title}
-                    </h3>
-                  </Link>
-                  <div className="flex items-center space-x-2 mt-2 text-xs text-gray-500 dark:text-gray-400">
-                    <Calendar className="w-3 h-3" />
-                    <span>{formatDateSimple(post.createdAt)}</span>
-                  </div>
-                  <div className="flex items-center justify-between mt-4">
-                    <div className="flex items-center space-x-3 text-xs text-gray-500 dark:text-gray-400">
-                      <div className="flex items-center">
-                        <Eye className="w-3 h-3 mr-1" />
-                        <span>{post.viewCount}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <Heart className="w-3 h-3 mr-1" />
-                        <span>{post.likeCount}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <MessageCircle className="w-3 h-3 mr-1" />
-                        <span>{post.commentCount}</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <Link to={`/dashboard/posts/${post.slug}/edit`}>
-                        <Button variant="ghost" size="sm">
-                          <Edit3 className="w-4 h-4" />
-                        </Button>
-                      </Link>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => handleDelete(post.id, post.title)}
-                      >
-                        <Trash2 className="w-4 h-4 text-red-500" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <PostCard post={post} />
             ))}
           </div>
         ) : (
@@ -285,9 +226,9 @@ export default function MyPostsPage() {
                   <div key={post.id} className="p-4 flex items-start space-x-4">
                     <div className="flex-shrink-0 w-12 h-12 rounded overflow-hidden bg-gray-100 dark:bg-gray-800">
                       {post.thumbnail ? (
-                        <img 
-                          src={post.thumbnail} 
-                          alt={post.title} 
+                        <img
+                          src={post.thumbnail}
+                          alt={post.title}
                           className="w-full h-full object-cover"
                         />
                       ) : (
@@ -303,11 +244,16 @@ export default function MyPostsPage() {
                             {post.title}
                           </h3>
                         </Link>
-                        {!post.published && (
-                          <span className="ml-2 px-2 py-0.5 bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300 text-xs font-medium rounded">
-                            Bản nháp
-                          </span>
-                        )}
+                        <span
+                          className={`ml-2 px-2 py-0.5 text-xs font-medium rounded 
+                            ${post.is_publish
+                              ? "bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300"
+                              : "bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300"
+                            }`}
+                        >
+                          {post.is_publish ? "Public" : "Draft"}
+                        </span>
+
                       </div>
                       <div className="flex items-center space-x-4 mt-1 text-xs text-gray-500 dark:text-gray-400">
                         <div className="flex items-center">
@@ -329,13 +275,13 @@ export default function MyPostsPage() {
                       </div>
                     </div>
                     <div className="flex items-center space-x-1">
-                      <Link to={`/dashboard/posts/${post.slug}/edit`}>
+                      <Link to={`/dashboard/posts/edit/${post.id}`}>
                         <Button variant="ghost" size="sm">
                           <Edit3 className="w-4 h-4" />
                         </Button>
                       </Link>
-                      <Button 
-                        variant="ghost" 
+                      <Button
+                        variant="ghost"
                         size="sm"
                         onClick={() => handleDelete(post.id, post.title)}
                       >
@@ -356,8 +302,8 @@ export default function MyPostsPage() {
               Không tìm thấy bài viết nào
             </h3>
             <p className="text-gray-500 dark:text-gray-400 mb-6">
-              {searchTerm ? 
-                `Không tìm thấy bài viết nào phù hợp với "${searchTerm}"` : 
+              {searchTerm ?
+                `Không tìm thấy bài viết nào phù hợp với "${searchTerm}"` :
                 'Bạn chưa có bài viết nào. Hãy bắt đầu viết bài đầu tiên của bạn!'}
             </p>
             <Link to="/dashboard/posts/new">
@@ -371,7 +317,7 @@ export default function MyPostsPage() {
       )}
 
       {/* Pagination */}
-      {!isLoading && totalPages > 1 && (
+      {!isLoading && (
         <div className="flex justify-center mt-6">
           <div className="flex items-center space-x-2">
             <Button
@@ -383,12 +329,12 @@ export default function MyPostsPage() {
               Trước
             </Button>
             <div className="text-sm text-gray-600 dark:text-gray-400">
-              Trang {page + 1} / {totalPages}
+              Trang {page + 1}
             </div>
             <Button
               variant="outline"
               size="sm"
-              disabled={page >= totalPages - 1}
+              disabled={!hasNextPage}
               onClick={() => setPage(page + 1)}
             >
               Sau

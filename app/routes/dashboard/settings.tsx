@@ -30,7 +30,7 @@ import {
 } from 'lucide-react';
 
 export default function SettingsPage() {
-  const { user, setUser, logout } = useAuthStore();
+  const { user, logout } = useAuthStore();
 
   const queryClient = useQueryClient();
   
@@ -77,7 +77,10 @@ export default function SettingsPage() {
     const root = document.documentElement;
     
     // Xóa tất cả các class màu sắc hiện tại
-    root.classList.remove('theme-blue', 'theme-purple', 'theme-green', 'theme-red', 'theme-orange', 'theme-pink', 'theme-indigo', 'theme-yellow');
+    root.classList.remove('theme-blue', 'theme-purple', 
+                          'theme-green', 'theme-red', 
+                          'theme-orange', 'theme-pink', 
+                          'theme-indigo', 'theme-yellow');
     
     // Thêm class màu sắc mới
     root.classList.add(`theme-${color}`);
@@ -112,7 +115,7 @@ useEffect(() => {
         confirmPassword: ''
       });
       showSuccessMessage();
-    },
+    }, 
     onError: (error: any) => {
       setSaveError(error.message || 'Có lỗi xảy ra khi đổi mật khẩu');
       setTimeout(() => setSaveError(null), 5000);
@@ -679,7 +682,9 @@ useEffect(() => {
                       className={`absolute inset-0 cursor-pointer rounded-full ${notificationSettings.newsletterSubscription ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'}`}
                     >
                       <span
-                        className={`absolute inset-y-0 left-0 flex items-center justify-center w-6 h-6 bg-white rounded-full shadow transform transition-transform duration-200 ease-in-out ${notificationSettings.newsletterSubscription ? 'translate-x-6' : 'translate-x-0'}`}
+                        className={`absolute inset-y-0 left-0 flex items-center justify-center w-6 h-6 bg-white 
+                          rounded-full shadow transform transition-transform duration-200 ease-in-out 
+                          ${notificationSettings.newsletterSubscription ? 'translate-x-6' : 'translate-x-0'}`}
                       />
                     </label>
                   </div>

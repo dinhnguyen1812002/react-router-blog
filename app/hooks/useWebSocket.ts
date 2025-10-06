@@ -34,7 +34,7 @@ export function useWebSocket(
 
   // Debug logging
   if (env.DEV) {
-    console.log("🔌 WebSocket URL:", url);
+    console.log("WebSocket URL:", url);
   }
 
   const [isConnected, setIsConnected] = useState(false);

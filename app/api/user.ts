@@ -1,5 +1,6 @@
+import type { promises } from 'dns';
 import { apiClient } from './client';
-import type {ApiResponse, PaginatedResponse, Post} from '~/types';
+import type {ApiResponse, PaginatedResponse, Post, ProfileUser} from '~/types';
 
 interface UserProfile {
   id: string;
@@ -18,6 +19,17 @@ interface UserProfile {
     totalComments: number;
     totalBookmarks: number;
   };
+}
+
+
+export interface TopUser {
+  id: string;
+  username: string;
+  email: string;
+  avatar?: string | null;
+  bio?: string | null;
+  postCount: number;
+  socialMediaLinks?: Record<string, string>; // { "LINKEDIN": "...", "TWITTER": "..." }
 }
 
 export const userApi = {
@@ -52,48 +64,18 @@ export const userApi = {
     return response.data;
   },
 
-  getPopularUsers: async (limit: number = 10): Promise<ApiResponse<UserProfile[]>> => {
-    try {
-      // For now, return mock data. In real app, this would be an API endpoint
-      const mockUsers: UserProfile[] = [
-        {
-          id: '1',
-          username: 'nguyenvana',
-          email: 'nguyenvana@example.com',
-          displayName: 'Nguyễn Văn A',
-          bio: 'Full-stack developer với 5+ năm kinh nghiệm',
-          avatarUrl: '',
-          createdAt: '2023-01-01T00:00:00Z',
-          stats: {
-            totalPosts: 45,
-            totalComments: 890,
-            totalBookmarks: 125,
-          },
-        },
-        {
-          id: '2',
-          username: 'tranthib',
-          email: 'tranthib@example.com',
-          displayName: 'Trần Thị B',
-          bio: 'UI/UX Designer & Frontend Developer',
-          avatarUrl: '',
-          createdAt: '2023-02-01T00:00:00Z',
-          stats: {
-            totalPosts: 32,
-            totalComments: 650,
-            totalBookmarks: 98,
-          },
-        },
-      ];
 
-      return {
-        data: mockUsers.slice(0, limit),
-        message: 'Success',
-        success: true,
-      };
-    } catch (error) {
-      console.error('Error fetching popular users:', error);
-      throw error;
-    }
-  },
+  
+ getTopUser: async (): Promise<TopUser[]> => {
+  const res = await apiClient.get('/users/top-authors');
+  return res.data; // vì API trả array trực tiếp
+ },
+ 
+  // NEW: Fetch public user by username
+  getPublicUserByUsername: async (username: string): Promise<ProfileUser> => { 
+    const res = await apiClient.get(`/user/public/${username}`);
+    console.log(res.data);
+    return res.data;
+  }
+
 };

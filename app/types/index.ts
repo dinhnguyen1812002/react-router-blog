@@ -9,7 +9,7 @@ export interface User {
   username: string;
   email: string;
   roles: string[];
-  avatar: string | null;
+  avatar?: string ;
   socialMediaLinks: socialMediaLinks[];
 }
 
@@ -17,8 +17,10 @@ export interface LoginResponse {
   id: string;
   username: string;
   email: string;
+  avatar?: string ;
   roles: string[];
   accessToken: string;
+  token: string;
   refreshToken?: string;
 }
 
@@ -54,6 +56,7 @@ export interface Post {
   userRating: number | null;
   comments?: Comment[];
   public_date: string,
+  is_publish : boolean
   
 }
 

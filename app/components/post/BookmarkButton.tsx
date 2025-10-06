@@ -23,7 +23,7 @@ export const BookmarkButton = ({
   const { isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [ isSavedByCurrentUser, setIsSavedByCurrentUser ] = useState(initialBookmarked);
+  const [isSavedByCurrentUser, setIsSavedByCurrentUser] = useState(initialBookmarked);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Update local state when props change
@@ -39,7 +39,7 @@ export const BookmarkButton = ({
       // } else {
       //   return await bookmarksApi.addBookmark(postId);
       // }
-       return await bookmarksApi.addBookmark(postId);
+      return await bookmarksApi.addBookmark(postId);
     },
     onMutate: async () => {
       // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
@@ -99,11 +99,10 @@ export const BookmarkButton = ({
           title={isSavedByCurrentUser ? "Bỏ lưu" : "Lưu bài viết"}
         >
           <Bookmark
-            className={`w-4 h-4 transition-all duration-200 ${
-              isSavedByCurrentUser
+            className={`w-4 h-4 transition-all duration-200 ${isSavedByCurrentUser
                 ? "fill-current text-blue-600 dark:text-blue-400"
                 : "text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
-            }`}
+              }`}
           />
         </Button>
         <BookmarkErrorToast
@@ -121,14 +120,13 @@ export const BookmarkButton = ({
         size="sm"
         onClick={handleClick}
         disabled={bookmarkMutation.isPending}
-        className={`flex items-center space-x-2 ${className}`}
+        className={`flex items-center space-x-2 px-3 py-1.5 rounded-full transition-all duration-200 hover:scale-105 text-dark dark:text-white ${className}`}
       >
         <Bookmark
-          className={`w-4 h-4 transition-all duration-200 ${
-            isSavedByCurrentUser
+          className={`w-4 h-4 transition-all duration-200 ${isSavedByCurrentUser
               ? "fill-current text-blue-600 dark:text-blue-400"
               : "text-gray-500 dark:text-gray-400"
-          }`}
+            }`}
         />
         <span className="text-sm">
           {bookmarkMutation.isPending

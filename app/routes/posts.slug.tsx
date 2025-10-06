@@ -15,6 +15,10 @@ import { LikeButton } from "~/components/post/LikeButton";
 import { BookmarkButton } from "~/components/post/BookmarkButton";
 import { RatingComponent } from "~/components/post/RatingComponent";
 import { useAuthStore } from "~/store/authStore";
+import { PostSEO } from "~/components/post/PostSEO";
+import { PostDetailSkeleton } from "~/components/skeleton/PostDetailSkeleton";
+import { ProgressiveContentLoader } from "~/components/post/ProgressiveContentLoader";
+import { useLoadingPerformance } from "~/components/post/LoadingPerformanceIndicator";
 import {
   Clock,
   Eye,
@@ -36,12 +40,17 @@ import {
   ArrowLeft,
   Tag as TagIcon,
 } from "lucide-react";
+import UserAvatar from "~/components/ui/boring-avatar";
+
 
 export default function PostDetailPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
   const contentRef = useRef<HTMLDivElement>(null);
   const { user, isAuthenticated } = useAuthStore();
+
+  // Performance tracking
+  const { showIndicator, LoadingPerformanceIndicator } = useLoadingPerformance();
 
   // State for interactions
   const [showShareMenu, setShowShareMenu] = useState(false);
@@ -135,28 +144,7 @@ export default function PostDetailPage() {
   if (isLoading) {
     return (
       <MainLayout>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            <div className="lg:col-span-3">
-              <div className="animate-pulse space-y-6">
-                <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-                <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                <div className="space-y-4">
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-4/6"></div>
-                </div>
-              </div>
-            </div>
-            <div className="lg:col-span-1">
-              <div className="animate-pulse space-y-4">
-                <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                <div className="h-48 bg-gray-200 dark:bg-gray-700 rounded"></div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <PostDetailSkeleton />
       </MainLayout>
     );
   }
@@ -183,12 +171,18 @@ export default function PostDetailPage() {
             </div>
           </div>
         </div>
+
+        {/* Performance Indicator */}
+        <LoadingPerformanceIndicator show={showIndicator} />
       </MainLayout>
     );
   }
 
   return (
     <MainLayout>
+      {/* SEO Metadata */}
+      <PostSEO post={post} baseUrl={typeof window !== "undefined" ? window.location.origin : "http://localhost:5173"} />
+
       {/* Reading Progress Bar */}
       <ReadingProgressBar
         // targetRef={contentRef}
@@ -199,8 +193,8 @@ export default function PostDetailPage() {
         position="top"
       />
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl">
           {/* Main Content */}
           <div className="lg:col-span-3">
             {/* Breadcrumb */}
@@ -229,7 +223,7 @@ export default function PostDetailPage() {
                 </li>
               </ol>
             </nav>
-    {/* Featured Image */}
+            {/* Featured Image */}
             {(post.thumbnail || post.thumbnailUrl) && (
               <div className="mb-8">
                 <img
@@ -280,7 +274,7 @@ export default function PostDetailPage() {
               )}
 
               {/* Enhanced Meta Information */}
-              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg  mb-8">
+              <div className="mb-8">
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   {/* Left side - Meta info */}
                   <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600 dark:text-gray-400">
@@ -321,6 +315,7 @@ export default function PostDetailPage() {
                     <BookmarkButton
                       postId={post.id}
                       initialBookmarked={post.isSavedByCurrentUser}
+                      className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm"
                     />
 
                     {/* Share Button */}
@@ -424,21 +419,25 @@ export default function PostDetailPage() {
               {/* Author Info */}
             </header>
 
-          
+
             {/* Post Content */}
             <article
               ref={contentRef}
-              className="prose prose-lg 
-              max-w-none dark:prose-invert mb-12
-               prose-headings:scroll-mt-20 
-               dark:text-white
-               "
+              className="mb-12"
             >
-              <div dangerouslySetInnerHTML={{ __html: post.content }} />
+              <ProgressiveContentLoader
+                content={post.content}
+                className="prose prose-lg max-w-none dark:prose-invert prose-headings:scroll-mt-20 dark:text-white"
+                enableLazyImages={true}
+                enableProgressiveText={false}
+                onLoadComplete={() => {
+                  console.log("Post content loaded successfully");
+                }}
+              />
             </article>
             <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 mb-8">
               <div className="flex items-start space-x-4">
-                <Avatar className="w-12 h-12">
+                {/* <Avatar className="w-12 h-12">
                   <AvatarImage
                     src={post.user.avatar || ""}
                     alt={post.user.username}
@@ -446,7 +445,12 @@ export default function PostDetailPage() {
                   <AvatarFallback>
                     {post.user.username.charAt(0).toUpperCase()}
                   </AvatarFallback>
-                </Avatar>
+                </Avatar> */}
+
+                <UserAvatar 
+                name={post.user.username}   
+                src={post.user.avatar || ""}
+                />
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
                     <div>
@@ -505,7 +509,7 @@ export default function PostDetailPage() {
 
             {/* Comments Section */}
             <div className="mt-12">
-              <CommentSection postId={post.id} initialComments={[]} />
+              <CommentSection postId={post.id} initialComments={post.comments || []} />
             </div>
           </div>
 

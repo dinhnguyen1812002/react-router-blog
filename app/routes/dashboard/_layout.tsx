@@ -7,7 +7,14 @@ import { Sidebar } from "~/components/dashboard/Sidebar";
 import { PageTransition } from "~/components/ui/PageTransition";
 import { RouteLoadingIndicator } from "~/components/ui/RouteLoadingIndicator";
 import { ScrollArea } from "~/components/ui/scroll-area";
+import { AuthRequired } from "~/components/ProtectedRoute";
+import type { Route } from "./+types";
 
+
+
+export function meta({ }: Route.MetaArgs) {
+  return [{ title: "Dashboard" }, { name: "description", content: "Dashboard" }];
+}
 export default function DashboardLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     if (typeof window !== "undefined") {
@@ -30,23 +37,27 @@ export default function DashboardLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <RouteLoadingIndicator />
-      
-      <Sidebar 
-        collapsed={sidebarCollapsed}
-        onToggleCollapsed={toggleSidebar}
-      >
-        <ScrollArea className="h-screen">
-          <div className="p-4 lg:p-6">
-            <div className="container mx-auto">
-              <PageTransition>
-                <Outlet />
-              </PageTransition>
+    <AuthRequired>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <RouteLoadingIndicator />
+
+        <Sidebar
+          collapsed={sidebarCollapsed}
+          onToggleCollapsed={toggleSidebar}
+        >
+          {/* <ScrollArea className="h-screen">
+            <div className="p-4 lg:p-6">
+              <div className="container mx-auto">
+
+              </div>
             </div>
-          </div>
-        </ScrollArea>
-      </Sidebar>
-    </div>
+
+          </ScrollArea> */}
+          <PageTransition>
+            <Outlet />
+          </PageTransition>
+        </Sidebar>
+      </div>
+    </AuthRequired>
   );
 }

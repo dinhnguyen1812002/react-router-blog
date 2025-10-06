@@ -46,7 +46,7 @@ export default function AdminSettings() {
 
   const [activeTab, setActiveTab] = useState("general");
 
-  const handleSettingChange = (key, value) => {
+  const handleSettingChange = (key: string, value: any) => {
     setSettings(prev => ({ ...prev, [key]: value }));
   };
 
@@ -71,8 +71,8 @@ export default function AdminSettings() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Cài đặt hệ thống</h1>
-          <p className="text-gray-600">Quản lý cấu hình và tùy chỉnh hệ thống</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Cài đặt hệ thống</h1>
+          <p className="text-gray-600 dark:text-gray-400">Quản lý cấu hình và tùy chỉnh hệ thống</p>
         </div>
         <button 
           onClick={handleSave}
@@ -83,9 +83,9 @@ export default function AdminSettings() {
         </button>
       </div>
 
-      <div className="bg-white rounded-lg shadow">
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow">
         {/* Tabs */}
-        <div className="border-b border-gray-200">
+        <div className="border-b border-gray-200 dark:border-slate-700">
           <nav className="flex space-x-8 px-6" aria-label="Tabs">
             {tabs.map((tab) => {
               const Icon = tab.icon;
@@ -97,7 +97,7 @@ export default function AdminSettings() {
                     flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm
                     ${activeTab === tab.id
                       ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-600'
                     }
                   `}
                 >
@@ -114,50 +114,50 @@ export default function AdminSettings() {
           {/* General Settings */}
           {activeTab === "general" && (
             <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-gray-900">Cài đặt tổng quan</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Cài đặt tổng quan</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Tên website</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Tên website</label>
                   <input
                     type="text"
                     value={settings.siteName}
                     onChange={(e) => handleSettingChange('siteName', e.target.value)}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">URL website</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">URL website</label>
                   <input
                     type="url"
                     value={settings.siteUrl}
                     onChange={(e) => handleSettingChange('siteUrl', e.target.value)}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700">Mô tả website</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Mô tả website</label>
                   <textarea
                     rows={3}
                     value={settings.siteDescription}
                     onChange={(e) => handleSettingChange('siteDescription', e.target.value)}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Email quản trị</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email quản trị</label>
                   <input
                     type="email"
                     value={settings.adminEmail}
                     onChange={(e) => handleSettingChange('adminEmail', e.target.value)}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Múi giờ</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Múi giờ</label>
                   <select
                     value={settings.timezone}
                     onChange={(e) => handleSettingChange('timezone', e.target.value)}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="Asia/Ho_Chi_Minh">Việt Nam (UTC+7)</option>
                     <option value="UTC">UTC</option>
@@ -171,25 +171,25 @@ export default function AdminSettings() {
           {/* Content Settings */}
           {activeTab === "content" && (
             <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-gray-900">Cài đặt nội dung</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Cài đặt nội dung</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Số bài viết mỗi trang</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Số bài viết mỗi trang</label>
                   <input
                     type="number"
                     min="1"
                     max="50"
                     value={settings.postsPerPage}
                     onChange={(e) => handleSettingChange('postsPerPage', parseInt(e.target.value))}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Vai trò mặc định</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Vai trò mặc định</label>
                   <select
                     value={settings.defaultUserRole}
                     onChange={(e) => handleSettingChange('defaultUserRole', e.target.value)}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="USER">Người dùng</option>
                     <option value="AUTHOR">Tác giả</option>
@@ -203,9 +203,9 @@ export default function AdminSettings() {
                     id="allowComments"
                     checked={settings.allowComments}
                     onChange={(e) => handleSettingChange('allowComments', e.target.checked)}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-slate-700 rounded"
                   />
-                  <label htmlFor="allowComments" className="ml-2 block text-sm text-gray-900">
+                  <label htmlFor="allowComments" className="ml-2 block text-sm text-gray-900 dark:text-gray-100">
                     Cho phép bình luận
                   </label>
                 </div>
@@ -215,9 +215,9 @@ export default function AdminSettings() {
                     id="moderateComments"
                     checked={settings.moderateComments}
                     onChange={(e) => handleSettingChange('moderateComments', e.target.checked)}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-slate-700 rounded"
                   />
-                  <label htmlFor="moderateComments" className="ml-2 block text-sm text-gray-900">
+                  <label htmlFor="moderateComments" className="ml-2 block text-sm text-gray-900 dark:text-gray-100">
                     Kiểm duyệt bình luận trước khi hiển thị
                   </label>
                 </div>
@@ -227,9 +227,9 @@ export default function AdminSettings() {
                     id="allowRegistration"
                     checked={settings.allowRegistration}
                     onChange={(e) => handleSettingChange('allowRegistration', e.target.checked)}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-slate-700 rounded"
                   />
-                  <label htmlFor="allowRegistration" className="ml-2 block text-sm text-gray-900">
+                  <label htmlFor="allowRegistration" className="ml-2 block text-sm text-gray-900 dark:text-gray-100">
                     Cho phép đăng ký tài khoản mới
                   </label>
                 </div>
@@ -240,42 +240,42 @@ export default function AdminSettings() {
           {/* Email Settings */}
           {activeTab === "email" && (
             <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-gray-900">Cài đặt email</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Cài đặt email</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">SMTP Host</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">SMTP Host</label>
                   <input
                     type="text"
                     value={settings.smtpHost}
                     onChange={(e) => handleSettingChange('smtpHost', e.target.value)}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">SMTP Port</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">SMTP Port</label>
                   <input
                     type="number"
                     value={settings.smtpPort}
                     onChange={(e) => handleSettingChange('smtpPort', parseInt(e.target.value))}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">SMTP Username</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">SMTP Username</label>
                   <input
                     type="text"
                     value={settings.smtpUsername}
                     onChange={(e) => handleSettingChange('smtpUsername', e.target.value)}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">SMTP Password</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">SMTP Password</label>
                   <input
                     type="password"
                     value={settings.smtpPassword}
                     onChange={(e) => handleSettingChange('smtpPassword', e.target.value)}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
               </div>
@@ -285,39 +285,39 @@ export default function AdminSettings() {
           {/* Security Settings */}
           {activeTab === "security" && (
             <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-gray-900">Cài đặt bảo mật</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Cài đặt bảo mật</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Thời gian hết hạn phiên (giờ)</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Thời gian hết hạn phiên (giờ)</label>
                   <input
                     type="number"
                     min="1"
                     max="168"
                     value={settings.sessionTimeout}
                     onChange={(e) => handleSettingChange('sessionTimeout', parseInt(e.target.value))}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Số lần đăng nhập sai tối đa</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Số lần đăng nhập sai tối đa</label>
                   <input
                     type="number"
                     min="3"
                     max="10"
                     value={settings.maxLoginAttempts}
                     onChange={(e) => handleSettingChange('maxLoginAttempts', parseInt(e.target.value))}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Độ dài mật khẩu tối thiểu</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Độ dài mật khẩu tối thiểu</label>
                   <input
                     type="number"
                     min="6"
                     max="20"
                     value={settings.passwordMinLength}
                     onChange={(e) => handleSettingChange('passwordMinLength', parseInt(e.target.value))}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
               </div>
@@ -327,9 +327,9 @@ export default function AdminSettings() {
                   id="enableTwoFactor"
                   checked={settings.enableTwoFactor}
                   onChange={(e) => handleSettingChange('enableTwoFactor', e.target.checked)}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-slate-700 rounded"
                 />
-                <label htmlFor="enableTwoFactor" className="ml-2 block text-sm text-gray-900">
+                <label htmlFor="enableTwoFactor" className="ml-2 block text-sm text-gray-900 dark:text-gray-100">
                   Bật xác thực hai yếu tố (2FA)
                 </label>
               </div>
@@ -339,14 +339,14 @@ export default function AdminSettings() {
           {/* Appearance Settings */}
           {activeTab === "appearance" && (
             <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-gray-900">Cài đặt giao diện</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Cài đặt giao diện</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Chủ đề</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Chủ đề</label>
                   <select
                     value={settings.theme}
                     onChange={(e) => handleSettingChange('theme', e.target.value)}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="light">Sáng</option>
                     <option value="dark">Tối</option>
@@ -354,30 +354,30 @@ export default function AdminSettings() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Màu chủ đạo</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Màu chủ đạo</label>
                   <input
                     type="color"
                     value={settings.primaryColor}
                     onChange={(e) => handleSettingChange('primaryColor', e.target.value)}
-                    className="mt-1 block w-full h-10 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full h-10 border border-gray-300 dark:border-slate-700 dark:bg-slate-900 rounded-md focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">URL Logo</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">URL Logo</label>
                   <input
                     type="url"
                     value={settings.logoUrl}
                     onChange={(e) => handleSettingChange('logoUrl', e.target.value)}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">URL Favicon</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">URL Favicon</label>
                   <input
                     type="url"
                     value={settings.faviconUrl}
                     onChange={(e) => handleSettingChange('faviconUrl', e.target.value)}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
               </div>
@@ -387,7 +387,7 @@ export default function AdminSettings() {
           {/* Notification Settings */}
           {activeTab === "notifications" && (
             <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-gray-900">Cài đặt thông báo</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Cài đặt thông báo</h2>
               <div className="space-y-4">
                 <div className="flex items-center">
                   <input
@@ -395,9 +395,9 @@ export default function AdminSettings() {
                     id="emailNotifications"
                     checked={settings.emailNotifications}
                     onChange={(e) => handleSettingChange('emailNotifications', e.target.checked)}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-slate-700 rounded"
                   />
-                  <label htmlFor="emailNotifications" className="ml-2 block text-sm text-gray-900">
+                  <label htmlFor="emailNotifications" className="ml-2 block text-sm text-gray-900 dark:text-gray-100">
                     Bật thông báo email
                   </label>
                 </div>
@@ -407,9 +407,9 @@ export default function AdminSettings() {
                     id="newPostNotifications"
                     checked={settings.newPostNotifications}
                     onChange={(e) => handleSettingChange('newPostNotifications', e.target.checked)}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-slate-700 rounded"
                   />
-                  <label htmlFor="newPostNotifications" className="ml-2 block text-sm text-gray-900">
+                  <label htmlFor="newPostNotifications" className="ml-2 block text-sm text-gray-900 dark:text-gray-100">
                     Thông báo bài viết mới
                   </label>
                 </div>
@@ -419,9 +419,9 @@ export default function AdminSettings() {
                     id="commentNotifications"
                     checked={settings.commentNotifications}
                     onChange={(e) => handleSettingChange('commentNotifications', e.target.checked)}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-slate-700 rounded"
                   />
-                  <label htmlFor="commentNotifications" className="ml-2 block text-sm text-gray-900">
+                  <label htmlFor="commentNotifications" className="ml-2 block text-sm text-gray-900 dark:text-gray-100">
                     Thông báo bình luận mới
                   </label>
                 </div>
@@ -431,9 +431,9 @@ export default function AdminSettings() {
                     id="systemNotifications"
                     checked={settings.systemNotifications}
                     onChange={(e) => handleSettingChange('systemNotifications', e.target.checked)}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-slate-700 rounded"
                   />
-                  <label htmlFor="systemNotifications" className="ml-2 block text-sm text-gray-900">
+                  <label htmlFor="systemNotifications" className="ml-2 block text-sm text-gray-900 dark:text-gray-100">
                     Thông báo hệ thống
                   </label>
                 </div>
@@ -444,24 +444,24 @@ export default function AdminSettings() {
           {/* System Settings */}
           {activeTab === "system" && (
             <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-gray-900">Thông tin hệ thống</h2>
-              <div className="bg-gray-50 rounded-lg p-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Thông tin hệ thống</h2>
+              <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div>
-                    <span className="font-medium text-gray-700">Phiên bản:</span>
-                    <span className="ml-2 text-gray-600">v1.0.0</span>
+                    <span className="font-medium text-gray-700 dark:text-gray-300">Phiên bản:</span>
+                    <span className="ml-2 text-gray-600 dark:text-gray-300">v1.0.0</span>
                   </div>
                   <div>
-                    <span className="font-medium text-gray-700">Database:</span>
-                    <span className="ml-2 text-gray-600">PostgreSQL 14</span>
+                    <span className="font-medium text-gray-700 dark:text-gray-300">Database:</span>
+                    <span className="ml-2 text-gray-600 dark:text-gray-300">PostgreSQL 14</span>
                   </div>
                   <div>
-                    <span className="font-medium text-gray-700">Server:</span>
-                    <span className="ml-2 text-gray-600">Node.js 18</span>
+                    <span className="font-medium text-gray-700 dark:text-gray-300">Server:</span>
+                    <span className="ml-2 text-gray-600 dark:text-gray-300">Node.js 18</span>
                   </div>
                   <div>
-                    <span className="font-medium text-gray-700">Uptime:</span>
-                    <span className="ml-2 text-gray-600">15 ngày 4 giờ</span>
+                    <span className="font-medium text-gray-700 dark:text-gray-300">Uptime:</span>
+                    <span className="ml-2 text-gray-600 dark:text-gray-300">15 ngày 4 giờ</span>
                   </div>
                 </div>
               </div>

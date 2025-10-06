@@ -19,6 +19,9 @@ import {
   Shield,
   Zap,
   ArrowRight,
+  Eye,
+  EyeOff,
+  ChevronsRight,
 } from "lucide-react";
 import { Button } from "~/components/ui/button";
 
@@ -35,11 +38,12 @@ export default function LoginPage() {
   const location = useLocation();
   const { login, isAuthenticated, isLoading, error, clearError } = useAuth();
   const [successMessage, setSuccessMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
   });
@@ -77,205 +81,225 @@ export default function LoginPage() {
     }
   };
 
+  const onSwitchToRegister = () => {
+    navigate("/register");
+  };
+
   return (
-    <MainLayout>
-      <PageBackground variant="auth">
-        <div className="min-h-screen flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-lg w-full space-y-8">
-            {/* Animated Header */}
-            <div className="text-center space-y-6">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-3xl blur-xl opacity-30 animate-pulse"></div>
-                
-              </div>
-
-              <div className="space-y-3">
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  Chào mừng trở lại!
-                </h1>
-                <p className="text-lg text-gray-600 dark:text-gray-300 max-w-md mx-auto">
-                  Đăng nhập để khám phá thế giới nội dung tuyệt vời
-                </p>
-              </div>
+    <div className="min-h-screen bg-slate-50 flex">
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 to-slate-800/90 z-10"></div>
+        <img
+          src="https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop"
+          alt="Modern workspace"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="relative z-20 flex flex-col justify-center px-12 text-white">
+          <div className="max-w-md">
+            <div className="mb-8">
+              {/* <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 backdrop-blur-sm rounded-2xl mb-6">
+               <Link to="/">
+                <ChevronsRight className="h-5 w-5 text-white" />
+               </Link>
+         
+              </div> */}
             </div>
-
-            {/* Modern Form Card */}
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 rounded-2xl blur-xl"></div>
-              <ThemedCard
-                variant="elevated"
-                className="relative backdrop-blur-xl bg-white/80 dark:bg-gray-900/80 border border-white/20 dark:border-gray-700/30 shadow-2xl"
-              >
-                <ThemedCardContent className="p-8">
-                  <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-                    {successMessage && (
-                      <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 px-5 py-4 rounded-xl flex items-center gap-3 shadow-sm">
-                        <div className="w-8 h-8 bg-green-100 dark:bg-green-800/30 rounded-full flex items-center justify-center">
-                          <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
-                        </div>
-                        <span className="font-medium">{successMessage}</span>
-                      </div>
-                    )}
-
-                    {error && (
-                      <div className="bg-gradient-to-r from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-5 py-4 rounded-xl flex items-center gap-3 shadow-sm">
-                        <div className="w-8 h-8 bg-red-100 dark:bg-red-800/30 rounded-full flex items-center justify-center">
-                          <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400" />
-                        </div>
-                        <span className="font-medium">{error}</span>
-                      </div>
-                    )}
-
-                    <div className="space-y-5">
-                      <div className="group">
-                        <ThemedInput
-                          type="email"
-                          label="Địa chỉ Email"
-                          placeholder="your@email.com"
-                        
-                          error={errors.email?.message}
-                          variant="filled"
-                          inputSize="lg"
-                          className="transition-all duration-300 group-hover:shadow-md focus-within:shadow-lg focus-within:shadow-blue-500/20"
-                          {...register("email")}
-                          onChange={() => clearError()}
-                        />
-                      </div>
-
-                      <div className="group">
-                        <ThemedInput
-                          type="password"
-                          label="Mật khẩu"
-                          placeholder="••••••••"
-                          
-                          error={errors.password?.message}
-                          variant="filled"
-                          inputSize="lg"
-                          className="transition-all duration-300 group-hover:shadow-md focus-within:shadow-lg focus-within:shadow-purple-500/20"
-                          {...register("password")}
-                          onChange={() => clearError()}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between pt-2">
-                      <label className="flex items-center group cursor-pointer">
-                        <div className="relative">
-                          <input
-                            type="checkbox"
-                            className="w-5 h-5 text-blue-600 border-2 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
-                            {...register("rememberMe")}
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg opacity-0 group-hover:opacity-10 transition-opacity duration-200"></div>
-                        </div>
-                        <span className="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100 transition-colors">
-                          Ghi nhớ đăng nhập
-                        </span>
-                      </label>
-                      <Link
-                        to="/forgot-password"
-                        className="text-sm font-medium bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-purple-700 transition-all duration-200 hover:underline"
-                      >
-                        Quên mật khẩu?
-                      </Link>
-                    </div>
-
-                    <div className="pt-4 justify-items-center">
-                     
-                        <Button  variant={"outline"} 
-                        type="submit"
-                        size={"lg"}
-                         className="items-center text-black w-full">
-                          Đăng Nhập
-                        </Button>
-                    </div>
-                  </form>
-
-                  {/* Divider */}
-                  <div className="relative my-8">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-gray-200 dark:border-gray-700"></div>
-                    </div>
-                    <div className="relative flex justify-center text-sm">
-                      <span className="px-4 bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 font-medium">
-                        Hoặc
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Register Link */}
-                  <div className="text-center">
-                    <p className="text-gray-600 dark:text-gray-400 mb-4">
-                      Chưa có tài khoản?
-                    </p>
-                    <Link
-                      to="/register"
-                      className="inline-flex items-center gap-2 px-6 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl font-medium text-gray-700 dark:text-gray-300 hover:border-blue-500 dark:hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 group"
-                    >
-                      <span>Tạo tài khoản mới</span>
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
-                    </Link>
-                  </div>
-                </ThemedCardContent>
-              </ThemedCard>
-            </div>
-
-            {/* Enhanced Features */}
-            <div className="grid grid-cols-3 gap-6 text-center">
-              <div className="group space-y-3">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl blur-lg opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
-                  <div className="relative w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:scale-110 transition-transform duration-300">
-                    <Zap className="w-6 h-6 text-white" />
-                  </div>
+            <h2 className="text-4xl font-bold mb-4 leading-tight">
+              Welcome back to your workspace
+            </h2>
+            <p className="text-lg text-slate-300 leading-relaxed">
+              Sign in to access your personalized dashboard, manage your projects, and collaborate with your team.
+            </p>
+            <div className="mt-12 space-y-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
                 </div>
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                    Siêu nhanh
-                  </h3>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">
-                    Đăng nhập trong 1 giây
-                  </p>
-                </div>
+                <span className="text-slate-200">Secure authentication</span>
               </div>
-
-              <div className="group space-y-3">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl blur-lg opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
-                  <div className="relative w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:scale-110 transition-transform duration-300">
-                    <Shield className="w-6 h-6 text-white" />
-                  </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
                 </div>
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                    Bảo mật
-                  </h3>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">
-                    Mã hóa cấp ngân hàng
-                  </p>
-                </div>
+                <span className="text-slate-200">Fast and reliable</span>
               </div>
-
-              <div className="group space-y-3">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl blur-lg opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
-                  <div className="relative w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:scale-110 transition-transform duration-300">
-                    <Sparkles className="w-6 h-6 text-white" />
-                  </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
                 </div>
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                    Trải nghiệm
-                  </h3>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">
-                    Giao diện hiện đại
-                  </p>
-                </div>
+                <span className="text-slate-200">24/7 support available</span>
               </div>
             </div>
           </div>
         </div>
-      </PageBackground>
-    </MainLayout>
+      </div>
+
+      <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-md">
+          <div className="mb-8 lg:hidden text-center">
+            <div className="inline-flex items-center justify-center w-14 h-14 bg-slate-900 rounded-xl mb-4">
+              <LogIn className="w-7 h-7 text-white" />
+            </div>
+          </div>
+
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">Welcome Back</h1>
+            <p className="text-slate-600">Sign in to continue to your account</p>
+          </div>
+
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex items-center">
+                <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
+                <p className="text-sm text-red-700">{error}</p>
+              </div>
+            </div>
+          )}
+
+          {successMessage && (
+            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+              <div className="flex items-center">
+                <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
+                <p className="text-sm text-green-700">{successMessage}</p>
+              </div>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
+            <div>
+              <label htmlFor="email" className="block text-sm font-semibold text-slate-700 mb-2">
+                Email Address
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Mail className="h-5 w-5 text-slate-400" />
+                </div>
+                <input
+                  type="email"
+                  id="email"
+                  {...register("email")}
+                  className={`block w-full pl-10 pr-3 py-3 border ${
+                    errors.email
+                      ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+                      : 'border-slate-300 focus:border-slate-500 focus:ring-slate-500'
+                  } rounded-lg focus:outline-none focus:ring-2 transition-colors`}
+                  placeholder="you@example.com"
+                  aria-label="Email Address"
+                  aria-invalid={errors.email ? 'true' : 'false'}
+                  aria-describedby={errors.email ? 'email-error' : undefined}
+                />
+              </div>
+              {errors.email && (
+                <p id="email-error" className="mt-2 text-sm text-red-600" role="alert">
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="password" className="block text-sm font-semibold text-slate-700 mb-2">
+                Password
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-slate-400" />
+                </div>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  id="password"
+                  {...register("password")}
+                  className={`block w-full pl-10 pr-12 py-3 border ${
+                    errors.password
+                      ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+                      : 'border-slate-300 focus:border-slate-500 focus:ring-slate-500'
+                  } rounded-lg focus:outline-none focus:ring-2 transition-colors`}
+                  placeholder="••••••••"
+                  aria-label="Password"
+                  aria-invalid={errors.password ? 'true' : 'false'}
+                  aria-describedby={errors.password ? 'password-error' : undefined}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
+              </div>
+              {errors.password && (
+                <p id="password-error" className="mt-2 text-sm text-red-600" role="alert">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="rememberMe"
+                  {...register("rememberMe")}
+                  className="h-4 w-4 text-slate-700 border-slate-300 rounded focus:ring-slate-500 focus:ring-2 transition-colors cursor-pointer"
+                  aria-label="Remember me"
+                />
+                <label htmlFor="rememberMe" className="ml-2 block text-sm text-slate-700 cursor-pointer">
+                  Remember me
+                </label>
+              </div>
+              <Link
+                to="/forgot-password"
+                className="text-sm font-semibold text-slate-700 hover:text-slate-900 transition-colors"
+              >
+                Forgot password?
+              </Link>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full bg-gradient-to-r from-slate-700 to-slate-900 text-white font-semibold py-3 px-4 rounded-lg hover:from-slate-800 hover:to-slate-950 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              aria-label={isSubmitting ? 'Signing in...' : 'Sign in'}
+            >
+              {isSubmitting ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                  Signing in...
+                </>
+              ) : (
+                <>
+                  <LogIn className="w-5 h-5 mr-2" />
+                  Sign In
+                </>
+              )}
+            </button>
+          </form>
+
+          <div className="mt-8">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-200"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-4 bg-slate-50 lg:bg-white text-slate-500">Don't have an account?</span>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={onSwitchToRegister}
+              className="mt-4 w-full bg-white text-slate-700 font-semibold py-3 px-4 rounded-lg border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 transition-all duration-200"
+            >
+              Create new account
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

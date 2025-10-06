@@ -27,25 +27,25 @@ export default function DashboardPage() {
   const { user } = useAuthStore();
 
   // Fetch user statistics
-  const { data: stats, isLoading: statsLoading } = useQuery({
-    queryKey: ['user-stats'],
-    queryFn: userPostsApi.getUserStats,
-    enabled: !!user
-  });
+  // const { data: stats, isLoading: statsLoading } = useQuery({
+  //   queryKey: ['user-stats'],
+  //   queryFn: userPostsApi.getUserStats,
+  //   enabled: !!user
+  // });
 
   // Fetch recent posts
-  const { data: recentPosts, isLoading: postsLoading } = useQuery({
-    queryKey: ['user-posts', 0, 5],
-    queryFn: () => userPostsApi.getUserPosts(0, 5),
-    enabled: !!user
-  });
+  // const { data: recentPosts, isLoading: postsLoading } = useQuery({
+  //   queryKey: ['user-posts', 0, 5],
+  //   queryFn: () => userPostsApi.getUserPosts(0, 5),
+  //   enabled: !!user
+  // });
 
   return (
     <div className="space-y-8">
       {/* Welcome Section */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-          Chào mừng trở lại, {user?.username}! 👋
+          Chào mừng trở lại, {user?.username}!
         </h1>
         <p className="text-gray-600 dark:text-gray-400">
           Đây là tổng quan về hoạt động của bạn trên BlogPlatform
@@ -53,7 +53,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statsLoading ? (
           <StatsSkeleton  />
         ) : (
@@ -155,7 +155,7 @@ export default function DashboardPage() {
             </Card>
           </>
         )}
-      </div>
+      </div> */}
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -205,60 +205,7 @@ export default function DashboardPage() {
             </Button>
           </Link>
         </CardHeader>
-        <CardContent>
-          {postsLoading ? (
-            <div className="space-y-4">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-                </div>
-              ))}
-            </div>
-          ) : recentPosts?.posts?.length ? (
-            <div className="divide-y divide-gray-200 dark:divide-gray-700">
-              {recentPosts.posts.map((post: any) => (
-                <div key={post.id} className="py-4 first:pt-0 last:pb-0">
-                  <Link to={`/posts/${post.slug}`} className="block group">
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                      {post.title}
-                    </h3>
-                    <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500 dark:text-gray-400">
-                      <div className="flex items-center">
-                        <Calendar className="w-4 h-4 mr-1" />
-                        <span>{new Date(post.createdAt).toLocaleDateString()}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <Eye className="w-4 h-4 mr-1" />
-                        <span>{post.viewCount || 0}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <Heart className="w-4 h-4 mr-1" />
-                        <span>{post.likeCount || 0}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <MessageCircle className="w-4 h-4 mr-1" />
-                        <span>{post.commentCount || 0}</span>
-                      </div>
-                    </div>
-                  </Link>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <p className="text-gray-500 dark:text-gray-400 mb-4">
-                Bạn chưa có bài viết nào
-              </p>
-              <Link to="/dashboard/posts/new">
-                <Button>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Viết bài mới
-                </Button>
-              </Link>
-            </div>
-          )}
-        </CardContent>
+        
       </Card>
     </div>
   );

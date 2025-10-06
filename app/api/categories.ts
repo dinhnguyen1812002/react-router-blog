@@ -8,21 +8,21 @@ export const categoriesApi = {
   },
 
   getById: async (id: string): Promise<ApiResponse<Category>> => {
-    const response = await apiClient.get(`/categories/${id}`);
+    const response = await apiClient.get(`/category/${id}`);
     return response.data;
   },
 
   create: async (data: Partial<Category>): Promise<ApiResponse<Category>> => {
-    const response = await apiClient.post('/categories', data);
+    const response = await apiClient.post('/category/add', data);
     return response.data;
   },
 
   update: async (id: string, data: Partial<Category>): Promise<ApiResponse<Category>> => {
-    const response = await apiClient.put(`/categories/${id}`, data);
+    const response = await apiClient.put(`/category/${id}`, data);
     return response.data;
   },
 
   delete: async (id: string): Promise<void> => {
-    await apiClient.delete(`/categories/${id}`);
+    await apiClient.delete(`/category/${id}`);
   },
 };

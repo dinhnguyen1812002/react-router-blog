@@ -1,17 +1,14 @@
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router";
 import { postsApi } from "~/api/posts";
 import type { FilterOptions } from "~/types/filters";
-import { PostList } from "~/components/post/PostList";
+// Removed PostList usage; rendering inline
 import PostSkeleton from "~/components/skeleton/PostSkeleton";
 import { Button } from "~/components/ui/button";
 import { MainLayout } from "~/components/layout/MainLayout";
 import FeaturedPostsSidebar from "~/components/sidebar/FeaturedPostsSidebar";
-import AdvancedFiltersSidebar from "~/components/sidebar/AdvancedFiltersSidebar";
-import SearchSidebar from "~/components/sidebar/SearchSidebar";
-import TagsCloudSidebar from "~/components/sidebar/TagsCloudSidebar";
-import CategoriesListSidebar from "~/components/sidebar/CategoriesListSidebar";
+
 import {
   ChevronLeft,
   ChevronRight,
@@ -19,13 +16,30 @@ import {
   List as ListIcon,
   Filter,
 } from "lucide-react";
+import { PostCard } from "~/components/post";
+import { Input } from "~/components/ui/Input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
+import type { Route } from "../+types/root";
+import { PostCardSkeleton } from "~/components/skeleton/PostDetailSkeleton";
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Blog - Khám phá bài viết mới nhất từ cộng đồng" },
+    { name: "description", content: "Tổng hợp các bài viết hay nhất về công nghệ, lập trình, chia sẻ kinh nghiệm và xu hướng mới từ cộng đồng. Tìm kiếm, lọc và khám phá nội dung phù hợp với bạn." },
+    { name: "keywords", content: "blog, bài viết, lập trình, công nghệ, chia sẻ, kinh nghiệm, xu hướng" },
+    { property: "og:title", content: "Blog cộng đồng - Bài viết mới nhất" },
+    { property: "og:description", content: "Khám phá các bài viết nổi bật và xu hướng. Tìm kiếm theo chủ đề bạn yêu thích." },
+    { property: "og:type", content: "website" },
+  ];
+}
+
 
 export default function PostsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [page, setPage] = useState(0);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showSidebar, setShowSidebar] = useState(true);
-  const pageSize = 12;
+  const pageSize = viewMode === 'grid' ? 6 : 10;
 
   // Initialize filters from URL params
   const [filters, setFilters] = useState<FilterOptions>({
@@ -40,6 +54,21 @@ export default function PostsPage() {
       [],
     tags: searchParams.get("tags")?.split(",").filter(Boolean) || [],
   });
+
+  // Debounced search value for input UX
+  const [searchInput, setSearchInput] = useState(filters.search);
+  useEffect(() => {
+    setSearchInput(filters.search);
+  }, [filters.search]);
+
+  
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setFilters((prev) => ({ ...prev, search: searchInput }));
+      setPage(0);
+    }, 350);
+    return () => clearTimeout(timeoutId);
+  }, [searchInput]);
 
   // Update URL when filters change
   useEffect(() => {
@@ -63,9 +92,10 @@ export default function PostsPage() {
     data: postsData,
     isLoading,
     error,
+    isFetching,
   } = useQuery({
-    queryKey: ["posts", page, filters],
-    queryFn: () => postsApi.getPosts(page, pageSize),
+    queryKey: ["posts", page, pageSize, filters],
+    queryFn: () => postsApi.getPosts(page, pageSize, filters),
     staleTime: 2 * 60 * 1000, // 2 minutes
   });
 
@@ -127,51 +157,20 @@ export default function PostsPage() {
     setPage(0);
   };
 
-  if (isLoading) {
-    return (
-      <MainLayout> 
-<div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-         
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-             <PostSkeleton/>
-          </div>
-        </div>
-      </div>
-      </MainLayout>
-      
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">
-            Có lỗi xảy ra
-          </h1>
-          <Button onClick={() => window.location.reload()}>Thử lại</Button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <MainLayout>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              Discover Posts
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              Explore the latest articles from our community
-            </p>
-          </div>
-
-          {/* View Controls */}
-          <div className="flex items-center space-x-4">
+        <div className="space-y-4 mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                Bài viết
+              </h1>
+              <p className="text-gray-600 dark:text-gray-400">
+                Khám phá các bài viết mới nhất từ cộng đồng
+              </p>
+            </div>
             {/* Sidebar Toggle */}
             <button
               onClick={() => setShowSidebar(!showSidebar)}
@@ -179,29 +178,80 @@ export default function PostsPage() {
             >
               <Filter className="h-5 w-5" />
             </button>
+          </div>
 
-            {/* View Mode Toggle */}
-            <div className="flex items-center space-x-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
-              <button
-                onClick={() => setViewMode("grid")}
-                className={`p-2 rounded transition-colors ${
-                  viewMode === "grid"
-                    ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400"
-                    : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-                }`}
+          {/* Toolbar */}
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div className="flex-1 flex items-center gap-2">
+              <Input
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                placeholder="Tìm kiếm bài viết..."
+                className="w-full md:max-w-md"
+              />
+              {filters.search && (
+                <Button variant="outline" size="sm" onClick={() => setFilters((p) => ({...p, search: ""}))}>Xóa</Button>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <Select
+                value={filters.sortBy}
+                onValueChange={(v) => { setFilters((p) => ({...p, sortBy: v as FilterOptions["sortBy"]})); setPage(0); }}
               >
-                <Grid className="h-4 w-4" />
-              </button>
-              <button
-                onClick={() => setViewMode("list")}
-                className={`p-2 rounded transition-colors ${
-                  viewMode === "list"
-                    ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400"
-                    : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-                }`}
+                <SelectTrigger size="sm" className="min-w-36"><SelectValue placeholder="Sắp xếp" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="newest">Mới nhất</SelectItem>
+                  <SelectItem value="oldest">Cũ nhất</SelectItem>
+                  <SelectItem value="popular">Phổ biến</SelectItem>
+                  <SelectItem value="trending">Xu hướng</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select
+                value={filters.timeRange}
+                onValueChange={(v) => { setFilters((p) => ({...p, timeRange: v as FilterOptions["timeRange"]})); setPage(0); }}
               >
-                <ListIcon className="h-4 w-4" />
-              </button>
+                <SelectTrigger size="sm" className="min-w-32"><SelectValue placeholder="Khoảng thời gian" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tất cả</SelectItem>
+                  <SelectItem value="today">Hôm nay</SelectItem>
+                  <SelectItem value="week">Tuần này</SelectItem>
+                  <SelectItem value="month">Tháng này</SelectItem>
+                  <SelectItem value="year">Năm nay</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select
+                value={filters.featured}
+                onValueChange={(v) => { setFilters((p) => ({...p, featured: v as FilterOptions["featured"]})); setPage(0); }}
+              >
+                <SelectTrigger size="sm" className="min-w-32"><SelectValue placeholder="Loại" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tất cả</SelectItem>
+                  <SelectItem value="featured">Nổi bật</SelectItem>
+                  <SelectItem value="regular">Thông thường</SelectItem>
+                </SelectContent>
+              </Select>
+              <div className="flex items-center space-x-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+                <button
+                  onClick={() => setViewMode("grid")}
+                  className={`p-2 rounded transition-colors ${
+                    viewMode === "grid"
+                      ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400"
+                      : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                  }`}
+                >
+                  <Grid className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode("list")}
+                  className={`p-2 rounded transition-colors ${
+                    viewMode === "list"
+                      ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400"
+                      : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                  }`}
+                >
+                  <ListIcon className="h-4 w-4" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -209,63 +259,40 @@ export default function PostsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-3">
-            {/* Loading State */}
+            {/* Unified states */}
             {isLoading && (
               <div className="space-y-6">
-                <div
-                  className={`grid gap-6 ${
-                    viewMode === "grid"
-                      ? "grid-cols-1 md:grid-cols-2 xl:grid-cols-3"
-                      : "grid-cols-1"
-                  }`}
-                >
-                  {[...Array(pageSize)].map((_, i) => (
-                    <PostSkeleton key={i} />
-                  ))}
+                <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'}`}>
+                  {[...Array(pageSize)].map((_, i) => (<PostCardSkeleton key={i} />))}
                 </div>
               </div>
             )}
-
-            {/* Error State */}
-            {error && (
+            {!isLoading && error && (
               <div className="text-center py-12">
-                <div className="text-red-500 mb-4">Error loading posts</div>
-                <Button onClick={() => window.location.reload()}>
-                  Try Again
-                </Button>
+                <div className="text-red-500 mb-4">Không tải được danh sách bài viết</div>
+                <Button onClick={() => window.location.reload()}>Thử lại</Button>
               </div>
             )}
-
-            {/* Empty State */}
-            {!isLoading && !error && postsData?.content.length === 0 && (
+            {!isLoading && !error && (postsData?.content.length ?? 0) === 0 && (
               <div className="text-center py-12">
-                <div className="text-gray-500 dark:text-gray-400 mb-4">
-                  No posts found matching your criteria
-                </div>
-                <Button onClick={clearAllFilters}>Clear Filters</Button>
+                <div className="text-gray-500 dark:text-gray-400 mb-4">Không có bài viết phù hợp</div>
+                <Button onClick={clearAllFilters}>Xóa bộ lọc</Button>
               </div>
             )}
 
             {/* Posts Grid/List */}
-            {!isLoading && !error && postsData?.content?.length && (
+            {!isLoading && !error && postsData?.content?.length ? (
               <>
-                {/* <div className={`grid gap-6 ${
-                  viewMode === 'grid'
-                    ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3'
-                    : 'grid-cols-1 '
-                }`}>
-                  <PostList posts={postsData.content} loading={false} />
-                </div> */}
-                <div className={`grid gap-6 grid-cols-1 `}>
-                  <PostList posts={postsData.content} loading={false} />
+                {/* Inline rendering for both grid and list modes */}
+                <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'}`}>
+                  {postsData.content.map((p) => (
+                      <PostCard key={p.id} post={p} />
+                    ))}
                 </div>
-
                 {postsData.totalPages > 1 && (
                   <div className="flex justify-between items-center mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
                     <div className="text-sm text-gray-600 dark:text-gray-400">
-                      Page {page + 1} of {postsData.totalPages} • Showing{" "}
-                      {postsData.content.length} of {postsData.totalElements}{" "}
-                      posts
+                      Trang {page + 1} / {postsData.totalPages} • Hiển thị {postsData.content.length} / {postsData.totalElements}
                     </div>
 
                     <div className="flex items-center space-x-2">
@@ -276,7 +303,7 @@ export default function PostsPage() {
                         onClick={handlePrevPage}
                       >
                         <ChevronLeft className="h-4 w-4" />
-                        Previous
+                        Trước
                       </Button>
 
                       <div className="flex items-center space-x-1">
@@ -311,14 +338,14 @@ export default function PostsPage() {
                         disabled={page >= postsData.totalPages - 1}
                         onClick={handleNextPage}
                       >
-                        Next
+                        Sau
                         <ChevronRight className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>
                 )}
               </>
-            )}
+            ) : null}
           </div>
 
           {/* Sidebar */}
@@ -326,16 +353,16 @@ export default function PostsPage() {
             className={`lg:col-span-1 space-y-8 ${showSidebar ? "block" : "hidden lg:block"}`}
           >
             {/* Search */}
-            <SearchSidebar onSearch={handleSearch} className="lg:block" />
+            {/* <SearchSidebar onSearch={handleSearch} className="lg:block" /> */}
 
             {/* Advanced Filters */}
-            <AdvancedFiltersSidebar
+            {/* <AdvancedFiltersSidebar
               filters={filters}
               onFiltersChange={handleFiltersChange}
               onClearFilters={clearAllFilters}
               totalResults={postsData?.totalElements || 0}
               className="lg:block"
-            />
+            /> */}
 
             {/* Featured Posts */}
             <FeaturedPostsSidebar

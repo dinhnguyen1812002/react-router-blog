@@ -430,7 +430,7 @@ main {
 
 /* Selection */
 /* ::selection { background-color: var(--color-primary-200); color: var(--color-primary-900); } */
-.dark ::selection {
+/* .dark ::selection {
   background-color: var(--color-primary-800);
   color: var(--color-primary-100);
-}
+} */

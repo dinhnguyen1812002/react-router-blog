@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router';
 import { useAuth } from '~/hooks/useAuth';
-import { ChevronDown, User, Settings, LogOut, BookOpen, TestTube } from 'lucide-react';
+import { ChevronDown, User, Settings, LogOut, BookOpen, TestTube, UserStar } from 'lucide-react';
 
 import type { User as UserType } from '~/types';
+import UserAvatar from '../ui/boring-avatar';
 
 interface UserDropdownProps {
   user: UserType;
@@ -70,8 +71,17 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
         aria-expanded={isDropdownOpen}
         aria-haspopup="true"
       >
-        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-sm">
-          {user.username.charAt(0).toUpperCase()}
+        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 
+        rounded-full flex items-center justify-center text-white text-sm font-bold shadow-sm">
+          <UserAvatar 
+            name={user.username}
+            src={user.avatar}
+            size={32}
+           
+            variant="beam"
+            colors={['#FF5733', '#FFC300', '#DAF7A6']}
+            alt={user.username}
+          /> 
         </div>
         <span className="text-gray-700 font-medium hidden sm:block">{user.username}</span>
         <ChevronDown 
@@ -102,22 +112,31 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
             </Link>
 
             <Link
-              to="/profile"
+              to={`/profile/${user.username}`}
               onClick={closeDropdown}
               className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             >
               <User className="w-4 h-4" />
               <span>Hồ sơ cá nhân</span>
             </Link>
-
+            {user.roles.includes('ROLE_ADMIN') && (
             <Link
+              to="/admin"
+              onClick={closeDropdown}
+              className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            >
+              <UserStar className="w-4 h-4" />
+              <span>Admin</span>
+            </Link>
+            )}
+            {/* <Link
               to="/my-posts"
               onClick={closeDropdown}
               className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             >
               <BookOpen className="w-4 h-4" />
               <span>Bài viết của tôi</span>
-            </Link>
+            </Link> */}
           </div>
 
           {/* Theme Toggle */}

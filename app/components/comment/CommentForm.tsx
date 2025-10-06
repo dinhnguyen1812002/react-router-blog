@@ -32,7 +32,7 @@ export const CommentForm = ({
     mutationFn: (data: { content: string; parentCommentId?: string | null }) =>
       commentsApi.createComment(postId, data),
     onSuccess: (response) => {
-      console.log('✅ Comment created successfully:', response);
+   
 
       // Handle different response formats
       let newComment: CommentType = response;
@@ -64,13 +64,13 @@ export const CommentForm = ({
       localStorage.removeItem('pendingComment');
     },
     onError: (error) => {
-      console.error('❌ Create comment error:', error);
+      console.error(' Create comment error:', error);
 
       // Show user-friendly error message
       // if (error.response?.status === 403) {
-      //   console.error('🚫 Access denied - please check authentication');
+      //   console.error(' Access denied - please check authentication');
       // } else if (error.response?.status === 401) {
-      //   console.error('🔐 Unauthorized - please login again');
+      //   console.error('Unauthorized - please login again');
       // }
     }
   });
@@ -182,7 +182,7 @@ export const CommentForm = ({
       {createCommentMutation.error && (
         <div className="bg-red-50 border border-red-200 rounded-md p-3">
           <p className="text-sm text-red-700">
-            ❌ Lỗi khi gửi bình luận: {createCommentMutation.error.message}
+             Lỗi khi gửi bình luận: {createCommentMutation.error.message}
           </p>
         </div>
       )}
@@ -191,7 +191,7 @@ export const CommentForm = ({
       {!isAuthenticated && (
         <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
           <p className="text-sm text-blue-700">
-            💡 Bạn chưa đăng nhập. Sau khi viết bình luận và bấm gửi, bạn sẽ được chuyển đến trang đăng nhập.
+             Bạn chưa đăng nhập. Sau khi viết bình luận và bấm gửi, bạn sẽ được chuyển đến trang đăng nhập.
           </p>
         </div>
       )}
@@ -200,7 +200,7 @@ export const CommentForm = ({
       {pendingComment && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
           <p className="text-sm text-yellow-700">
-            📝 Bình luận đã được lưu tạm. Hãy hoàn thành đăng nhập để gửi bình luận.
+             Bình luận đã được lưu tạm. Hãy hoàn thành đăng nhập để gửi bình luận.
           </p>
         </div>
       )}

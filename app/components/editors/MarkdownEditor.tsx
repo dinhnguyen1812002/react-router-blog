@@ -56,7 +56,7 @@ export default function MarkdownEditor({ value, onChange, placeholder }: Markdow
           onChange={(val) => onChange(val || '')}
           preview={preview}
           height={400}
-          placeholder={placeholder || '# Tiêu đề\n\nViết nội dung bài viết bằng Markdown...'}
+         
           className="border-none"
           textareaProps={{
             placeholder: placeholder || '# Tiêu đề\n\nViết nội dung bài viết bằng Markdown...',

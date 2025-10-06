@@ -1,115 +1,226 @@
-import { useLoaderData, useParams } from '@remix-run/react';
-import { json, type LoaderFunctionArgs } from '@remix-run/node';
-import { userApi } from '~/api/user';
-import { ProfileHeader } from '~/components/profile/ProfileHeader';
-import { MarkdownRenderer } from '~/components/profile/MarkdownRenderer';
-import { Card } from '~/components/ui/Card';
+import { Link, useParams } from "react-router";
+import { useQuery } from "@tanstack/react-query";
+import { userApi } from "~/api/user";
+import { ProfileHeader } from "~/components/profile/ProfileHeader";
+import { Card, CardContent, CardHeader } from "~/components/ui/Card";
+import { MainLayout } from "~/components/layout/MainLayout";
 
-export async function loader({ params }: LoaderFunctionArgs) {
-  const { username } = params;
-  try {
-    const response = await userApi.getPublicProfile(username || '');
-    return json({ user: response.data });
-  } catch (error) {
-    throw new Response('Profile not found', { status: 404 });
-  }
-}
+import type { ProfileUser } from "~/types";
+import type { profile } from "console";
 
+import { PostCard } from "~/components/post";
+import { Button } from "~/components/ui";
+import { Spinner } from "~/components/ui/Spinner";
+import { formatDateSimple } from "~/lib/utils";
+import { UserAvatar } from "~/components/ui/boring-avatar";
 export default function PublicProfilePage() {
-  const { user } = useLoaderData<typeof loader>();
-  const { username } = useParams();
+  const { username = "" } = useParams();
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["public-user", username],
+    queryFn: () => userApi.getPublicUserByUsername(username), // call API
+    enabled: !!username,
+  });
+
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="animate-pulse space-y-4">
+            <div className="h-48 bg-gray-200 dark:bg-gray-700 rounded-xl" />
+            <div className="h-24 bg-gray-200 dark:bg-gray-700 rounded-xl" />
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (isError || !data) {
+    return (
+      <MainLayout>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="text-center text-gray-600 dark:text-gray-300">
+            Không tìm thấy người dùng.
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  const profile = data as ProfileUser;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-4xl mx-auto">
-        {/* Profile Header */}
-        <ProfileHeader user={user} isOwnProfile={false} />
-
-        {/* Bio Section */}
-        {user.bio && (
-          <Card className="mt-6 p-6">
-            <h2 className="text-xl font-semibold mb-4">About</h2>
-            <p className="text-gray-700 dark:text-gray-300">{user.bio}</p>
-          </Card>
-        )}
-
-        {/* Website Link */}
-        {user.website && (
-          <Card className="mt-6 p-6">
-            <h2 className="text-xl font-semibold mb-4">Website</h2>
-            <a 
-              href={user.website} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-blue-600 dark:text-blue-400 hover:underline"
-            >
-              {user.website}
-            </a>
-          </Card>
-        )}
-
-        {/* Social Media Links */}
-        {user.socialMediaLinks && (
-          <Card className="mt-6 p-6">
-            <h2 className="text-xl font-semibold mb-4">Connect</h2>
-            <div className="flex flex-wrap gap-4">
-              {user.socialMediaLinks.GITHUB && (
-                <a 
-                  href={user.socialMediaLinks.GITHUB} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="flex items-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
-                >
-                  <svg className="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
-                  </svg>
-                  GitHub
-                </a>
-              )}
-              {user.socialMediaLinks.TWITTER && (
-                <a 
-                  href={user.socialMediaLinks.TWITTER} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="flex items-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
-                >
-                  <svg className="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
-                  </svg>
-                  Twitter
-                </a>
-              )}
-              {/* Add other social media icons as needed */}
+    <MainLayout>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Profile Header */}
+      <Card className="mb-8">
+        <div className="relative">
+          {/* Cover Image */}
+          {/* {profile.coverImageUrl ? (
+            <div className="h-48 bg-gradient-to-r from-blue-500 to-purple-600 rounded-t-lg">
+              <img
+                src={profile.coverImageUrl}
+                alt="Cover"
+                className="w-full h-full object-cover rounded-t-lg"
+              />
             </div>
-          </Card>
-        )}
+          ) : (
+            <div className="h-48 bg-gradient-to-r from-blue-500 to-purple-600 rounded-t-lg" />
+          )} */}
 
-        {/* Custom Profile Content */}
-        {user.customProfileMarkdown && (
-          <Card className="mt-6 p-6">
-            <MarkdownRenderer content={user.customProfileMarkdown} />
-          </Card>
-        )}
-      </div>
-    </div>
-  );
-}
+          {/* Profile Info */}
+          <div className="relative px-6 pb-6">
+            <div className="flex flex-col sm:flex-row sm:items-end sm:space-x-6">
+              {/* Avatar */}
+              <div className="relative -mt-16 mb-4 sm:mb-0">
+                <UserAvatar
+                  src={profile.avatar}
+                  name={profile.username}
+                  alt={profile.username}
+                  size={128}
+                  className="border-4 border-white shadow-lg"
+                />
+              </div>
 
-export function ErrorBoundary() {
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-4xl mx-auto text-center py-12">
-        <h1 className="text-4xl font-bold text-red-600 mb-4">Profile Not Found</h1>
-        <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
-          The profile you're looking for doesn't exist or has been removed.
-        </p>
-        <a 
-          href="/" 
-          className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-        >
-          Go back home
-        </a>
+              {/* User Info */}
+              <div className="flex-1">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <h1 className="text-2xl font-bold text-gray-900">
+                      {profile.username}
+                    </h1>
+                    {profile.username && (
+                      <p className="text-gray-600">@{profile.username}</p>
+                    )}
+                    {/* {profile.location && (
+                      <p className="text-gray-500 text-sm mt-1"> {profile.location}</p>
+                    )} */}
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex space-x-3 mt-4 sm:mt-0">
+                    {false ? (
+                      <Link to="/settings/profile">
+                        <Button variant="secondary"> Chỉnh sửa hồ sơ</Button>
+                      </Link>
+                    ) : (
+                      <>
+                        <Button variant="secondary"> Theo dõi</Button>
+                        <Button variant="secondary"> Nhắn tin</Button>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Bio */}
+                {profile.bio && (
+                  <p className="text-gray-700 mt-4 max-w-2xl">{profile.bio}</p>
+                )}
+
+                {/* Links */}
+                <div className="flex flex-wrap gap-4 mt-4">
+                  {profile.website && (
+                    <a
+                      href={profile.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-700 text-sm flex items-center space-x-1"
+                    >
+                      <span>🌐</span>
+                      <span>Website</span>
+                    </a>
+                  )}
+                  {profile.socialMediaLinks.GITHUB && (
+                    <a
+                      href={profile.socialMediaLinks.GITHUB}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-700 text-sm flex items-center space-x-1"
+                    >
+                      <span>🐙</span>
+                      <span>GitHub</span>
+                    </a>
+                  )}
+                </div>
+
+                {/* Join Date */}
+              
+              </div>
+            </div>
+          </div>
+        </div>
+      </Card>
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <Card>
+          <CardContent className="p-6 text-center">
+            <div className="text-3xl font-bold text-blue-600 mb-2">
+              {profile.postsCount || 0}
+            </div>
+            <div className="text-gray-600">Bài viết</div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="p-6 text-center">
+            <div className="text-3xl font-bold text-green-600 mb-2">
+              {profile.commentsCount || 0}
+            </div>
+            <div className="text-gray-600">Bình luận</div>
+          </CardContent>
+        </Card>
+        
+        {/* <Card>
+          <CardContent className="p-6 text-center">
+            <div className="text-3xl font-bold text-purple-600 mb-2">
+              {profile.stats?.totalBookmarks || 0}
+            </div>
+            <div className="text-gray-600">Đã lưu</div>
+          </CardContent>
+        </Card> */}
       </div>
+
+      {/* User Posts */}
+      {/* <Card>
+        <CardHeader>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Bài viết của { profile.username}
+          </h2>
+        </CardHeader>
+        <CardContent>
+          {postsLoading ? (
+            <div className="flex justify-center py-12">
+              <Spinner size="lg" />
+            </div>
+          ) : userPosts?.content?.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">📝</div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                Chưa có bài viết nào
+              </h3>
+              <p className="text-gray-600">
+                {isOwnProfile 
+                  ? 'Bạn chưa viết bài viết nào. Hãy bắt đầu chia sẻ câu chuyện của mình!'
+                  : 'Người dùng này chưa có bài viết nào.'
+                }
+              </p>
+              {isOwnProfile && (
+                <Link to="/author/posts/new" className="mt-4 inline-block">
+                  <Button>Viết bài đầu tiên</Button>
+                </Link>
+              )}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {userPosts?.content?.map((post) => (
+                <PostCard key={post.id} post={post} />
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card> */}
     </div>
+  </MainLayout>
   );
 }

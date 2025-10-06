@@ -15,6 +15,7 @@ import { LikeButton } from "./LikeButton";
 import { RatingComponent } from "./RatingComponent";
 import { BookmarkButton } from "./BookmarkButton";
 import type { Post } from "~/types";
+import UserAvatar from "../ui/boring-avatar";
 
 interface PostCardProps {
   post: Post;
@@ -41,31 +42,32 @@ export const PostCard = ({ post }: PostCardProps) => {
         <div className="absolute top-2 left-2 flex items-center gap-2">
           {post.categories?.length > 0 && (
             <span
-              className="px-2 py-1 rounded-full text-xs font-medium text-white shadow-sm"
+              className="px-2 py-1 rounded-full text-xs font-medium shadow-sm "
               style={{
-                backgroundColor:
-                  post.categories[0].backgroundColor || "#3B82F6",
+                border: `1px solid ${post.categories[0].backgroundColor || "#3B82F6"}`,
+                color: post.categories[0].backgroundColor || "#3B82F6",
               }}
             >
               {post.categories[0].category}
             </span>
           )}
           {post.featured && (
-            <span className="px-2 py-1 rounded-full text-xs bg-yellow-400 text-yellow-900">
+            <span className="px-2 py-1 rounded-full text-xs font-medium shadow-sm bg-white border border-yellow-400 text-yellow-400">
               ⭐
             </span>
           )}
         </div>
 
+
         {/* Bookmark */}
-       <div className="absolute bottom-2 right-2">
-  <BookmarkButton
-    postId={post.id}
-    initialBookmarked={post.isSavedByCurrentUser}
-    variant="compact"
-    className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm"
-  />
-</div>
+        <div className="absolute bottom-2 right-2">
+          <BookmarkButton
+            postId={post.id}
+            initialBookmarked={post.isSavedByCurrentUser}
+            variant="compact"
+            className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm"
+          />
+        </div>
 
       </div>
 
@@ -88,12 +90,20 @@ export const PostCard = ({ post }: PostCardProps) => {
         {/* Thông tin tác giả + Stats */}
         <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-3">
           <div className="flex items-center space-x-2">
-           <Avatar>
-            <AvatarImage 
-              src={post.user.avatar || ''}
+            {/* <Avatar>
+              <AvatarImage
+                src={post.user.avatar || ''}
+              />
+              <AvatarFallback >{post.user.username.charAt(0)}</AvatarFallback>
+            </Avatar> */}
+            <UserAvatar 
+            name={post.user.username}   
+            src={post.user.avatar || ""}
+            size={20}
+            variant="marble"
+           
+            alt={post.user.username}
             />
-            <AvatarFallback >{post.user.username.charAt(0)}</AvatarFallback>
-           </Avatar>
             <span className="font-medium truncate max-w-[80px]">
               {post.user.username}
             </span>

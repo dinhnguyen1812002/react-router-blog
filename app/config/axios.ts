@@ -6,6 +6,7 @@ const axiosInstance = axios.create({
   baseURL: env.API_BASE_URL,
   timeout: env.API_TIMEOUT,
   withCredentials: true,
+  
   headers: { "Content-Type": "application/json" },
 });
 
@@ -18,7 +19,7 @@ axiosInstance.interceptors.request.use(
     }
 
     if (process.env.NODE_ENV === "development") {
-      console.log("🚀 API Request:", {
+      console.log("API Request:", {
         method: config.method?.toUpperCase(),
         url: config.url,
         hasAuth: !!config.headers.Authorization,
@@ -28,7 +29,7 @@ axiosInstance.interceptors.request.use(
     return config;
   },
   (error) => {
-    console.error("❌ Request Error:", error);
+    console.error(" Request Error:", error);
     return Promise.reject(error);
   }
 );
@@ -51,19 +52,32 @@ const processQueue = (error: any, token: string | null = null) => {
   failedQueue = [];
 };
 
+// Helper function to check if request should be retried
+const shouldRetryRequest = (config: any): boolean => {
+  // Don't retry refresh token requests
+  if (config.url?.includes('/auth/refresh-token')) {
+    return false;
+  }
+  // Don't retry login/logout requests
+  if (config.url?.includes('/auth/login') || config.url?.includes('/auth/logout')) {
+    return false;
+  }
+  return true;
+};
+
 axiosInstance.interceptors.response.use(
   (response) => {
     if (process.env.NODE_ENV === "development") {
-      console.log("✅ API Response:", response.status, response.config.url);
+      console.log("API Response:", response.status, response.config.url);
     }
     return response;
   },
   async (error: AxiosError) => {
     const originalRequest: any = error.config;
-    const { logout, refreshToken } = useAuthStore.getState();
+    const { logout, refreshAccessToken } = useAuthStore.getState();
 
-    // Nếu là 401 và chưa retry
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Nếu là 401 và chưa retry và request có thể retry
+    if (error.response?.status === 401 && !originalRequest._retry && shouldRetryRequest(originalRequest)) {
       if (isRefreshing) {
         // Nếu đang refresh → đưa request vào hàng đợi
         return new Promise((resolve, reject) => {
@@ -80,15 +94,22 @@ axiosInstance.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const newToken = await refreshToken(); // gọi store
+        console.log(" Attempting to refresh token due to 401...");
+        const newToken = await refreshAccessToken(); // gọi store
+        
         if (!newToken) throw new Error("Refresh failed");
+
+        console.log(" Token refreshed successfully, retrying request");
 
         processQueue(null, newToken);
 
         // Gắn token mới và retry
         originalRequest.headers["Authorization"] = "Bearer " + newToken;
+
         return axiosInstance(originalRequest);
+
       } catch (err) {
+        console.error("Token refresh failed:", err);
         processQueue(err, null);
         logout(); // Refresh fail → logout
         return Promise.reject(err);
@@ -99,7 +120,7 @@ axiosInstance.interceptors.response.use(
 
     // Log error trong dev
     if (process.env.NODE_ENV === "development") {
-      console.error("❌ API Error:", {
+      console.error(" API Error:", {
         status: error.response?.status,
         url: error.config?.url,
         method: error.config?.method,

@@ -110,7 +110,7 @@ export default function AdminCategories() {
     return (
       <div className="flex items-center justify-center h-64">
         <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-        <span className="ml-2 text-gray-600">Đang tải danh mục...</span>
+        <span className="ml-2 text-gray-600 dark:text-gray-400">Đang tải danh mục...</span>
       </div>
     );
   }
@@ -120,8 +120,8 @@ export default function AdminCategories() {
     return (
       <div className="flex flex-col items-center justify-center h-64">
         <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
-        <h3 className="text-lg font-medium text-gray-900 mb-2">Có lỗi xảy ra</h3>
-        <p className="text-gray-600 mb-4">Không thể tải danh sách danh mục</p>
+        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Có lỗi xảy ra</h3>
+        <p className="text-gray-600 dark:text-gray-400 mb-4">Không thể tải danh sách danh mục</p>
         <button
           onClick={handleRefresh}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
@@ -138,8 +138,8 @@ export default function AdminCategories() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Quản lý danh mục</h1>
-          <p className="text-gray-600">Quản lý các danh mục bài viết trong hệ thống</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Quản lý danh mục</h1>
+          <p className="text-gray-600 dark:text-gray-400">Quản lý các danh mục bài viết trong hệ thống</p>
         </div>
         <div className="flex items-center space-x-3">
           <button
@@ -167,53 +167,53 @@ export default function AdminCategories() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Tổng danh mục</p>
-              <p className="text-2xl font-bold text-gray-900">{categories.length}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Tổng danh mục</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{categories.length}</p>
             </div>
-            <div className="p-3 bg-blue-50 rounded-full">
+            <div className="p-3 bg-blue-50 dark:bg-blue-900/30 rounded-full">
               <FolderOpen className="h-6 w-6 text-blue-600" />
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Kết quả tìm kiếm</p>
-              <p className="text-2xl font-bold text-gray-900">{filteredCategories.length}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Kết quả tìm kiếm</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{filteredCategories.length}</p>
             </div>
-            <div className="p-3 bg-green-50 rounded-full">
+            <div className="p-3 bg-green-50 dark:bg-green-900/30 rounded-full">
               <Search className="h-6 w-6 text-green-600" />
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Đang tải</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Đang tải</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                 {isFetching ? "..." : "✓"}
               </p>
             </div>
-            <div className="p-3 bg-purple-50 rounded-full">
+            <div className="p-3 bg-purple-50 dark:bg-purple-900/30 rounded-full">
               <RefreshCw className={`h-6 w-6 text-purple-600 ${isFetching ? 'animate-spin' : ''}`} />
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Trạng thái</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Trạng thái</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                 {error ? "Lỗi" : "OK"}
               </p>
             </div>
-            <div className="p-3 bg-yellow-50 rounded-full">
+            <div className="p-3 bg-yellow-50 dark:bg-yellow-900/30 rounded-full">
               {error ? (
                 <AlertCircle className="h-6 w-6 text-red-600" />
               ) : (
@@ -225,7 +225,7 @@ export default function AdminCategories() {
       </div>
 
       {/* Search and Filter */}
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
         <div className="flex items-center space-x-4">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -234,10 +234,10 @@ export default function AdminCategories() {
               placeholder="Tìm kiếm danh mục..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400 dark:placeholder-gray-500"
             />
           </div>
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-gray-500 dark:text-gray-400">
             Tìm thấy {filteredCategories.length} danh mục
           </div>
         </div>
@@ -246,22 +246,22 @@ export default function AdminCategories() {
       {/* Categories Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredCategories.map((category) => (
-          <div key={category.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6">
+          <div key={category.id} className="bg-white dark:bg-slate-800 rounded-lg shadow-md hover:shadow-lg transition-shadow p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-3">
-                <div className="p-2 bg-blue-100 rounded-full">
+                <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-full">
                   <FolderOpen className="h-5 w-5 text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">{category.category}</h3>
-                  <span className="text-xs text-gray-500">{category.slug}</span>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{category.category}</h3>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">{category.slug}</span>
                 </div>
               </div>
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => handleEditCategory(category)}
                   disabled={updateCategoryMutation.isPending}
-                  className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors disabled:opacity-50"
+                  className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-full transition-colors disabled:opacity-50"
                 >
                   {updateCategoryMutation.isPending ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -272,7 +272,7 @@ export default function AdminCategories() {
                 <button
                   onClick={() => handleDeleteCategory(category.id)}
                   disabled={deleteCategoryMutation.isPending}
-                  className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors disabled:opacity-50"
+                  className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors disabled:opacity-50"
                 >
                   {deleteCategoryMutation.isPending ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -283,17 +283,17 @@ export default function AdminCategories() {
               </div>
             </div>
 
-            <p className="text-gray-600 text-sm mb-4 line-clamp-2">{category.description}</p>
+            <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2">{category.description}</p>
 
-            <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+            <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
               <div className="flex items-center space-x-1">
                 <Calendar className="h-4 w-4" />
                 <span>ID: {category.id}</span>
               </div>
             </div>
 
-            <div className="mt-3 pt-3 border-t border-gray-100">
-              <div className="w-full bg-gray-200 rounded-full h-2">
+            <div className="mt-3 pt-3 border-t border-gray-100 dark:border-slate-700">
+              <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2">
                 <div
                   className="h-2 rounded-full transition-all duration-300"
                   style={{
@@ -320,7 +320,13 @@ export default function AdminCategories() {
         isOpen={showEditModal}
         onClose={() => setShowEditModal(false)}
         onSubmit={handleSubmitCategory}
-        initialData={selectedCategory}
+        initialData={selectedCategory ? {
+          id: selectedCategory.id,
+          category: selectedCategory.category,
+          slug: selectedCategory.slug,
+          description: selectedCategory.description,
+          backgroundColor: selectedCategory.backgroundColor,
+        } : null}
         mode="edit"
       />
     </div>

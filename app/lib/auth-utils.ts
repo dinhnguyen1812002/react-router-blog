@@ -9,7 +9,7 @@
 export function clearAllAuthData(): void {
   if (typeof window === 'undefined') return;
 
-  console.log('🧹 Starting complete auth data cleanup...');
+  console.log('Starting complete auth data cleanup...');
 
   // 1. Clear localStorage
   const localStorageAuthKeys = [
@@ -132,7 +132,7 @@ export function clearAllAuthData(): void {
     }
   });
 
-  console.log('✅ Auth data cleanup completed');
+  console.log('Auth data cleanup completed');
 }
 
 /**
@@ -143,7 +143,8 @@ export function isAuthenticated(): boolean {
 
   const token = localStorage.getItem('token') || 
                 localStorage.getItem('authToken') || 
-                localStorage.getItem('access-token');
+                localStorage.getItem('access-token') 
+                localStorage.getItem('refresh-token');
 
   if (!token) return false;
 
@@ -153,14 +154,14 @@ export function isAuthenticated(): boolean {
     const currentTime = Date.now() / 1000;
     
     if (payload.exp < currentTime) {
-      console.log('🔒 Token expired, clearing auth data...');
+      console.log('Token expired, clearing auth data...');
       clearAllAuthData();
       return false;
     }
     
     return true;
   } catch (error) {
-    console.error('❌ Error validating token:', error);
+    console.error('Error validating token:', error);
     clearAllAuthData();
     return false;
   }
@@ -191,7 +192,7 @@ export function getCurrentUser(): any | null {
     
     return userStr ? JSON.parse(userStr) : null;
   } catch (error) {
-    console.error('❌ Error parsing user data:', error);
+    console.error('Error parsing user data:', error);
     return null;
   }
 }
@@ -201,7 +202,7 @@ export function getCurrentUser(): any | null {
  * Clear all auth data and redirect to login
  */
 export function handleAuthError(error?: any): void {
-  console.log('🔒 Authentication error detected, clearing session...');
+  console.log('Authentication error detected, clearing session...');
   
   // Clear all auth data
   clearAllAuthData();
@@ -230,7 +231,7 @@ export function handleAuthError(error?: any): void {
  * Safe logout function that can be called from anywhere
  */
 export function performLogout(): void {
-  console.log('👋 Performing logout...');
+  console.log('Performing logout...');
   
   // Clear all auth data
   clearAllAuthData();

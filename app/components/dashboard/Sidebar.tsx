@@ -16,6 +16,7 @@ import {
   Search,
   PanelRight,
 } from "lucide-react";
+import UserAvatar from "../ui/boring-avatar";
 
 interface SidebarProps {
   children: React.ReactNode;
@@ -129,11 +130,21 @@ export function Sidebar({ children, collapsed = false, onToggleCollapsed }: Side
               <Bell className="w-5 h-5 text-gray-500" />
             </button>
             <div className="flex items-center space-x-2">
-              <img
+              {/* <img
                 src={user?.avatar || "/avatar/avatar.jpg"}
                 alt="avatar"
                 className="w-8 h-8 rounded-full"
-              />
+              /> */}
+              <UserAvatar
+              variant="marble"
+              name={user?.username}
+              src={user?.avatar}
+              size={32}
+              colors={['#FF5733', '#FFC300', '#DAF7A6']}
+              alt={user?.username}
+               className="w-5 h-5 rounded-full" />
+
+
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 {user?.username}
               </span>

@@ -1,0 +1,69 @@
+{
+    "id": "018bca12-e660-4c0f-906a-09650f68aa06",
+    "user": {
+        "id": "8c7f2694-951d-4a12-8301-9385daef4e08",
+        "username": "Nguyên Đình",
+        "email": "dinhnguyen1812002@gmail.com",
+        "avatar": null,
+        "roles": null
+    },
+    "title": "Tôi viết cái gì???",
+    "slug": "t-i-vi-t-c-i-g----",
+    "excerpt": "sgfgsadfgsdf",
+    "createdAt": "2025-08-17T10:16:16.187+00:00",
+    "featured": true,
+    "content": "Tiển tích hợp (IDE) mạnh mẽ được phát triển bởi JetBrains. ",
+    "thumbnail": "http://localhost:8888/uploads/thumbnail/638910225637290000_Thinkpad X Series chính hãng giá rẻ _ Nhật Minh Laptop.jpg",
+    "categories": [
+        {
+            "id": 1,
+            "category": "cooking",
+            "backgroundColor": "#FFFF66"
+        }
+    ],
+    "tags": [
+        {
+            "name": "Ruby",
+            "slug": "ruby",
+            "description": "Ngôn ngữ với cú pháp thân thiện",
+            "color": "#cc342d",
+            "uuid": "d71b6587-7da7-48dd-a184-47f7dd0c46e9"
+        },
+        {
+            "name": "Java",
+            "slug": "java",
+            "description": "Ngôn ngữ hướng đối tượng mạnh mẽ",
+            "color": "#f89820",
+            "uuid": "d7a6639c-b6bb-43ed-b9cf-c6c2d73d47de"
+        }
+    ],
+    "commentCount": null,
+    "viewCount": 27,
+    "likeCount": 0,
+    "averageRating": 0.0,
+    "isLikedByCurrentUser": false,
+    "isSavedByCurrentUser": false,
+    "userRating": null,
+    "comments": [
+        {
+            "id": "acb87425-99b9-4f26-b22d-14a4d08f8adf",
+            "content": "vãi loko",
+            "user": {
+                "id": "833fc957-2ec6-4981-8aa8-dd8cf9f3a413",
+                "username": "rrrtest",
+                "email": "rrrtest@gmail.com",
+                "avatar": null,
+                "roles": null
+            },
+            "createdAt": "2025-10-01T02:33:35.661934Z",
+            "updatedAt": null,
+            "depth": 0,
+            "parentCommentId": null,
+            "replyCount": 0,
+            "replies": null,
+            "hasMoreReplies": false
+        }
+    ],
+    "public_date": null,
+    "is_publish": null
+}

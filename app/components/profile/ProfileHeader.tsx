@@ -59,7 +59,7 @@ export function ProfileHeader({
           <div className="flex-1 mt-16">
             <div className="flex items-center gap-3 mb-2">
               <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{user.username}</h1>
-              {user.roles.includes('ROLE_ADMIN') && (
+              {user.roles?.includes('ROLE_ADMIN') && (
                 <span className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 px-2 py-1 rounded-full text-xs font-medium">
                   Admin
                 </span>
