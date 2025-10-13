@@ -14,16 +14,23 @@ route("dashboard", "routes/dashboard/_layout.tsx", [
   route("bookmarks", "routes/dashboard/bookmarks.tsx"),
   route("my-posts", "routes/dashboard/my-posts.tsx"), // Thêm route mới cho My Posts
   route("settings", "routes/dashboard/settings.tsx"),
-  route("posts/new", "routes/dashboard/posts/new.tsx"),
-  route("posts/edit/:id", "routes/dashboard/posts/edit.tsx"), // ✅ Route edit post
+  // route("posts/new", "routes/dashboard/posts/new.tsx"),
+  // route("posts/edit/:id", "routes/dashboard/posts/edit.tsx"), //Route edit post
   route("analytics", "routes/dashboard/analytics.tsx"),
   route("profile", "routes/dashboard/profile/index.tsx"),
   route("profile/edit", "routes/dashboard/profile/edit.tsx"),
   route("newsletter", "routes/dashboard/newsletter.tsx"), // Newsletter management for users
+  route("article",  "routes/dashboard/posts/article.tsx"),
+  route("series", "routes/dashboard/series/index.tsx"),
+  route("series/new", "routes/dashboard/series/new.tsx"),
+  route("series/:id/edit", "routes/dashboard/series/edit.tsx"),
 ]),
+
 
   route("posts", "routes/posts._index.tsx"),
   route("posts/:slug", "routes/posts.slug.tsx"),
+  route("series", "routes/series._index.tsx"),
+  route("series/:slug", "routes/series.$slug.tsx"),
   route("categories", "routes/category.index.tsx"),
   route("search", "routes/search.tsx"),
   // route("auth-error-test", "routes/auth-error-test.tsx"),

@@ -122,7 +122,7 @@ export default function EditPostPage() {
     if (!postResponse) return;
     
     const post = postResponse;
-    console.log('📝 Populating form with post:', post);
+    console.log(' Populating form with post:', post);
     
     // Set basic fields
     setValue('title', post.title || '', { shouldValidate: false });
@@ -273,6 +273,7 @@ export default function EditPostPage() {
       <div className="flex items-center space-x-1">
         <Type className="w-3 h-3" />
         <span>{wordCount} từ</span>
+        
       </div>
       <div className="flex items-center space-x-1">
         <Clock className="w-3 h-3" />
@@ -627,12 +628,14 @@ export default function EditPostPage() {
                     </CardContent>
                   </Card>
 
+  
+
                   {/* Thumbnail Upload */}
                   <Card>
                     <CardHeader className="pb-3">
                       <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 flex items-center">
                         <ImageIcon className="w-4 h-4 mr-2" />
-                        Ảnh đại diện
+                        Thumbnai
                       </h3>
                     </CardHeader>
                     <CardContent>

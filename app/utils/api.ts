@@ -114,6 +114,39 @@ bookmarks: {
     updateNotes: (savedPostId: string) =>
       buildApiUrl(`post/notes/${savedPostId}`),
   },
+
+  // Series endpoints
+  series: {
+    list: (page?: number, size?: number, sortBy?: string, sortDirection?: string) => {
+      const params = new URLSearchParams();
+      if (page !== undefined) params.append("page", page.toString());
+      if (size !== undefined) params.append("size", size.toString());
+      if (sortBy) params.append("sortBy", sortBy);
+      if (sortDirection) params.append("sortDirection", sortDirection);
+      return buildApiUrl(`api/v1/series${params.toString() ? `?${params.toString()}` : ""}`);
+    },
+    byId: (id: string) => buildApiUrl(`api/v1/series/${id}`),
+    bySlug: (slug: string) => buildApiUrl(`api/v1/series/slug/${slug}`),
+    byUser: (userId: string, page?: number, size?: number) => {
+      const params = new URLSearchParams();
+      if (page !== undefined) params.append("page", page.toString());
+      if (size !== undefined) params.append("size", size.toString());
+      return buildApiUrl(`api/v1/series/user/${userId}${params.toString() ? `?${params.toString()}` : ""}`);
+    },
+    create: () => buildApiUrl("api/v1/series"),
+    update: (id: string) => buildApiUrl(`api/v1/series/${id}`),
+    delete: (id: string) => buildApiUrl(`api/v1/series/${id}`),
+    search: () => buildApiUrl("api/v1/series/search"),
+    popular: (page?: number, size?: number) => {
+      const params = new URLSearchParams();
+      if (page !== undefined) params.append("page", page.toString());
+      if (size !== undefined) params.append("size", size.toString());
+      return buildApiUrl(`api/v1/series/popular${params.toString() ? `?${params.toString()}` : ""}`);
+    },
+    addPost: (seriesId: string) => buildApiUrl(`api/v1/series/${seriesId}/posts`),
+    removePost: (seriesId: string, postId: string) => buildApiUrl(`api/v1/series/${seriesId}/posts/${postId}`),
+    reorderPosts: (seriesId: string) => buildApiUrl(`api/v1/series/${seriesId}/posts/reorder`),
+  },
 } as const;
 
 // Helper function to get base API URL

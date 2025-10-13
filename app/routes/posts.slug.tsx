@@ -244,13 +244,18 @@ export default function PostDetailPage() {
                       <Link
                         key={category.id}
                         to={`/posts?category=${category.slug}`}
-                        className="px-3 py-1 rounded-full text-sm font-medium text-white hover:opacity-80 transition-opacity"
-                        style={{
-                          backgroundColor:
-                            category.backgroundColor || "#3B82F6",
-                        }}
+                        className=""
+
                       >
-                        {category.category}
+                        <span
+                          className="px-2 py-1 rounded-full text-xs font-medium shadow-sm "
+                          style={{
+                            border: `1px solid ${post.categories[0].backgroundColor || "#3B82F6"}`,
+                            color: post.categories[0].backgroundColor || "#3B82F6",
+                          }}
+                        >
+                          {post.categories[0].category}
+                        </span>
                       </Link>
                     ))}
                   </>
@@ -262,6 +267,8 @@ export default function PostDetailPage() {
                   </span>
                 )}
               </div>
+
+            
 
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
                 {post.title}
@@ -447,9 +454,9 @@ export default function PostDetailPage() {
                   </AvatarFallback>
                 </Avatar> */}
 
-                <UserAvatar 
-                name={post.user.username}   
-                src={post.user.avatar || ""}
+                <UserAvatar
+                  name={post.user.username}
+                  src={post.user.avatar || ""}
                 />
                 <div className="flex-1">
                   <div className="flex items-center justify-between">

@@ -39,6 +39,12 @@ export const Header = () => {
               Bài viết
             </Link>
             <Link
+              to="/series"
+              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            >
+              Series
+            </Link>
+            <Link
               to="/memes"
               className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             >

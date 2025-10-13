@@ -11,14 +11,14 @@ import { useState, useEffect } from 'react';
 import { useAuthInit } from '~/hooks/useAuthInit';
 import { Toaster, toast } from 'sonner';
 import { useThemeStore } from '~/store/themeStore';
-import { AuthDebug } from '~/components/AuthDebug';
+
 
 
 
 import type { Route } from "./+types/root";
 import stylesheet from "./app.css?url";
-import animations from "./styles/animations.css?url";
 import theme from "./styles/theme.css?url";
+
 import LoadingSpinner from "./components/Loading";
 
 
@@ -41,6 +41,7 @@ export const links: Route.LinksFunction = () => [
   },
   { rel: "stylesheet", href: theme },
   { rel: "stylesheet", href: stylesheet },
+  // {rel: "stylesheet", href: animations}
 
   // { rel: "stylesheet", href: animations },
 ];

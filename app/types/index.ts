@@ -150,3 +150,64 @@ export interface Meme {
   likes?: number;
   views?: number;
 }
+
+// Series types
+export interface Series {
+  id: string;
+  title: string;
+  slug: string;
+  description: string;
+  thumbnail?: string | null;
+  userId: string;
+  username: string;
+  userAvatar?: string | null;
+  isActive: boolean;
+  isCompleted: boolean;
+  totalPosts: number;
+  viewCount: number;
+  posts: SeriesPost[];
+  createdAt: string;
+  updatedAt: string;
+  // Legacy support - will be removed
+  author?: {
+    id: string;
+    username: string;
+  };
+  postCount?: number;
+}
+
+export interface SeriesPost {
+  id: string;
+  title: string;
+  slug: string;
+  order?: number;
+}
+
+export interface CreateSeriesRequest {
+  title: string;
+  slug: string;
+  description: string;
+}
+
+export interface UpdateSeriesRequest {
+  title?: string;
+  slug?: string;
+  description?: string;
+}
+
+export interface AddPostToSeriesRequest {
+  postId: string;
+}
+
+export interface ReorderSeriesPostsRequest {
+  postIds: string[];
+}
+
+export interface SeriesSearchRequest {
+  keyword?: string;
+  authorId?: string;
+  page?: number;
+  size?: number;
+  sortBy?: string;
+  sortDirection?: 'ASC' | 'DESC';
+}

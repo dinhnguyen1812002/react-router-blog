@@ -22,21 +22,12 @@ import {
   Type,
   Clock,
   BookOpen,
-  Zap,
+
   Focus,
-  Palette,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
-  MoreHorizontal,
+ 
   ChevronDown,
-  ChevronUp,
-  Download,
-  Upload,
-  History,
-  Target,
+
   Lightbulb,
-  Wand2
 } from 'lucide-react';
 import { Card, CardHeader, CardContent } from '~/components/ui/Card';
 
@@ -329,7 +320,7 @@ export default function NewPostPageOptimized() {
                     placeholder="Nhập tiêu đề bài viết..."
                     className="w-full text-3xl font-bold bg-transparent border-none outline-none text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-0"
                   />
-                  <div className="mt-3 flex items-center justify-between text-sm">
+                  {/* <div className="mt-3 flex items-center justify-between text-sm">
                     <div className="flex items-center space-x-4">
                       <span className="text-gray-500 dark:text-gray-400">
                         {titleCharCount}/200 ký tự
@@ -347,13 +338,13 @@ export default function NewPostPageOptimized() {
                         {wordCount} từ • ~{readingTimeMinutes} phút đọc
                       </span>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
 
               {/* Enhanced Content Editor */}
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-                <div className="border-b border-gray-100 dark:border-gray-700 p-3">
+                {/* <div className="border-b border-gray-100 dark:border-gray-700 p-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -388,7 +379,7 @@ export default function NewPostPageOptimized() {
                       </button>
                     </div>
                   </div>
-                </div>
+                </div> */}
                 <div>
                   <EditorWrapper
                     contentType={contentType}
@@ -498,7 +489,7 @@ export default function NewPostPageOptimized() {
                     <CardHeader className="pb-3">
                       <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 flex items-center">
                         <ImageIcon className="w-4 h-4 mr-2" />
-                        Ảnh đại diện
+                        Thumbnai
                       </h3>
                     </CardHeader>
                     <CardContent>

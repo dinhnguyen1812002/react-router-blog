@@ -131,7 +131,7 @@ export default function HomePage() {
   const categories = categoriesData;
 
   const trendingTags = tagsData;
-  console.log( categories);
+ 
   return (
     <MainLayout>
       {/* Enhanced Hero Section */}

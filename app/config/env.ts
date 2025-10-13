@@ -1,7 +1,7 @@
 // Environment configuration
 export const env = {
   // API Configuration
-  API_BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8888/api/v1',
+  API_BASE_URL: import.meta.env.VITE_API_BASE_URL ,
   API_TIMEOUT: parseInt(import.meta.env.VITE_API_TIMEOUT || '10000'),
   
   // App Configuration
@@ -33,7 +33,7 @@ export const buildApiUrl = (endpoint: string) => {
 
 // Log environment info in development
 if (isDev()) {
-  console.log('🔧 Environment Config:', {
+  console.log('Environment Config:', {
     API_BASE_URL: env.API_BASE_URL,
     API_TIMEOUT: env.API_TIMEOUT,
     NODE_ENV: env.NODE_ENV,

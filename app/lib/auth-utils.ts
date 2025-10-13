@@ -43,7 +43,7 @@ export function clearAllAuthData(): void {
       lowerKey.includes('credential')
     ) {
       localStorage.removeItem(key);
-      console.log(`🗑️ Removed localStorage key: ${key}`);
+      console.log(`Removed localStorage key: ${key}`);
     }
   });
 
@@ -78,7 +78,7 @@ export function clearAllAuthData(): void {
       lowerKey.includes('credential')
     ) {
       sessionStorage.removeItem(key);
-      console.log(`🗑️ Removed sessionStorage key: ${key}`);
+      console.log(`Removed sessionStorage key: ${key}`);
     }
   });
 
@@ -119,7 +119,7 @@ export function clearAllAuthData(): void {
       document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${rootDomain};`;
     }
     
-    console.log(`🍪 Cleared cookie: ${cookieName}`);
+    console.log(`Cleared cookie: ${cookieName}`);
   });
 
   // Clear all cookies (nuclear option)
