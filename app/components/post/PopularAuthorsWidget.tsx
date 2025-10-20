@@ -170,7 +170,7 @@ export default function PopularAuthorsWidget({
                     {author.username.charAt(0).toUpperCase()}
                   </span>
                 </div>
-                <div className="absolute -top-1 -right-1 bg-white dark:bg-gray-800 rounded-full p-0.5">
+                <div className="absolute -top-1 -right-1 bg-white dark:bg-black rounded-full p-0.5">
                   {getRankIcon(author.stats.rank)}
                 </div>
               </div>

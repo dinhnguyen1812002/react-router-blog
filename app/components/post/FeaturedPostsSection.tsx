@@ -100,13 +100,13 @@ export default function FeaturedPostsSection({
           <div className="flex items-center space-x-2">
             <button
               onClick={goToPrevious}
-              className="p-2 rounded-full bg-white dark:bg-gray-800 shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700"
+              className="p-2 rounded-full bg-white dark:bg-black shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700"
             >
               <ChevronLeft className="h-4 w-4 text-gray-600 dark:text-gray-400" />
             </button>
             <button
               onClick={goToNext}
-              className="p-2 rounded-full bg-white dark:bg-gray-800 shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700"
+              className="p-2 rounded-full bg-white dark:bg-black shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700"
             >
               <ChevronRight className="h-4 w-4 text-gray-600 dark:text-gray-400" />
             </button>
@@ -115,7 +115,7 @@ export default function FeaturedPostsSection({
       </div>
 
       {/* Main Featured Post */}
-      <div className="relative bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+      <div className="relative bg-white dark:bg-black rounded-xl shadow-lg overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
           {/* Image */}
           <div className="relative h-64 lg:h-96">
@@ -147,10 +147,10 @@ export default function FeaturedPostsSection({
 
             {/* Quick Actions */}
             <div className="absolute top-4 right-4 flex space-x-2">
-              <button className="p-2 bg-white/90 dark:bg-gray-800/90 rounded-full hover:bg-white dark:hover:bg-gray-800 transition-colors">
+              <button className="p-2 bg-white/90 dark:bg-black/90 rounded-full hover:bg-white dark:hover:bg-gray-800 transition-colors">
                 <Bookmark className="h-4 w-4 text-gray-600 dark:text-gray-400" />
               </button>
-              <button className="p-2 bg-white/90 dark:bg-gray-800/90 rounded-full hover:bg-white dark:hover:bg-gray-800 transition-colors">
+              <button className="p-2 bg-white/90 dark:bg-black/90 rounded-full hover:bg-white dark:hover:bg-gray-800 transition-colors">
                 <Share2 className="h-4 w-4 text-gray-600 dark:text-gray-400" />
               </button>
             </div>
@@ -267,7 +267,7 @@ export default function FeaturedPostsSection({
               <Link
                 key={post.id}
                 to={`/posts/${post.slug}`}
-                className="group bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-gray-200 dark:border-gray-700"
+                className="group bg-white dark:bg-black rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-gray-200 dark:border-gray-700"
               >
                 <div className="aspect-video relative">
                   {post.thumbnail || post.thumbnailUrl ? (

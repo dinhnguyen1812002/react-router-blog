@@ -274,7 +274,7 @@ export default function SearchPage() {
                                 className={`px-3 py-2 text-sm rounded-md transition-colors ${
                                   pageNum === page
                                     ? "bg-blue-600 text-white"
-                                    : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700"
+                                    : "bg-white dark:bg-black text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700"
                                 }`}
                               >
                                 {pageNum + 1}

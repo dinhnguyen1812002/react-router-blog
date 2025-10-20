@@ -20,8 +20,8 @@ export const ThemedCard = ({
   const baseClasses = 'theme-card transition-all duration-300';
   
   const variantClasses = {
-    default: 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700',
-    elevated: 'bg-white dark:bg-gray-800 border-0 shadow-lg dark:shadow-gray-900/20',
+    default: 'bg-white dark:bg-black border border-gray-200 dark:border-gray-700',
+    elevated: 'bg-white dark:bg-black border-0 shadow-lg dark:shadow-gray-900/20',
     outlined: 'bg-transparent border-2 border-gray-200 dark:border-gray-700',
     glass: 'theme-glass backdrop-blur-sm'
   };

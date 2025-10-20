@@ -36,7 +36,7 @@ export default function NotificationDemo() {
   };
 
   return (
-    <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+    <div className="p-6 bg-white dark:bg-black rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
       <h3 className="text-lg font-semibold mb-4">Notification System Demo</h3>
       
       {/* Connection Status */}

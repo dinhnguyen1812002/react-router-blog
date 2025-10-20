@@ -276,7 +276,7 @@ export default function GlobalSearch({
         {showResults && (
           <div 
             ref={resultsRef}
-            className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto"
+            className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto"
           >
             {/* Loading State */}
             {isLoadingResults && debouncedQuery.length >= 2 && (

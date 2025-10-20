@@ -183,7 +183,7 @@ export default function TableOfContents({
 
   return (
     <div className={containerClasses}>
-      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+      <div className="bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
           <div className="flex items-center space-x-2">
@@ -288,7 +288,7 @@ export default function TableOfContents({
 
       {/* Progress indicator */}
       {highlightActive && tocItems.length > 0 && (
-        <div className="mt-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3">
+        <div className="mt-4 bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-lg p-3">
           <div className="flex items-center justify-between text-sm">
             <span className="text-gray-600 dark:text-gray-400">Tiến độ đọc</span>
             <span className="font-medium text-gray-900 dark:text-white">

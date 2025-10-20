@@ -97,7 +97,7 @@ File `app/styles/post-content.css` chứa tất cả styling tùy chỉnh cho n�
 
 /* Code Blocks */
 .post-content pre {
-  @apply bg-gray-900 dark:bg-gray-800 text-gray-100;
+  @apply bg-gray-900 dark:bg-black text-gray-100;
   @apply p-6 rounded-xl overflow-x-auto;
   @apply my-8;
   @apply border border-gray-700 dark:border-gray-600;
@@ -117,7 +117,7 @@ File `app/styles/post-content.css` chứa tất cả styling tùy chỉnh cho n�
 
 #### Meta Information Cards
 ```tsx
-<div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 p-8 mb-8">
+<div className="bg-white dark:bg-black rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 p-8 mb-8">
 ```
 
 #### Action Buttons

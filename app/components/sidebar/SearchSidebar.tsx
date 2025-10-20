@@ -154,7 +154,7 @@ export default function SearchSidebar({
 
           {/* Search Results Dropdown */}
           {showResults && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+            <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
               {isLoadingResults ? (
                 <div className="p-4 text-center">
                   <Loader2 className="h-5 w-5 animate-spin text-blue-500 mx-auto mb-2" />

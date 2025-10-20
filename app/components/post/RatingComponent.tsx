@@ -189,7 +189,7 @@ export const RatingComponent = ({
 
       {/* Authentication Prompt */}
       {!isAuthenticated && (
-        <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg text-center">
+        <div className="bg-gray-50 dark:bg-black p-3 rounded-lg text-center">
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Đăng nhập để đánh giá bài viết này
           </p>

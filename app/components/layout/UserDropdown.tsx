@@ -93,7 +93,7 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
 
       {/* Dropdown Menu */}
       {isDropdownOpen && (
-        <div className="absolute right-0 mt-2 w-56 sm:w-64 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-600 py-2 z-50 animate-dropdown-in">
+        <div className="absolute right-0 mt-2 w-56 sm:w-64 bg-white dark:bg-black rounded-lg shadow-xl border border-gray-200 dark:border-gray-600 py-2 z-50 animate-dropdown-in">
           {/* User Info Header */}
           <div className="px-4 py-2 border-b border-gray-100 dark:border-gray-600">
             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{user.username}</p>

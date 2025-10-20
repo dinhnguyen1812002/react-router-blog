@@ -49,6 +49,7 @@ const processQueue = (error: any, token: string | null = null) => {
       prom.reject(error);
     }
   });
+  
   failedQueue = [];
 };
 

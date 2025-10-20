@@ -32,6 +32,7 @@ export default function NewLetters() {
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     if (!emailRegex.test(email)) {
       setValidationError("Please enter a valid email address.");
       return false;
@@ -47,7 +48,7 @@ export default function NewLetters() {
     if (!validateForm()) return;
 
     const payload = {
-      email: email.trim(),
+      email: email.trim() ,
       ...(name.trim() && { name: name.trim() })
     };
 
@@ -72,8 +73,7 @@ export default function NewLetters() {
                       "An error occurred while subscribing. Please try again.";
 
   // Get success message
-  const successMessage = subscribeMutation.data?.message || 
-                         "Subscription successful! Please check your email to confirm.";
+  const successMessage =  "Subscription successful! Please check your email to confirm.";
 
   return (
     <section className="relative isolate overflow-hidden  py-16 sm:py-24 lg:py-32 rounded-lg mt-20">
@@ -153,7 +153,7 @@ export default function NewLetters() {
                   }}
                   disabled={isLoading}
                   placeholder="your.email@example.com"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-black text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 />
               </div>
               
@@ -172,7 +172,7 @@ export default function NewLetters() {
                   }}
                   disabled={isLoading}
                   placeholder="Nguyễn Văn A"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-black text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 />
               </div>
               
@@ -208,7 +208,7 @@ export default function NewLetters() {
           
           {/* Features Section */}
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-            <div className="flex flex-col items-start p-6 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-200/50 dark:border-gray-700/50">
+            <div className="flex flex-col items-start p-6 bg-white/50 dark:bg-black/50 backdrop-blur-sm rounded-2xl border border-gray-200/50 dark:border-gray-700/50">
               <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl mb-4">
                 <CalendarDays className="w-6 h-6 text-blue-600 dark:text-blue-400" />
               </div>
@@ -220,7 +220,7 @@ export default function NewLetters() {
               </p>
             </div>
 
-            <div className="flex flex-col items-start p-6 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-200/50 dark:border-gray-700/50">
+            <div className="flex flex-col items-start p-6 bg-white/50 dark:bg-black/50 backdrop-blur-sm rounded-2xl border border-gray-200/50 dark:border-gray-700/50">
               <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-xl mb-4">
                 <Shield className="w-6 h-6 text-green-600 dark:text-green-400" />
               </div>
@@ -232,7 +232,7 @@ export default function NewLetters() {
               </p>
             </div>
 
-            <div className="flex flex-col items-start p-6 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-200/50 dark:border-gray-700/50">
+            <div className="flex flex-col items-start p-6 bg-white/50 dark:bg-black/50 backdrop-blur-sm rounded-2xl border border-gray-200/50 dark:border-gray-700/50">
               <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-xl mb-4">
                 <FlagOff className="w-6 h-6 text-purple-600 dark:text-purple-400" />
               </div>
@@ -244,7 +244,7 @@ export default function NewLetters() {
               </p>
             </div>
 
-            <div className="flex flex-col items-start p-6 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-200/50 dark:border-gray-700/50">
+            <div className="flex flex-col items-start p-6 bg-white/50 dark:bg-black/50 backdrop-blur-sm rounded-2xl border border-gray-200/50 dark:border-gray-700/50">
               <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-xl mb-4">
                 <CheckCircle className="w-6 h-6 text-orange-600 dark:text-orange-400" />
               </div>

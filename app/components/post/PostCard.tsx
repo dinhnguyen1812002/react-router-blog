@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import { Card, CardContent, CardHeader } from "~/components/ui/Card";
 import { formatDateSimple } from "~/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/Avatar";
+
 import {
   Heart,
   Eye,
@@ -24,8 +24,8 @@ interface PostCardProps {
 export const PostCard = ({ post }: PostCardProps) => {
   return (
     <Card
-      className="group hover:shadow-lg dark:hover:shadow-gray-900/50
-  transition-all duration-300 overflow-hidden border-0 shadow-sm bg-white dark:bg-gray-800 w-full max-w-md p-0"
+      className="group dark:hover:shadow-gray-900/50
+  transition-all duration-300 overflow-hidden border shadow-sm bg-white dark:bg-black w-full max-w-md p-0 "
     >
       {/* Hình ảnh */}
       <div className="relative">
@@ -65,7 +65,7 @@ export const PostCard = ({ post }: PostCardProps) => {
             postId={post.id}
             initialBookmarked={post.isSavedByCurrentUser}
             variant="compact"
-            className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm"
+            className="bg-white/90 dark:bg-black/90 backdrop-blur-sm"
           />
         </div>
 
@@ -98,7 +98,7 @@ export const PostCard = ({ post }: PostCardProps) => {
             </Avatar> */}
             <UserAvatar 
             name={post.user.username}   
-            src={post.user.avatar || ""}
+            src={post.user.avatar }
             size={20}
             variant="marble"
            

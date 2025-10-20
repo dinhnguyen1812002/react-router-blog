@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, Link, useNavigate } from "react-router";
 import { MainLayout } from "~/components/layout/MainLayout";
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/Avatar";
+
 import { Button } from "~/components/ui/button";
 import { postsApi } from "~/api/posts";
 import { formatDate, calculateReadingTime, formatNumber } from "~/lib/utils";
@@ -193,8 +193,8 @@ export default function PostDetailPage() {
         position="top"
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="max-w-7xl">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-4xl">
           {/* Main Content */}
           <div className="lg:col-span-3">
             {/* Breadcrumb */}
@@ -322,7 +322,7 @@ export default function PostDetailPage() {
                     <BookmarkButton
                       postId={post.id}
                       initialBookmarked={post.isSavedByCurrentUser}
-                      className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm"
+                      className="bg-white/90 dark:bg-black/90 backdrop-blur-sm"
                     />
 
                     {/* Share Button */}
@@ -337,7 +337,7 @@ export default function PostDetailPage() {
 
                       {/* Share Menu */}
                       {showShareMenu && (
-                        <div className="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10">
+                        <div className="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10">
                           <div className="p-2">
                             <button
                               onClick={() => handleShare("facebook")}
@@ -379,7 +379,7 @@ export default function PostDetailPage() {
                       </button>
 
                       {showMoreMenu && (
-                        <div className="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10">
+                        <div className="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10">
                           <div className="p-2">
                             {canEditPost && (
                               <>
@@ -442,7 +442,7 @@ export default function PostDetailPage() {
                 }}
               />
             </article>
-            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 mb-8">
+            <div className="bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-lg p-6 mb-8">
               <div className="flex items-start space-x-4">
                 {/* <Avatar className="w-12 h-12">
                   <AvatarImage
@@ -524,7 +524,7 @@ export default function PostDetailPage() {
           {/* <div className="lg:col-span-1 sticky top-20 ">
             <div className=" space-y-6">
               {relatedPosts.length > 0 && (
-                <div className=" bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+                <div className=" bg-white dark:bg-black rounded-lg p-6 border border-gray-200 dark:border-gray-700">
                   <h3 className="font-semibold text-gray-900 dark:text-white mb-4">
                     Related Posts
                   </h3>

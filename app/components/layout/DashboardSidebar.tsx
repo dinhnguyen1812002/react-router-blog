@@ -192,7 +192,7 @@ export const DashboardSidebar = ({
 
   return (
     <div className={`
-      fixed inset-y-0 left-0 z-50 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 shadow-xl transform transition-all duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0
+      fixed inset-y-0 left-0 z-50 bg-white dark:bg-black border-r border-gray-200 dark:border-gray-700 shadow-xl transform transition-all duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0
       ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       ${sidebarCollapsed ? 'lg:w-16' : 'lg:w-72'}
       w-72
@@ -463,7 +463,7 @@ export const DashboardSidebar = ({
         )}
 
         {/* Sidebar footer */}
-        <div className="p-3 border-t border-gray-200 dark:border-gray-700 space-y-2 bg-gray-50/50 dark:bg-gray-800/50">
+        <div className="p-3 border-t border-gray-200 dark:border-gray-700 space-y-2 bg-gray-50/50 dark:bg-black/50">
           {/* Theme toggle */}
           {/* {sidebarCollapsed ? (
             <ThemedIconButton

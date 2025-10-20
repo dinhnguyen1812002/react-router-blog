@@ -182,7 +182,7 @@ export default function ThumbnailUpload({
           />
           
           <div className="space-y-4">
-            <div className="mx-auto w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+            <div className="mx-auto w-16 h-16 bg-gray-100 dark:bg-black rounded-full flex items-center justify-center">
               <ImageIcon className="w-8 h-8 text-gray-400" />
             </div>
             
@@ -216,7 +216,7 @@ export default function ThumbnailUpload({
             {/* Upload progress overlay */}
             {uploadMutation.isPending && uploadProgress && (
               <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 min-w-[200px]">
+                <div className="bg-white dark:bg-black rounded-lg p-4 min-w-[200px]">
                   <div className="flex items-center gap-3 mb-2">
                     <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
                     <span className="text-sm font-medium">Đang upload...</span>
@@ -236,7 +236,7 @@ export default function ThumbnailUpload({
           </div>
 
           {/* File info */}
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+          <div className="bg-gray-50 dark:bg-black rounded-lg p-3">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">

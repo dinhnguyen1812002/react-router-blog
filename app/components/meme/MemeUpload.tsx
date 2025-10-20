@@ -88,7 +88,7 @@ export default function MemeUpload() {
         </p>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-black rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
         {/* Upload Mode Toggle */}
         <div className="p-6 border-b border-gray-200 dark:border-gray-700">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
@@ -236,7 +236,7 @@ export default function MemeUpload() {
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {files.map((file, index) => (
-                <div key={index} className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-gray-600">
+                <div key={index} className="bg-white dark:bg-black rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-gray-600">
                   <div className="relative">
                     <img
                       src={URL.createObjectURL(file)}

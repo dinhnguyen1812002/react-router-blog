@@ -11,7 +11,7 @@ export const LoadingSkeleton = ({ className = '' }: LoadingSkeletonProps) => {
 // Card skeleton
 export const CardSkeleton = () => {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+    <div className="bg-white dark:bg-black rounded-lg border border-gray-200 dark:border-gray-700 p-6">
       <div className="animate-pulse">
         <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
         <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-3"></div>
@@ -32,7 +32,7 @@ export const StatsSkeleton = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {[...Array(4)].map((_, i) => (
-        <div key={i} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <div key={i} className="bg-white dark:bg-black rounded-lg border border-gray-200 dark:border-gray-700 p-6">
           <div className="animate-pulse">
             <div className="flex items-center justify-between">
               <div className="flex-1">
@@ -54,7 +54,7 @@ export const ListSkeleton = ({ items = 5 }: { items?: number }) => {
   return (
     <div className="space-y-4">
       {[...Array(items)].map((_, i) => (
-        <div key={i} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <div key={i} className="bg-white dark:bg-black rounded-lg border border-gray-200 dark:border-gray-700 p-6">
           <div className="animate-pulse">
             <div className="flex items-start space-x-4">
               <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-lg flex-shrink-0"></div>
@@ -84,7 +84,7 @@ export const GridSkeleton = ({ items = 6 }: { items?: number }) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {[...Array(items)].map((_, i) => (
-        <div key={i} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div key={i} className="bg-white dark:bg-black rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
           <div className="animate-pulse">
             <div className="h-48 bg-gray-200 dark:bg-gray-700"></div>
             <div className="p-6">

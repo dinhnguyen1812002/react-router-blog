@@ -81,7 +81,7 @@ export function NotificationToast({
       case 'bookmark':
         return 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800 text-purple-800 dark:text-purple-200';
       case 'system':
-        return 'bg-gray-50 dark:bg-gray-900/20 border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-200';
+        return 'bg-gray-50 dark:bg-black/20 border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-200';
       default:
         return 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200';
     }

@@ -103,7 +103,7 @@ export default function ReadingProgressBar({
     <>
       {/* Progress Bar */}
       <div className={progressBarClasses}>
-        <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 shadow-sm">
+        <div className="bg-white/95 dark:bg-black/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 shadow-sm">
           {/* Progress Bar */}
           <div
             ref={progressBarRef}
@@ -145,7 +145,7 @@ export default function ReadingProgressBar({
               {showBackToTop && scrollProgress > 10 && (
                 <button
                   onClick={scrollToTop}
-                  className="p-1.5 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                  className="p-1.5 rounded-full bg-gray-100 dark:bg-black hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                   title="Về đầu trang"
                 >
                   <ArrowUp className="h-4 w-4 text-gray-600 dark:text-gray-400" />
@@ -160,7 +160,7 @@ export default function ReadingProgressBar({
       {showBackToTop && isVisible && scrollProgress > 20 && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-6 right-6 z-40 p-3 rounded-full bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:scale-110 group"
+          className="fixed bottom-6 right-6 z-40 p-3 rounded-full bg-white dark:bg-black shadow-lg hover:shadow-xl border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:scale-110 group"
           title="Về đầu trang"
         >
           <ArrowUp className="h-5 w-5 text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
@@ -191,7 +191,7 @@ export default function ReadingProgressBar({
       )}
 
       {/* Mini Progress Indicator (Mobile) */}
-      <div className="fixed top-0 left-0 right-0 z-50 h-0.5 bg-gray-200 dark:bg-gray-800 md:hidden">
+      <div className="fixed top-0 left-0 right-0 z-50 h-0.5 bg-gray-200 dark:bg-black md:hidden">
         <div
           className="h-full transition-all duration-150 ease-out"
           style={{

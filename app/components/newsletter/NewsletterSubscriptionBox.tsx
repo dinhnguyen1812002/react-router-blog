@@ -130,7 +130,7 @@ export default function NewsletterSubscriptionBox({
   // Sidebar variant
   if (variant === 'sidebar') {
     return (
-      <div className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 ${className}`}>
+      <div className={`bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-lg p-4 ${className}`}>
         <div className="text-center mb-4">
           <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center mx-auto mb-3">
             <Mail className="h-6 w-6 text-blue-600 dark:text-blue-400" />
@@ -262,7 +262,7 @@ export default function NewsletterSubscriptionBox({
 
   // Default variant
   return (
-    <div className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 ${className}`}>
+    <div className={`bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-lg p-6 ${className}`}>
       <div className="text-center mb-6">
         <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center mx-auto mb-4">
           <Mail className="h-6 w-6 text-blue-600 dark:text-blue-400" />

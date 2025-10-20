@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation } from "react-router";
-import { useState } from "react";
+import { use, useState } from "react";
 import { useAuthStore } from "~/store/authStore";
 import {
   Home,
@@ -21,6 +21,11 @@ import {
   TooltipTrigger,
 } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
+import { ThemeToggle } from "../tiptap-templates/simple/theme-toggle";
+import { ThemeSwitch } from "../ui/ThemeToggle";
+
+import UserAvatar from "../ui/boring-avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 interface SidebarProps {
   collapsed: boolean;
@@ -28,14 +33,18 @@ interface SidebarProps {
   children: React.ReactNode;
 }
 
-export function Sidebar({ collapsed, onToggleCollapsed, children }: SidebarProps) {
+export function Sidebar({
+  collapsed,
+  onToggleCollapsed,
+  children,
+}: SidebarProps) {
   const location = useLocation();
   const { user, logout } = useAuthStore();
 
   const navItems = [
     { name: "Tổng quan", path: "/dashboard", icon: Home },
     { name: "Bài viết của tôi", path: "/dashboard/my-posts", icon: FileText },
-    { name: "Viết bài mới", path: "/dashboard/posts/new", icon: PlusCircle },
+    { name: "Viết bài mới", path: "/dashboard/article", icon: PlusCircle },
     { name: "Series", path: "/dashboard/series", icon: BookOpen },
     { name: "Bài viết đã lưu", path: "/dashboard/bookmarks", icon: Bookmark },
     { name: "Thống kê", path: "/dashboard/analytics", icon: BarChart3 },
@@ -48,7 +57,7 @@ export function Sidebar({ collapsed, onToggleCollapsed, children }: SidebarProps
       ? location.pathname === "/dashboard"
       : location.pathname.startsWith(path);
 
-  const NavItem = ({ item }: { item: typeof navItems[0] }) => {
+  const NavItem = ({ item }: { item: (typeof navItems)[0] }) => {
     const active = isActive(item.path);
     const Icon = item.icon;
 
@@ -57,9 +66,9 @@ export function Sidebar({ collapsed, onToggleCollapsed, children }: SidebarProps
         variant="ghost"
         asChild
         className={cn(
-          "w-full justify-start gap-3 transition-colors",
+          "w-full justify-start gap-3 transition-colors rounded-none",
           collapsed ? "justify-center px-2" : "px-3",
-          active && "bg-muted"
+          active && "border-l-3 border-black dark:border-white"
         )}
       >
         <Link to={item.path}>
@@ -74,6 +83,7 @@ export function Sidebar({ collapsed, onToggleCollapsed, children }: SidebarProps
         <TooltipProvider>
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>{button}</TooltipTrigger>
+
             <TooltipContent side="right">
               <p>{item.name}</p>
             </TooltipContent>
@@ -90,17 +100,43 @@ export function Sidebar({ collapsed, onToggleCollapsed, children }: SidebarProps
       {/* Sidebar */}
       <aside
         className={cn(
-          "sticky top-0 h-screen flex flex-col border-r  transition-all duration-300  dark:bg-muted/40",
+          "sticky top-0  h-screen flex flex-col border-r  transition-all duration-300  dark:bg-black/40",
           collapsed ? "w-16" : "w-64"
         )}
       >
         {/* Header */}
-        <div className="flex h-16 items-center px-4 dark:text-white">
-          {!collapsed &&  
-            <Link to="/dashboard" className="flex items-center space-x-2">
-                  <span className="text-lg font-semibold dark:text-white">BlogPlatform</span>
-              </Link>
-          }
+        <div className="flex h-16 items-center px-4 dark:text-white z-50">
+          <Link to="/dashboard" className="flex items-center space-x-2 w-full">
+            {/* Avatar luôn hiển thị */}
+            <Avatar className="h-8 w-8 rounded-lg shrink-0">
+              <AvatarImage src={user?.avatar} alt={user?.username} />
+              <AvatarFallback className="rounded-lg bg-black text-white dark:bg-white dark:text-black">
+                {user?.username?.charAt(0)?.toUpperCase() || "U"}
+              </AvatarFallback>
+            </Avatar>
+            {/* <UserAvatar
+              src={user?.avatar}
+              alt={user?.username}
+              variant="marble"
+              colors={["#5b1d99", "#0074b4", "#00b34c", "#ffd41f", "#577590"]}
+              size={35}
+              square
+              className="rounded-lg"
+            /> */}
+
+            {/* Thông tin chỉ hiện khi không collapsed */}
+            <div
+              className={cn(
+                "grid flex-1 text-left text-sm leading-tight overflow-hidden transition-all duration-300 ease-in-out",
+                collapsed
+                  ? "opacity-0 w-0 translate-x-[-10px]"
+                  : "opacity-100 w-auto ml-2 translate-x-0"
+              )}
+            >
+              <span className="truncate font-medium">{user?.username}</span>
+              <span className="truncate text-xs">{user?.email}</span>
+            </div>
+          </Link>
         </div>
 
         {/* Navigation */}
@@ -111,7 +147,7 @@ export function Sidebar({ collapsed, onToggleCollapsed, children }: SidebarProps
         </nav>
 
         {/* Footer */}
-        <div className="border-t p-2 dark:text-white">
+        <div className="border-t p-2 dark:text-white ">
           <TooltipProvider>
             <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>
@@ -140,27 +176,27 @@ export function Sidebar({ collapsed, onToggleCollapsed, children }: SidebarProps
       {/* Main Content */}
       <div className="flex flex-1 flex-col">
         {/* Header */}
-        <header className="sticky top-0 z-10 flex h-16 items-center 
-                          justify-between border-b dark:bg-muted px-6 ">
+        <header
+          className="sticky top-0 z-50 flex h-16 items-centerbg-gray-50 bg-gray-100 dark:bg-black justify-between px-6 "
+        >
           <div className="flex items-center gap-3 ">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onToggleCollapsed}
-            >
-              {collapsed ? 
-              <PanelRight className="h-5 w-5 dark:text-white" /> 
-              :
-              <PanelRight className="h-5 w-5 dark:text-white" />}
+            <Button variant="ghost" size="icon" onClick={onToggleCollapsed}>
+              {collapsed ? (
+                <PanelRight className="h-5 w-5 dark:text-white" />
+              ) : (
+                <PanelRight className="h-5 w-5 dark:text-white" />
+              )}
             </Button>
             <h1 className="text-lg font-semibold dark:text-white">
               {location.pathname === "/dashboard"
                 ? "Tổng quan"
-                : navItems.find((item) => isActive(item.path))?.name || "Dashboard"}
+                : navItems.find((item) => isActive(item.path))?.name ||
+                  "Dashboard"}
             </h1>
           </div>
 
           <div className="flex items-center gap-2">
+            <ThemeSwitch />
             <span className="text-sm text-muted-foreground dark:text-white  ">
               {user?.username}
             </span>
@@ -168,7 +204,7 @@ export function Sidebar({ collapsed, onToggleCollapsed, children }: SidebarProps
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 bg-muted/40 p-6 dark:bg-muted/40">
+        <main className="flex-1 bg-muted/40 p-6 dark:bg-black/40">
           <Outlet />
         </main>
       </div>

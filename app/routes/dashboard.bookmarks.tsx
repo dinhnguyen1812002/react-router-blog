@@ -65,12 +65,12 @@ export default function BookmarksPage() {
               <input
                 type="text"
                 placeholder="Tìm kiếm bài viết đã lưu..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-black text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <div className="flex items-center space-x-1 bg-gray-100 dark:bg-gray-800 rounded-md p-1">
+            <div className="flex items-center space-x-1 bg-gray-100 dark:bg-black rounded-md p-1">
               <button
                 onClick={() => setViewMode('grid')}
                 className={`p-1.5 rounded ${viewMode === 'grid' ? 'bg-white dark:bg-gray-700 shadow-sm' : 'text-gray-500 dark:text-gray-400'}`}
@@ -142,7 +142,7 @@ export default function BookmarksPage() {
               <div className="divide-y divide-gray-200 dark:divide-gray-700">
                 {filteredPosts.map((post) => (
                   <div key={post.id} className="p-4 flex items-start space-x-4">
-                    <div className="flex-shrink-0 w-12 h-12 rounded overflow-hidden bg-gray-100 dark:bg-gray-800">
+                    <div className="flex-shrink-0 w-12 h-12 rounded overflow-hidden bg-gray-100 dark:bg-black">
                       {post.thumbnail ? (
                         <img 
                           src={post.thumbnail} 

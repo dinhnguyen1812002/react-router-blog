@@ -38,21 +38,14 @@ export default function DashboardLayout() {
 
   return (
     <AuthRequired>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-gray-50 dark:bg-black">
         <RouteLoadingIndicator />
 
         <Sidebar
           collapsed={sidebarCollapsed}
           onToggleCollapsed={toggleSidebar}
         >
-          {/* <ScrollArea className="h-screen">
-            <div className="p-4 lg:p-6">
-              <div className="container mx-auto">
-
-              </div>
-            </div>
-
-          </ScrollArea> */}
+         
           <PageTransition>
             <Outlet />
           </PageTransition>

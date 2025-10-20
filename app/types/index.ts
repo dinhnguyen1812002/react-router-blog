@@ -100,6 +100,7 @@ export interface PaginatedResponse<T> {
 }
 
 export interface Comment {
+  data: Comment;
   id: string;
   content: string;
   user: User;

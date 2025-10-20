@@ -95,7 +95,7 @@ export default function RandomMemeStream() {
       </div>
 
       {/* Connection Status Card */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 mb-8">
+      <div className="bg-white dark:bg-black rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 mb-8">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">
             <div className={`w-4 h-4 rounded-full ${
@@ -181,7 +181,7 @@ export default function RandomMemeStream() {
 
       {/* Current Meme Display */}
       {currentMeme && (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden mb-8">
+        <div className="bg-white dark:bg-black rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden mb-8">
           <div className="relative">
             <img
               src={ url + currentMeme.memeUrl}

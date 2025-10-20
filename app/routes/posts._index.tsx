@@ -174,7 +174,7 @@ export default function PostsPage() {
             {/* Sidebar Toggle */}
             <button
               onClick={() => setShowSidebar(!showSidebar)}
-              className="lg:hidden p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              className="lg:hidden p-2 rounded-lg bg-gray-100 dark:bg-black text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             >
               <Filter className="h-5 w-5" />
             </button>
@@ -230,7 +230,7 @@ export default function PostsPage() {
                   <SelectItem value="regular">Thông thường</SelectItem>
                 </SelectContent>
               </Select>
-              <div className="flex items-center space-x-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+              <div className="flex items-center space-x-1 bg-gray-100 dark:bg-black rounded-lg p-1">
                 <button
                   onClick={() => setViewMode("grid")}
                   className={`p-2 rounded transition-colors ${
@@ -322,7 +322,7 @@ export default function PostsPage() {
                                 className={`px-3 py-2 text-sm rounded-md transition-colors ${
                                   pageNum === page
                                     ? "bg-blue-600 text-white"
-                                    : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700"
+                                    : "bg-white dark:bg-black text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700"
                                 }`}
                               >
                                 {pageNum + 1}

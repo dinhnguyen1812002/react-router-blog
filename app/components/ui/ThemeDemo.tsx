@@ -16,7 +16,7 @@ export const ThemeDemo = () => {
             <div className="space-y-2">
               <h4 className="font-medium text-sm">Backgrounds</h4>
               <div className="space-y-1">
-                <div className="p-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded text-xs">
+                <div className="p-2 bg-white dark:bg-black border border-gray-200 dark:border-gray-600 rounded text-xs">
                   Primary
                 </div>
                 <div className="p-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded text-xs">

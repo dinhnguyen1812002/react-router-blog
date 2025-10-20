@@ -1,3 +1,5 @@
+"use client"
+
 import * as React from "react"
 import {
   AudioWaveform,
@@ -10,14 +12,7 @@ import {
   PieChart,
   Settings2,
   SquareTerminal,
-  Users,
-  FileText,
-  Tags,
-  FolderOpen,
-  Mail,
-  BarChart3,
-  Shield,
-  Home
+  User,
 } from "lucide-react"
 
 import { NavMain } from "~/components/nav-main"
@@ -31,24 +26,19 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "~/components/ui/sidebar"
+import { useAuthStore } from "~/store/authStore"
 
 // This is sample data.
-  // route("admin", "routes/admin/_layout.tsx", [
-  //   route("", "routes/admin/index.tsx"),
-  //   route("analytics", "routes/admin/analytics.tsx"),
-  //   route("users", "routes/admin/users.tsx"),
-  //   route("roles", "routes/admin/roles.tsx"),
-  //   route("categories", "routes/admin/categories.tsx"),
-  //   route("tags", "routes/admin/tags.tsx"),
-  //   route("newsletter", "routes/admin/newsletter.tsx"),
-  //   route("settings", "routes/admin/settings.tsx"),
-  // ]),
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
+
+
+  // user: {
+  //   name: "shadcn",
+  //   email: "m@example.com",
+  //   avatar: "/avatars/shadcn.jpg",
+  // },
+
+  
   teams: [
     {
       name: "Acme Inc",
@@ -68,47 +58,56 @@ const data = {
   ],
   navMain: [
     {
-      title: "Tổng quan",
-      url: "/admin",
-      icon: Home,
+      title: "Dashboard",
+      url: "#",
+      icon: SquareTerminal,
       isActive: true,
       items: [
         {
-          title: "Dashboard",
+          title: "Overview",
           url: "/admin",
         },
         {
-          title: "Thống kê",
-          url: "/admin/analytics",
+          title: "Analytics",
+           url: "/admin/analytics",
         },
+        // {
+        //   title: "Settings",
+        //   url: "#",
+        // },
       ],
     },
     {
-      title: "Quản lý nội dung",
+      title: "Content",
       url: "#",
-      icon: FileText,
+      icon: Bot,
       items: [
         {
-          title: "Danh mục",
+          title: "Category",
           url: "/admin/categories",
         },
         {
-          title: "Thẻ",
+          title: "Tags",
           url: "/admin/tags",
         },
+        // {
+        //   title: "Quantum",
+        //   url: "#",
+        // },
       ],
     },
-    {
-      title: "Quản lý người dùng",
+
+     {
+      title: "User",
       url: "#",
-      icon: Users,
+      icon: User,
       items: [
         {
-          title: "Người dùng",
+          title: "User",
           url: "/admin/users",
         },
         {
-          title: "Vai trò",
+          title: "Roles",
           url: "/admin/roles",
         },
       ],
@@ -116,93 +115,73 @@ const data = {
     {
       title: "Marketing",
       url: "#",
-      icon: Mail,
+      icon: BookOpen,
       items: [
         {
-          title: "Newsletter",
+          title: "Newletter",
           url: "/admin/newsletter",
         },
+        {
+          title: "Get Started",
+          url: "#",
+        },
+        // {
+        //   title: "Tutorials",
+        //   url: "#",
+        // },
+        // {
+        //   title: "Changelog",
+        //   url: "#",
+        // },
       ],
     },
     {
-      title: "Cài đặt",
+      title: "Settings",
       url: "#",
       icon: Settings2,
       items: [
         {
-          title: "Cài đặt hệ thống",
-          url: "/admin/settings",
+          title: "General",
+          url: "#",
+        },
+        {
+          title: "Team",
+          url: "#",
+        },
+        {
+          title: "Billing",
+          url: "#",
+        },
+        {
+          title: "Limits",
+          url: "#",
         },
       ],
     },
-    // {
-    //   title: "Documentation",
-    //   url: "#",
-    //   icon: BookOpen,
-    //   items: [
-    //     {
-    //       title: "Introduction",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Get Started",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Tutorials",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Changelog",
-    //       url: "#",
-    //     },
-    //   ],
-    // },
-    // {
-    //   title: "Settings",
-    //   url: "#",
-    //   icon: Settings2,
-    //   items: [
-    //     {
-    //       title: "General",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Team",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Billing",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Limits",
-    //       url: "#",
-    //     },
-    //   ],
-    // },
   ],
-  // projects: [
-  //   {
-  //     name: "Design Engineering",
-  //     url: "#",
-  //     icon: Frame,
-  //   },
-  //   {
-  //     name: "Sales & Marketing",
-  //     url: "#",
-  //     icon: PieChart,
-  //   },
-  //   {
-  //     name: "Travel",
-  //     url: "#",
-  //     icon: Map,
-  //   },
-  // ],
-  
+  projects: [
+    {
+      name: "Design Engineering",
+      url: "#",
+      icon: Frame,
+    },
+    {
+      name: "Sales & Marketing",
+      url: "#",
+      icon: PieChart,
+    },
+    {
+      name: "Travel",
+      url: "#",
+      icon: Map,
+    },
+  ],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+
+    const { user, isAuthenticated } = useAuthStore();
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -210,10 +189,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        {/* <NavProjects projects={data.projects} /> */}
+        <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser />
+        <NavUser user={user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

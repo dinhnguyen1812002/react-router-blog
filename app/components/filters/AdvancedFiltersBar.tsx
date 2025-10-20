@@ -93,7 +93,7 @@ export default function AdvancedFiltersBar({
   ];
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+    <div className="bg-white dark:bg-black rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
       {/* Main Filter Bar */}
       <div className="p-4">
         <div className="flex flex-col lg:flex-row gap-4">
@@ -196,7 +196,7 @@ export default function AdvancedFiltersBar({
 
       {/* Advanced Filters Panel */}
       {showAdvanced && (
-        <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-800/50">
+        <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-black/50">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Categories */}
             <div>

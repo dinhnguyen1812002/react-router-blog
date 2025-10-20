@@ -102,7 +102,7 @@ export function LoadingPerformanceIndicator({
 
   return (
     <div className="fixed bottom-4 right-4 z-50 max-w-sm">
-      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 animate-in slide-in-from-bottom-2 duration-300">
+      <div className="bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 animate-in slide-in-from-bottom-2 duration-300">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-2">
             <Zap className="h-4 w-4 text-blue-600" />

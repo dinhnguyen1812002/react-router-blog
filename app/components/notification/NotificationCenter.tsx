@@ -118,7 +118,7 @@ export default function NotificationCenter({
 
         {/* Notification Panel */}
         {isOpen && (
-          <div className="absolute right-0 mt-2 w-96 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50">
+          <div className="absolute right-0 mt-2 w-96 bg-white dark:bg-black rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50">
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center gap-2">

@@ -58,7 +58,7 @@ const StatCard = ({ name, value, change, changeType, period, icon: Icon }: StatC
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700/20 p-6">
+    <div className="bg-white dark:bg-black rounded-lg shadow dark:shadow-gray-700/20 p-6">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{name}</p>
@@ -215,7 +215,7 @@ export default function AdminDashboard() {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: 6 }).map((_, index) => (
-            <div key={index} className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700/20 p-6">
+            <div key={index} className="bg-white dark:bg-black rounded-lg shadow dark:shadow-gray-700/20 p-6">
               <div className="flex items-center justify-between">
                 <div className="space-y-2">
                   <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-24"></div>
@@ -255,7 +255,7 @@ export default function AdminDashboard() {
       {/* Top Posts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Most Viewed Posts */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700/20 p-6">
+        <div className="bg-white dark:bg-black rounded-lg shadow dark:shadow-gray-700/20 p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Bài viết được xem nhiều nhất</h2>
             <Eye className="h-5 w-5 text-gray-400 dark:text-gray-500" />
@@ -280,7 +280,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Most Liked Posts */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700/20 p-6">
+        <div className="bg-white dark:bg-black rounded-lg shadow dark:shadow-gray-700/20 p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Bài viết được yêu thích nhất</h2>
             <Heart className="h-5 w-5 text-gray-400 dark:text-gray-500" />
@@ -306,7 +306,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Recent Activities */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700/20 p-6">
+      <div className="bg-white dark:bg-black rounded-lg shadow dark:shadow-gray-700/20 p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Hoạt động gần đây</h2>
           <Activity className="h-5 w-5 text-gray-400 dark:text-gray-500" />
@@ -336,7 +336,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700/20 p-6">
+      <div className="bg-white dark:bg-black rounded-lg shadow dark:shadow-gray-700/20 p-6">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Thao tác nhanh</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <button className="p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
@@ -359,7 +359,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* System Status */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700/20 p-6">
+      {/* <div className="bg-white dark:bg-black rounded-lg shadow dark:shadow-gray-700/20 p-6">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Trạng thái hệ thống</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="text-center">
@@ -384,7 +384,7 @@ export default function AdminDashboard() {
             <p className="text-xs text-yellow-600 dark:text-yellow-400">Sử dụng 78%</p>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

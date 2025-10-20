@@ -77,7 +77,7 @@ export default function PostsSidebar({
     <div className={`w-80 flex-shrink-0 ${className}`}>
       <div className={` top-8 space-y-6`}>
         {/* Search Bar */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div className="bg-white dark:bg-black rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center gap-2 mb-4">
             <Search className="w-5 h-5 text-gray-600 dark:text-gray-400" />
             <h3 className="font-semibold text-gray-900 dark:text-gray-100">
@@ -106,7 +106,7 @@ export default function PostsSidebar({
         </div>
 
         {/* Categories */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div className="bg-white dark:bg-black rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center gap-2 mb-4">
             <Filter className="w-5 h-5 text-gray-600 dark:text-gray-400" />
             <h3 className="font-semibold text-gray-900 dark:text-gray-100">
@@ -155,7 +155,7 @@ export default function PostsSidebar({
         </div>
 
         {/* Tags */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div className="bg-white dark:bg-black rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center gap-2 mb-4">
             <TagIcon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
             <h3 className="font-semibold text-gray-900 dark:text-gray-100">
@@ -281,7 +281,7 @@ export default function PostsSidebar({
         )}
 
         {/* Filter Stats */}
-        <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 text-center">
+        <div className="bg-gray-50 dark:bg-black/50 rounded-lg p-4 text-center">
           <div className="text-sm text-gray-600 dark:text-gray-400">
             {categories?.length || 0} danh mục • {tags?.length || 0} tags
           </div>

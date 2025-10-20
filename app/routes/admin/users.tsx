@@ -106,7 +106,7 @@ export default function AdminUsers() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+      <div className="bg-white dark:bg-black rounded-lg shadow p-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -115,14 +115,14 @@ export default function AdminUsers() {
               placeholder="Tìm kiếm người dùng..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder:text-gray-400"
+              className="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-black text-gray-900 dark:text-gray-100 placeholder:text-gray-400"
             />
           </div>
           
           <select
             value={selectedRole}
             onChange={(e) => setSelectedRole(e.target.value)}
-            className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+            className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-black text-gray-900 dark:text-gray-100"
           >
             <option value="all">Tất cả vai trò</option>
             <option value="ADMIN">Admin</option>
@@ -133,7 +133,7 @@ export default function AdminUsers() {
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+            className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-black text-gray-900 dark:text-gray-100"
           >
             <option value="all">Tất cả trạng thái</option>
             <option value="active">Hoạt động</option>
@@ -148,10 +148,10 @@ export default function AdminUsers() {
       </div>
 
       {/* Users Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+      <div className="bg-white dark:bg-black rounded-lg shadow overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-gray-50 dark:bg-gray-900">
+            <thead className="bg-gray-50 dark:bg-black">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Người dùng
@@ -176,7 +176,7 @@ export default function AdminUsers() {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody className="bg-white dark:bg-black divide-y divide-gray-200 dark:divide-gray-700">
               {filteredUsers.map((user: AdminUser) => (
                 <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-900">
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -274,7 +274,7 @@ export default function AdminUsers() {
     <div className="ml-4 flex items-center space-x-2">
       <span className="text-sm text-gray-600 dark:text-gray-300">Hiển thị</span>
       <select
-        className="px-2 py-1 border border-gray-300 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+        className="px-2 py-1 border border-gray-300 dark:border-gray-700 rounded bg-white dark:bg-black text-gray-900 dark:text-gray-100"
         value={currentSize}
         onChange={(e) => {
           const newSize = Number(e.target.value);

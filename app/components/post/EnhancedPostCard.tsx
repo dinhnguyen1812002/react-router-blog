@@ -76,7 +76,7 @@ export default function EnhancedPostCard({
   // List variant
   if (variant === 'list') {
     return (
-      <article className={`group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-all duration-200 ${className}`}>
+      <article className={`group bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-all duration-200 ${className}`}>
         <div className="p-4">
           <div className="flex space-x-4">
             {/* Thumbnail */}
@@ -188,7 +188,7 @@ export default function EnhancedPostCard({
   // Compact variant
   if (variant === 'compact') {
     return (
-      <article className={`group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-all duration-200 ${className}`}>
+      <article className={`group bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-all duration-200 ${className}`}>
         <div className="p-3">
           <Link to={`/posts/${post.slug}`}>
             <h3 className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 mb-2">
@@ -219,7 +219,7 @@ export default function EnhancedPostCard({
   // Featured variant
   if (variant === 'featured') {
     return (
-      <article className={`group bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden ${className}`}>
+      <article className={`group bg-white dark:bg-black rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden ${className}`}>
         {/* Thumbnail */}
         {showThumbnail && (
           <Link to={`/posts/${post.slug}`} className="block relative">
@@ -356,7 +356,7 @@ export default function EnhancedPostCard({
 
   // Default variant (card)
   return (
-    <article className={`group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-lg transition-all duration-200 overflow-hidden ${className}`}>
+    <article className={`group bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-lg transition-all duration-200 overflow-hidden ${className}`}>
       {/* Thumbnail */}
       {showThumbnail && (
         <Link to={`/posts/${post.slug}`} className="block relative">

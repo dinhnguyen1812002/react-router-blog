@@ -109,7 +109,7 @@ export default function TagsCloudSidebar({
           </h2>
           
           {/* View Mode Toggle */}
-          <div className="flex items-center space-x-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+          <div className="flex items-center space-x-1 bg-gray-100 dark:bg-black rounded-lg p-1">
             <button
               onClick={() => setViewMode('cloud')}
               className={`p-1 rounded transition-colors ${

@@ -45,7 +45,7 @@ export function PostDetailSkeleton() {
             </div>
 
             {/* Meta Information Skeleton */}
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 mb-8">
+            <div className="bg-gray-50 dark:bg-black rounded-lg p-6 mb-8">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 {/* Left side - Meta info */}
                 <div className="flex flex-wrap items-center gap-6">
@@ -104,7 +104,7 @@ export function PostDetailSkeleton() {
           </article>
 
           {/* Author Info Skeleton */}
-          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 mb-8">
+          <div className="bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-lg p-6 mb-8">
             <div className="flex items-start space-x-4">
               <Skeleton className="w-12 h-12 rounded-full" />
               <div className="flex-1">
@@ -175,7 +175,7 @@ export function PostDetailSkeleton() {
         <div className="lg:col-span-1">
           <div className="space-y-6">
             {/* Related Posts Skeleton */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-black rounded-lg p-6 border border-gray-200 dark:border-gray-700">
               <Skeleton className="h-6 w-32 mb-4" />
               <div className="space-y-4">
                 {[1, 2, 3].map((i) => (
@@ -194,7 +194,7 @@ export function PostDetailSkeleton() {
             </div>
 
             {/* Table of Contents Skeleton */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-black rounded-lg p-6 border border-gray-200 dark:border-gray-700">
               <Skeleton className="h-6 w-40 mb-4" />
               <div className="space-y-2">
                 {[1, 2, 3, 4, 5].map((i) => (
@@ -222,7 +222,7 @@ export function ShimmerEffect() {
 // Compact skeleton for list items
 export function PostCardSkeleton() {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div className="bg-white dark:bg-black rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
       <Skeleton className="w-full h-48" />
       <div className="p-4">
         <div className="flex items-center space-x-2 mb-2">

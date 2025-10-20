@@ -17,7 +17,7 @@ export function ProfileHeader({
   showEditButton = true 
 }: ProfileHeaderProps) {
   return (
-    <div className="bg-white dark:bg-gray-800 overflow-hidden">
+    <div className="bg-white dark:bg-black overflow-hidden">
       {/* Cover Photo */}
       <div className="bg-gradient-to-r from-blue-500 to-purple-600 h-48 relative">
         <div className="absolute top-4 right-4 flex gap-2">

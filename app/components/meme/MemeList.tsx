@@ -91,7 +91,7 @@ export default function MemeList() {
 
       {memes.length === 0 ? (
         <div className="text-center py-16">
-          <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+          <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 dark:bg-black rounded-full flex items-center justify-center">
             <span className="text-4xl">🎭</span>
           </div>
           <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
@@ -117,7 +117,7 @@ export default function MemeList() {
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 0}
-                className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-lg font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 ← Trang trước
               </button>
@@ -142,7 +142,7 @@ export default function MemeList() {
                       className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                         currentPage === pageNum
                           ? "bg-blue-600 text-white shadow-lg"
-                          : "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                          : "bg-white dark:bg-black border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                       }`}
                     >
                       {pageNum + 1}
@@ -154,7 +154,7 @@ export default function MemeList() {
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages - 1}
-                className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-lg font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Trang sau →
               </button>

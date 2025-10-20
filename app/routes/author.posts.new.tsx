@@ -132,9 +132,9 @@ export default function NewPostPage() {
   };
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900">
+    <div className="bg-gray-50 dark:bg-black">
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      <div className="bg-white dark:bg-black border-b border-gray-200 dark:border-gray-700">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
@@ -201,7 +201,7 @@ export default function NewPostPage() {
           <div className="flex-1">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {/* Title Input */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+              <div className="bg-white dark:bg-black rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
                 <div className="p-6">
                   <input
                     {...register('title')}
@@ -216,7 +216,7 @@ export default function NewPostPage() {
               </div>
 
               {/* Content Editor */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+              <div className="bg-white dark:bg-black rounded-lg shadow-sm">
                 <div>
                   <EditorWrapper
                     contentType={contentType}
@@ -251,7 +251,7 @@ export default function NewPostPage() {
                   <textarea
                     {...register('excerpt')}
                     rows={4}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 resize-none"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-black text-gray-900 dark:text-gray-100 resize-none"
                     placeholder="Viết tóm tắt ngắn gọn về bài viết..."
                   />
                   <div className="mt-1 flex items-center justify-between text-xs">
@@ -279,7 +279,7 @@ export default function NewPostPage() {
                     <input
                       type="datetime-local"
                       {...register('public_date')}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-black text-gray-900 dark:text-gray-100"
                     />
                     {errors.public_date && (
                       <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.public_date.message}</p>
@@ -291,7 +291,7 @@ export default function NewPostPage() {
                     </label>
                     <select
                       {...register('categoryId')}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-black text-gray-900 dark:text-gray-100"
                       disabled={categoriesLoading}
                     >
                       <option value="">Chọn danh mục</option>
@@ -313,14 +313,14 @@ export default function NewPostPage() {
                       <button
                         type="button"
                         onClick={() => setValue('contentType', 'RICHTEXT', { shouldValidate: true })}
-                        className={`px-3 py-1.5 text-xs ${contentType === 'RICHTEXT' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300'}`}
+                        className={`px-3 py-1.5 text-xs ${contentType === 'RICHTEXT' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-black text-gray-700 dark:text-gray-300'}`}
                       >
                         Rich Text
                       </button>
                       <button
                         type="button"
                         onClick={() => setValue('contentType', 'MARKDOWN', { shouldValidate: true })}
-                        className={`px-3 py-1.5 text-xs border-l border-gray-300 dark:border-gray-700 ${contentType === 'MARKDOWN' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300'}`}
+                        className={`px-3 py-1.5 text-xs border-l border-gray-300 dark:border-gray-700 ${contentType === 'MARKDOWN' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-black text-gray-700 dark:text-gray-300'}`}
                       >
                         Markdown
                       </button>
@@ -372,7 +372,7 @@ export default function NewPostPage() {
                           className={`px-2 py-1 rounded-full text-xs font-medium transition-colors ${
                             selectedTags.includes(tag.uuid)
                               ? 'text-white'
-                              : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                              : 'bg-gray-100 dark:bg-black text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                           }`}
                           style={selectedTags.includes(tag.uuid) ? { backgroundColor: tag.color } : {}}
                         >

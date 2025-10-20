@@ -76,7 +76,7 @@ export default function NewsletterCard({
 
   if (variant === 'compact') {
     return (
-      <div className={`bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 ${className}`}>
+      <div className={`bg-white dark:bg-black rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 ${className}`}>
         <div className="flex items-center gap-3 mb-4">
           <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
             <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400" />
@@ -180,7 +180,7 @@ export default function NewsletterCard({
 
   // Default variant
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-8 ${className}`}>
+    <div className={`bg-white dark:bg-black rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-8 ${className}`}>
       <div className="text-center mb-6">
         <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full mb-4">
           <Mail className="w-8 h-8 text-blue-600 dark:text-blue-400" />

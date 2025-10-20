@@ -15,7 +15,7 @@ export const Header = () => {
   const showAuthState = isHydrated && isAuthenticated;
 
   return (
-    <header className="bg-white dark:bg-gray-800 shadow-sm dark:shadow-gray-900/20 border-b border-gray-200 dark:border-gray-700  ">
+    <header className="bg-white dark:bg-black shadow-sm dark:shadow-gray-900/20 border-b border-gray-200 dark:border-gray-700  ">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}

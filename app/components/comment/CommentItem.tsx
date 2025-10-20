@@ -128,7 +128,7 @@ export const CommentItem = ({
 
       <div className={`flex gap-3 md:gap-4 p-3 md:p-4 rounded-xl transition-all duration-200 ${
         isCollapsed 
-          ? 'bg-gray-50/50 dark:bg-gray-800/30' 
+          ? 'bg-gray-50/50 dark:bg-black/30' 
           : 'hover:bg-gray-50/80 dark:hover:bg-gray-800/50'
       } ${currentDepth > 0 ? '' : ''}`}>
         
@@ -216,7 +216,7 @@ export const CommentItem = ({
                   </button>
 
                   {showActions && (
-                    <div className="absolute right-0 top-8 z-20 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 py-2 min-w-[160px] animate-in slide-in-from-top-2 duration-200">
+                    <div className="absolute right-0 top-8 z-20 bg-white dark:bg-black rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 py-2 min-w-[160px] animate-in slide-in-from-top-2 duration-200">
                       {isOwner && !isEditing && (
                         <>
                           <button
@@ -320,7 +320,7 @@ export const CommentItem = ({
                     </div>
                   </div>
                 ) : (
-                  <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700 shadow-sm">
+                  <div className="bg-white dark:bg-black rounded-xl p-4 border border-gray-100 dark:border-gray-700 shadow-sm">
                     <p className="text-gray-800 dark:text-gray-200 whitespace-pre-wrap leading-relaxed">
                       {comment.content}
                     </p>
@@ -381,7 +381,7 @@ export const CommentItem = ({
 
               {/* Reply Form */}
               {showReplyForm && (
-                <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
+                <div className="mt-4 p-4 bg-gray-50 dark:bg-black/50 rounded-xl border border-gray-200 dark:border-gray-700">
                   <CommentForm
                     postId={postId}
                     parentCommentId={comment.id}

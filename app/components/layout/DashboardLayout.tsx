@@ -154,7 +154,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
-        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3 shadow-sm">
+        <div className="bg-white dark:bg-black border-b border-gray-200 dark:border-gray-700 px-4 py-3 shadow-sm">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               {/* Mobile menu button */}
@@ -233,7 +233,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         {/* Keyboard shortcuts modal */}
         {showKeyboardShortcuts && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
+            <div className="bg-white dark:bg-black rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   Phím tắt

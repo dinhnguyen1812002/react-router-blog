@@ -132,7 +132,7 @@ export const AddPostToSeriesModal = ({
             </div>
           ) : availablePosts.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20">
-              <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-900 flex items-center justify-center mb-4">
+              <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-black flex items-center justify-center mb-4">
                 <Search className="w-7 h-7 text-gray-400 dark:text-gray-600" strokeWidth={2} />
               </div>
               <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
@@ -153,7 +153,7 @@ export const AddPostToSeriesModal = ({
                     onClick={() => handlePostSelect(post.id)}
                     className={`group w-full text-left p-5 rounded-xl border-2 transition-all duration-200 ${
                       isSelected
-                        ? "border-gray-900 dark:border-white bg-gray-50 dark:bg-gray-900 shadow-sm"
+                        ? "border-gray-900 dark:border-white bg-gray-50 dark:bg-black shadow-sm"
                         : "border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900/50"
                     }`}
                     style={{ animationDelay: `${index * 30}ms` }}

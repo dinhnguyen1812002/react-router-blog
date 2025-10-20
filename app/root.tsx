@@ -39,7 +39,7 @@ export const links: Route.LinksFunction = () => [
     rel: "stylesheet",
     href: "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap"
   },
-  { rel: "stylesheet", href: theme },
+  // { rel: "stylesheet", href: theme },
   { rel: "stylesheet", href: stylesheet },
   // {rel: "stylesheet", href: animations}
 

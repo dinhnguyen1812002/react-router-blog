@@ -181,7 +181,7 @@ export const CommentSection = ({
                   className={`px-3 py-2 text-xs font-medium transition-colors flex items-center space-x-1 ${
                     sortBy === value
                       ? 'bg-blue-600 text-white'
-                      : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                      : 'bg-white dark:bg-black text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
                   }`}
                 >
                   <Icon className="w-3 h-3" />
@@ -267,7 +267,7 @@ export const CommentSection = ({
               {!showCommentForm ? (
                 <button
                   onClick={() => setShowCommentForm(true)}
-                  className="w-full bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center transition-colors group"
+                  className="w-full bg-gray-50 dark:bg-black hover:bg-gray-100 dark:hover:bg-gray-700 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center transition-colors group"
                 >
                   <MessageCircle className="w-6 h-6 mx-auto mb-2 text-gray-400 group-hover:text-blue-500" />
                   <p className="text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 font-medium">
@@ -278,7 +278,7 @@ export const CommentSection = ({
                   </p>
                 </button>
               ) : (
-                <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+                <div className="bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-lg p-6">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="font-medium text-gray-900 dark:text-white">Viết bình luận</h3>
                     <Button

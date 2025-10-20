@@ -15,7 +15,7 @@ interface PostCardCompactProps {
 export const PostCardCompact = ({ post, variant = 'horizontal' }: PostCardCompactProps) => {
   if (variant === 'minimal') {
     return (
-      <Card className="group hover:shadow-md transition-all duration-200 overflow-hidden bg-white dark:bg-gray-800">
+      <Card className="group hover:shadow-md transition-all duration-200 overflow-hidden bg-white dark:bg-black">
         <CardContent className="p-3">
           <div className="flex items-start space-x-3">
             {/* Thumbnail */}
@@ -94,7 +94,7 @@ export const PostCardCompact = ({ post, variant = 'horizontal' }: PostCardCompac
 
   // Horizontal variant (default)
   return (
-    <Card className="group hover:shadow-md transition-all duration-200 overflow-hidden bg-white dark:bg-gray-800">
+    <Card className="group hover:shadow-md transition-all duration-200 overflow-hidden bg-white dark:bg-black">
       <CardContent className="p-4">
         <div className="flex space-x-4">
           {/* Thumbnail */}

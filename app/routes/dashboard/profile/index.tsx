@@ -67,7 +67,7 @@ export default function ProfileDisplayPage() {
       <ProfileHeader user={user} isOwnProfile={true} />
 
       {/* Stats and Social Links */}
-      <div className="bg-white dark:bg-gray-800 p-6">
+      <div className="bg-white dark:bg-black p-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <ProfileStats user={user} />
           <SocialLinks socialMediaLinks={user.socialMediaLinks} />
@@ -75,7 +75,7 @@ export default function ProfileDisplayPage() {
       </div>
 
       {/* Tabs */}
-      <div className="bg-white dark:bg-gray-800">
+      <div className="bg-white dark:bg-black">
         <div className="border-b border-gray-200 dark:border-gray-700">
           <nav className="flex">
             {[

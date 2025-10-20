@@ -204,7 +204,7 @@ export default function ProfileEditPage() {
           <div className="flex items-center gap-4 mb-6">
             <button
               onClick={() => navigate('/dashboard/profile')}
-              className="p-2 rounded-lg bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-shadow border border-gray-200 dark:border-gray-700"
+              className="p-2 rounded-lg bg-white dark:bg-black shadow-sm hover:shadow-md transition-shadow border border-gray-200 dark:border-gray-700"
             >
               <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
             </button>
@@ -225,7 +225,7 @@ export default function ProfileEditPage() {
             {/* Left Column - Avatar & Basic Info */}
             <div className="lg:col-span-1 space-y-6">
               {/* Avatar Section */}
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-6">
+              <div className="bg-white dark:bg-black rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-6">
                 <div className="flex items-center gap-3 mb-6">
                   <Camera className="w-6 h-6 text-blue-600" />
                   <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Profile Picture</h2>
@@ -265,7 +265,7 @@ export default function ProfileEditPage() {
             {/* Right Column - Form Fields */}
             <div className="lg:col-span-2 space-y-6">
               {/* Basic Information */}
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-6">
+              <div className="bg-white dark:bg-black rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-6">
                 <div className="flex items-center gap-3 mb-6">
                   <User className="w-6 h-6 text-green-600" />
                   <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Basic Information</h2>
@@ -329,7 +329,7 @@ export default function ProfileEditPage() {
               </div>
 
               {/* Social Media Links */}
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-6">
+              <div className="bg-white dark:bg-black rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-6">
                 <div className="flex items-center gap-3 mb-6">
                   <Link className="w-6 h-6 text-purple-600" />
                   <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Social Media</h2>
@@ -387,7 +387,7 @@ export default function ProfileEditPage() {
               </div>
 
               {/* Custom Profile Content */}
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-6">
+              <div className="bg-white dark:bg-black rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-6">
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
                     <Palette className="w-6 h-6 text-orange-600" />
@@ -422,7 +422,7 @@ export default function ProfileEditPage() {
                 </div>
 
                 {showPreview ? (
-                  <div className="border border-gray-200 dark:border-gray-700 rounded-xl p-6 min-h-[400px] bg-gray-50 dark:bg-gray-900">
+                  <div className="border border-gray-200 dark:border-gray-700 rounded-xl p-6 min-h-[400px] bg-gray-50 dark:bg-black">
                     <MarkdownRenderer content={markdownContent || ''} />
                   </div>
                 ) : (

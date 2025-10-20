@@ -44,7 +44,7 @@ export function UserAvatar({
   return (
     <div
       className={cn(
-        "inline-flex items-center justify-center overflow-hidden bg-gray-100 dark:bg-gray-800",
+        "inline-flex items-center justify-center overflow-hidden bg-gray-100 dark:bg-black",
         className
       )}
       style={{ width: size, height: size, borderRadius: square ? 8 : 9999 }}

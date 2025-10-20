@@ -49,7 +49,7 @@ export default function MemesIndex() {
 
         {/* Tab Navigation */}
         {/* <div className="flex justify-center mb-12">
-          <div className="bg-white dark:bg-gray-800 rounded-full shadow-md border border-gray-200 dark:border-gray-700 p-2 flex gap-2 overflow-x-auto">
+          <div className="bg-white dark:bg-black rounded-full shadow-md border border-gray-200 dark:border-gray-700 p-2 flex gap-2 overflow-x-auto">
             {tabs.map((tab) => {
               const IconComponent = tab.icon;
               const isActive = activeTab === tab.id;
@@ -97,7 +97,7 @@ export default function MemesIndex() {
 
         {/* Footer Info */}
         <div className="mt-16 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-full text-sm text-gray-600 dark:text-gray-400">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-black rounded-full text-sm text-gray-600 dark:text-gray-400">
             <Sparkles className="w-4 h-4" />
             <span>Được tạo với ❤️ bởi cộng đồng</span>
           </div>

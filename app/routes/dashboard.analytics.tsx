@@ -417,7 +417,7 @@ export default function AnalyticsPage() {
                       case "milestone":
                         return "bg-yellow-100 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400";
                       default:
-                        return "bg-gray-100 dark:bg-gray-900/20 text-gray-600 dark:text-gray-400";
+                        return "bg-gray-100 dark:bg-black/20 text-gray-600 dark:text-gray-400";
                     }
                   };
 
