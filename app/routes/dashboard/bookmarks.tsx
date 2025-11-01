@@ -188,8 +188,8 @@ export default function BookmarksPage() {
             ))}
           </div>
         ) : (
-          <Card>
-            <CardContent className="p-0">
+          <div>
+            <CardContent >
               <div className="divide-y divide-gray-200 dark:divide-gray-700">
                 {filteredPosts.map((post) => (
                   <div key={post.id} className="p-4 flex items-start space-x-4">
@@ -198,7 +198,7 @@ export default function BookmarksPage() {
                         <img 
                           src={post.thumbnail} 
                           alt={post.title} 
-                          className="w-full h-full object-cover"
+                          className="w-full h-full"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
@@ -245,7 +245,7 @@ export default function BookmarksPage() {
                 ))}
               </div>
             </CardContent>
-          </Card>
+          </div>
         )
       ) : (
         <Card>

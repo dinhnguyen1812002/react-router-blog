@@ -42,13 +42,13 @@ export const PostCardCompact = ({ post, variant = 'horizontal' }: PostCardCompac
               </Link>
 
               <div className="flex items-center space-x-2 text-xs text-gray-500 dark:text-gray-400 mb-2">
-                <Avatar
+                {/* <Avatar
                   src={post.user.avatar}
                   fallback={post.user.username.charAt(0)}
                   alt={post.user.username}
                   size="sm"
                   className="w-5 h-5"
-                />
+                /> */}
                 <span className="truncate">{post.user.username}</span>
                 <span>•</span>
                 <span>{formatDateSimple(post.createdAt)}</span>
@@ -159,12 +159,12 @@ export const PostCardCompact = ({ post, variant = 'horizontal' }: PostCardCompac
             {/* Footer */}
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2 text-xs text-gray-500 dark:text-gray-400">
-                <Avatar
+                {/* <Avatar
                   src={post.user.avatar}
                   fallback={post.user.username.charAt(0)}
                   alt={post.user.username}
                   size="sm"
-                />
+                /> */}
                 <span className="font-medium">{post.user.username}</span>
                 <span>•</span>
                 <span>{formatDateSimple(post.createdAt)}</span>

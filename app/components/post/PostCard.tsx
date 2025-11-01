@@ -58,7 +58,6 @@ export const PostCard = ({ post }: PostCardProps) => {
           )}
         </div>
 
-
         {/* Bookmark */}
         <div className="absolute bottom-2 right-2">
           <BookmarkButton
@@ -68,15 +67,14 @@ export const PostCard = ({ post }: PostCardProps) => {
             className="bg-white/90 dark:bg-black/90 backdrop-blur-sm"
           />
         </div>
-
       </div>
 
       {/* Nội dung */}
       <div className="p-3 sm:p-4 flex flex-col justify-between h-full">
-        <Link to={`/posts/${post.slug}`} className="block group mb-2">
+        <Link to={`/articles/${post.slug}`} className="block group mb-2">
           <h3
             className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 
-      group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2"
+          group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2"
           >
             {post.title}
           </h3>
@@ -96,13 +94,12 @@ export const PostCard = ({ post }: PostCardProps) => {
               />
               <AvatarFallback >{post.user.username.charAt(0)}</AvatarFallback>
             </Avatar> */}
-            <UserAvatar 
-            name={post.user.username}   
-            src={post.user.avatar }
-            size={20}
-            variant="marble"
-           
-            alt={post.user.username}
+            <UserAvatar
+              name={post.user.username}
+              src={post.user.avatar}
+              size={20}
+              variant="marble"
+              alt={post.user.username}
             />
             <span className="font-medium truncate max-w-[80px]">
               {post.user.username}
@@ -132,10 +129,19 @@ export const PostCard = ({ post }: PostCardProps) => {
             initialAverageRating={post.averageRating}
             compact
           />
+          {/* <LikeButton
+            postId={post.id}
+            initialLiked={post.isLikedByCurrentUser}
+            initialLikeCount={post.likeCount}
+          /> */}
           <LikeButton
             postId={post.id}
             initialLiked={post.isLikedByCurrentUser}
             initialLikeCount={post.likeCount}
+            variant="minimal" // hoặc "compact", "minimal"
+            size="md"         // hoặc "sm", "lg"
+            showCount={true}
+            className="custom-class"
           />
         </div>
       </div>

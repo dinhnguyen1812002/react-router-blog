@@ -22,7 +22,7 @@ export const userPostsApi = {
   getUserPosts: async (page =  0, size: number): Promise<Post[]> => {
     try {
       const response = await apiClient.get(`/author/posts?page=${page}&size=${size}`);
-
+      console.log("vai lol")
       // If response.data is just an array of posts
       const posts = response.data;
 

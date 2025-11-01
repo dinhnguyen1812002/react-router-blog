@@ -320,7 +320,7 @@ export const CommentItem = ({
                     </div>
                   </div>
                 ) : (
-                  <div className="bg-white dark:bg-black rounded-xl p-4 border border-gray-100 dark:border-gray-700 shadow-sm">
+                  <div className=" dark:bg-black  p-4  dark:border-gray-700">
                     <p className="text-gray-800 dark:text-gray-200 whitespace-pre-wrap leading-relaxed">
                       {comment.content}
                     </p>

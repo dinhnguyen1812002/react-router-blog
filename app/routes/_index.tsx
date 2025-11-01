@@ -255,7 +255,7 @@ export default function HomePage() {
           </div>
 
           {categoriesLoading ? (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 ">
               {[...Array(8)].map((_, i) => (
                 <div key={i} className="animate-pulse">
                   <div className="bg-gray-200 dark:bg-gray-700 rounded-lg h-24"></div>
@@ -263,12 +263,12 @@ export default function HomePage() {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 ">
               {categories?.map((category: Category) => (
                 <Link
                   key={category.id}
                   to={`/posts?category=${category.slug}`}
-                  className="group p-6 bg-white dark:bg-black rounded-lg shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105"
+                  className="group p-6 bg-white dark:bg-black dark:border dark:border-gray-700  rounded-lg shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105"
                 >
                   <div className="flex items-center space-x-3 mb-3">
                     <div className="w-10 h-10 rounded-lg flex items-center justify-center">

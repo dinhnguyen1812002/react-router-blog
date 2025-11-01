@@ -27,8 +27,8 @@ route("dashboard", "routes/dashboard/_layout.tsx", [
 ]),
 
 
-  route("posts", "routes/posts._index.tsx"),
-  route("posts/:slug", "routes/posts.slug.tsx"),
+  route("articles", "routes/posts._index.tsx"),
+  route("articles/:slug", "routes/posts.slug.tsx"),
   route("series", "routes/series._index.tsx"),
   route("series/:slug", "routes/series.$slug.tsx"),
   route("categories", "routes/category.index.tsx"),

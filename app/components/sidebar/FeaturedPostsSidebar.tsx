@@ -70,7 +70,7 @@ export default function FeaturedPostsSidebar({
           {featuredPosts.map((post, index) => (
             <article key={post.id} className="group">
               <Link
-                to={`/posts/${post.slug}`}
+                to={`/articles/${post.slug}`}
                 className="block hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-lg p-3 -m-3 transition-colors"
               >
                 <div className="flex space-x-3">

@@ -47,7 +47,7 @@ export function usePostEditor({ postId, onSuccess, onError }: UsePostEditorOptio
 
   // Fetch post by ID for editing
   const { 
-    data: postResp, 
+    data: post, 
     isLoading: postLoading, 
     error: postError, 
     refetch: refetchPost 
@@ -57,8 +57,8 @@ export function usePostEditor({ postId, onSuccess, onError }: UsePostEditorOptio
       if (!postId) throw new Error('Post ID is required');
       console.log('[usePostEditor] Fetching post with ID:', postId);
       const response = await authorApi.getPostById(postId);
-      console.log('[usePostEditor] Post data received:', response.data);
-      return response;
+      console.log('[usePostEditor] Post data received:', response);
+      return response; // Returns Post directly
     },
     enabled: !!postId,
     retry: 2,
@@ -67,7 +67,6 @@ export function usePostEditor({ postId, onSuccess, onError }: UsePostEditorOptio
 
   // Populate form when post loads
   useEffect(() => {
-    const post = postResp?.data;
     if (!post) return;
     
     console.log('[usePostEditor] Populating form with post data:', post);
@@ -103,7 +102,7 @@ export function usePostEditor({ postId, onSuccess, onError }: UsePostEditorOptio
     setSelectedTags(tagUuids);
     
     console.log('[usePostEditor] Form populated successfully');
-  }, [postResp, setValue]);
+  }, [post, setValue]);
 
   // Create post mutation
   const createPostMutation = useMutation({
@@ -136,11 +135,11 @@ export function usePostEditor({ postId, onSuccess, onError }: UsePostEditorOptio
         title: data.title,
         excerpt: data.excerpt,
         content: data.content,
-        categories: [Number(data.categoryId)],
-        tags: selectedTags,
         thumbnail: data.thumbnailUrl || undefined,
+        categories: [String(data.categoryId)], // Convert to string array
+        tags: selectedTags, // Already string array
+        featured: false, // Default value
         public_date: data.public_date || undefined,
-        is_publish: data.status === 'PUBLISHED',
       };
       
       console.log('[usePostEditor] Update payload:', payload);
@@ -188,11 +187,11 @@ export function usePostEditor({ postId, onSuccess, onError }: UsePostEditorOptio
         title: formData.title,
         excerpt: formData.excerpt,
         content: formData.content,
-        categories: [Number(formData.categoryId)],
-        tags: selectedTags,
         thumbnail: formData.thumbnailUrl || undefined,
+        categories: [String(formData.categoryId)],
+        tags: selectedTags,
+        featured: false,
         public_date: formData.public_date || undefined,
-        is_publish: formData.status === 'PUBLISHED',
       };
       
       await authorApi.updatePost(String(postId), payload);
@@ -229,11 +228,11 @@ export function usePostEditor({ postId, onSuccess, onError }: UsePostEditorOptio
         title: formData.title,
         excerpt: formData.excerpt,
         content: formData.content,
-        categories: [Number(formData.categoryId)],
-        tags: selectedTags,
         thumbnail: formData.thumbnailUrl || undefined,
+        categories: [String(formData.categoryId)],
+        tags: selectedTags,
+        featured: false,
         public_date: formData.public_date || undefined,
-        is_publish: formData.status === 'PUBLISHED',
       };
       
       console.log('[usePostEditor] Saving post manually:', payload);
@@ -271,11 +270,11 @@ export function usePostEditor({ postId, onSuccess, onError }: UsePostEditorOptio
         title: data.title,
         excerpt: data.excerpt,
         content: data.content,
-        categories: [Number(data.categoryId)],
-        tags: selectedTags,
         thumbnail: data.thumbnailUrl || undefined,
+        categories: [String(data.categoryId)],
+        tags: selectedTags,
+        featured: false,
         public_date: data.public_date ? new Date(data.public_date).toISOString() : undefined,
-        is_publish: data.status === 'PUBLISHED',
       };
       createPostMutation.mutate(payload);
     }
@@ -296,7 +295,7 @@ export function usePostEditor({ postId, onSuccess, onError }: UsePostEditorOptio
     lastSaved,
     
     // Post data
-    post: postResp?.data,
+    post,
     postLoading,
     postError,
     refetchPost,

@@ -1,347 +1,225 @@
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Link } from 'react-router';
-import { Card, CardContent, CardHeader } from '~/components/ui/Card';
-import { Button } from '~/components/ui/button';
-import { userPostsApi } from '~/api/userPosts';
-import { useAuthStore } from '~/store/authStore';
+
+
+import { useState } from "react"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { Link } from "react-router"
+import { Button } from "~/components/ui/button"
+import { userPostsApi } from "~/api/userPosts"
+import { useAuthStore } from "~/store/authStore"
 import {
-  Edit3,
-  Eye,
-  Heart,
-  MessageCircle,
-  Star,
-  Trash2,
-  MoreHorizontal,
-  Calendar,
-  Filter,
   Search,
   Plus,
-  FileText,
-  Clock,
+  BookOpen,
+  Edit,
+  Trash2,
+  Calendar,
+  Eye,
+  MessageCircle,
   Tag,
-  Grid,
-  List
-} from 'lucide-react';
-import { formatDateSimple } from "~/lib/utils";
-import { authorApi } from '~/api/author';
-import { PostCard } from '~/components/post';
+  ChevronRight,
+  Grid3x3,
+  List,
+} from "lucide-react"
+import { formatDateSimple } from "~/lib/utils"
+import { authorApi } from "~/api/author"
+import { PostList } from "~/components/post/PostList"
+import { ListView } from "~/components/post/ListView"
+
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value)
+
+  useState(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value)
+    }, delay)
+
+    return () => {
+      clearTimeout(handler)
+    }
+  })
+
+  return debouncedValue
+}
 
 export default function MyPostsPage() {
-  const { user } = useAuthStore();
-  const queryClient = useQueryClient();
-  const [page, setPage] = useState(0);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filter, setFilter] = useState<'all' | 'published' | 'draft'>('all');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
-  const size = viewMode === 'grid' ? 6 : 6;
+  const { user } = useAuthStore()
+  const queryClient = useQueryClient()
 
-  // Fetch user posts
-  const { data: postsData, isLoading, error } = useQuery({
-    queryKey: ['user-posts', page, searchTerm, filter],
-    queryFn: () => userPostsApi.getUserPosts(page, size),
-    enabled: !!user
-  });
+  const [page, setPage] = useState(0)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
+  const size = 6
 
-  // Enhanced Delete post mutation following author.ts patterns
+  const debouncedSearch = useDebounce(searchTerm, 500)
+
+  const {
+    data: postsData,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["user-posts", page, debouncedSearch],
+    queryFn: async () => {
+      const response = await authorApi.getMyPosts(
+        page,
+        size,
+        debouncedSearch || undefined,
+        undefined,
+        undefined,
+        "desc",
+      )
+      return response
+    },
+    enabled: !!user,
+    staleTime: 30000,
+    placeholderData: (previousData) => previousData,
+  })
+
   const deleteMutation = useMutation({
     mutationFn: async (postId: string) => {
-      console.log(' Starting delete operation for post:', postId);
-      return await userPostsApi.deletePost(postId);
+      return await userPostsApi.deletePost(postId)
     },
-    onSuccess: (data, postId) => {
-      console.log(' Post deleted successfully:', { postId, data });
-
-      // Invalidate multiple related queries
-      queryClient.invalidateQueries({ queryKey: ['user-posts'] });
-      queryClient.invalidateQueries({ queryKey: ['user-stats'] });
-      queryClient.invalidateQueries({ queryKey: ['posts'] });
-      queryClient.invalidateQueries({ queryKey: ['featured-posts'] });
-
-      // Show success notification
-      if (typeof window !== 'undefined' && window.alert) {
-        window.alert('Bài viết đã được xóa thành công!');
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user-posts"] })
+      queryClient.invalidateQueries({ queryKey: ["user-stats"] })
+      if (typeof window !== "undefined" && window.alert) {
+        window.alert("Bài viết đã được xóa thành công!")
       }
     },
-    onError: (error, postId) => {
-      console.error(' Delete post failed:', { postId, error });
-
-      // Show error notification
-      if (typeof window !== 'undefined' && window.alert) {
-        window.alert(`Không thể xóa bài viết: ${error.message || 'Lỗi không xác định'}`);
+    onError: (error) => {
+      if (typeof window !== "undefined" && window.alert) {
+        window.alert(`Không thể xóa bài viết: ${error.message || "Lỗi không xác định"}`)
       }
     },
-  });
+  })
 
-  // Enhanced delete handler with better UX
   const handleDelete = async (postId: string, title: string) => {
-    // Enhanced confirmation dialog
-    const confirmMessage = `Bạn có chắc muốn xóa bài viết "${title}"?\n\nHành động này không thể hoàn tác và sẽ xóa vĩnh viễn:
-    • Nội dung bài viết
-    • Tất cả bình luận và tương tác
-    • Thống kê lượt xem
-    • Bookmark của người dùng khác`;
-
-    if (!window.confirm(confirmMessage)) {
-      return;
+    if (!window.confirm(`Bạn có chắc muốn xóa bài viết "${title}"?`)) {
+      return
     }
-
     try {
-      console.log('User confirmed deletion for post:', { postId, title });
-      await deleteMutation.mutateAsync(postId);
+      await deleteMutation.mutateAsync(postId)
     } catch (error) {
-      console.error('Delete operation failed:', error);
-      // Error is already handled in onError callback
+      console.error("Delete operation failed:", error)
     }
-  };
+  }
 
-  const posts = postsData || [];
-  const hasNextPage = posts.length >= size;
-
-  // Filter posts based on search term and filter
-  const filteredPosts = posts.filter(post => {
-    const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      post.summary?.toLowerCase().includes(searchTerm.toLowerCase());
-
-    if (filter === 'all') return matchesSearch;
-    if (filter === 'published') return matchesSearch && post.published;
-    if (filter === 'draft') return matchesSearch && !post.published;
-
-    return matchesSearch;
-  });
+  const posts = postsData || []
+  const hasNextPage = posts.length >= size
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            Bài viết của tôi
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Quản lý tất cả bài viết và bản nháp của bạn
-          </p>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Link to="/dashboard/posts/new">
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              Viết bài mới
-            </Button>
-          </Link>
-        </div>
-      </div>
-
-      {/* Filters and Search */}
-      <div>
-        <CardContent className="p-4">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <input
-                type="text"
-                placeholder="Tìm kiếm bài viết..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-black text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+    <div className="min-h-screen bg-background">
+      <div className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground py-8 md:py-12 px-4 md:px-0 mb-8 ">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1">
+              <h1 className="text-4xl md:text-5xl font-bold mb-2 text-balance">Bài viết của tôi</h1>
+              <p className="text-primary-foreground/90 text-lg">Quản lý và xuất bản những câu chuyện của bạn</p>
             </div>
-            <div className="flex items-center space-x-2">
-              <div className="flex items-center space-x-1 bg-gray-100 dark:bg-black rounded-md p-1">
-                <button
-                  onClick={() => setViewMode('grid')}
-                  className={`p-1.5 rounded ${viewMode === 'grid' ? 'bg-white dark:bg-gray-700 shadow-sm' : 'text-gray-500 dark:text-gray-400'}`}
-                >
-                  <Grid className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => setViewMode('list')}
-                  className={`p-1.5 rounded ${viewMode === 'list' ? 'bg-white dark:bg-gray-700 shadow-sm' : 'text-gray-500 dark:text-gray-400'}`}
-                >
-                  <List className="w-4 h-4" />
-                </button>
-              </div>
-              <select
-                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-black text-gray-900 dark:text-gray-100"
-                value={filter}
-                onChange={(e) => setFilter(e.target.value as any)}
-              >
-                <option value="all">Tất cả</option>
-                <option value="published">Đã xuất bản</option>
-                <option value="draft">Bản nháp</option>
-              </select>
-            </div>
-          </div>
-        </CardContent>
-      </div>
-
-      {/* Content */}
-      {isLoading ? (
-        viewMode === 'grid' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
-              <Card key={i} className="animate-pulse">
-                <div className="h-40 bg-gray-200 dark:bg-gray-700 rounded-t-lg"></div>
-                <CardContent className="p-4 space-y-3">
-                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-                  <div className="flex justify-between">
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        ) : (
-          <Card>
-            <CardContent className="p-0">
-              <div className="divide-y divide-gray-200 dark:divide-gray-700">
-                {[...Array(5)].map((_, i) => (
-                  <div key={i} className="animate-pulse p-4 flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                    <div className="flex-1 space-y-2">
-                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-                    </div>
-                    <div className="w-20 h-8 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )
-      ) : filteredPosts.length > 0 ? (
-        viewMode === 'grid' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-            {filteredPosts.map((post) => (
-              <PostCard post={post} />
-            ))}
-          </div>
-        ) : (
-          <Card>
-            <CardContent className="p-0">
-              <div className="divide-y divide-gray-200 dark:divide-gray-700">
-                {filteredPosts.map((post) => (
-                  <div key={post.id} className="p-4 flex items-start space-x-4">
-                    <div className="flex-shrink-0 w-12 h-12 rounded overflow-hidden bg-gray-100 dark:bg-black">
-                      {post.thumbnail ? (
-                        <img
-                          src={post.thumbnail}
-                          alt={post.title}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
-                          <FileText className="w-6 h-6" />
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center">
-                        <Link to={`/posts/${post.slug}`} className="flex-1">
-                          <h3 className="text-base font-medium text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 truncate">
-                            {post.title}
-                          </h3>
-                        </Link>
-                        <span
-                          className={`ml-2 px-2 py-0.5 text-xs font-medium rounded 
-                            ${post.is_publish
-                              ? "bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300"
-                              : "bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300"
-                            }`}
-                        >
-                          {post.is_publish ? "Public" : "Draft"}
-                        </span>
-
-                      </div>
-                      <div className="flex items-center space-x-4 mt-1 text-xs text-gray-500 dark:text-gray-400">
-                        <div className="flex items-center">
-                          <Calendar className="w-3 h-3 mr-1" />
-                          <span>{formatDateSimple(post.createdAt)}</span>
-                        </div>
-                        <div className="flex items-center">
-                          <Eye className="w-3 h-3 mr-1" />
-                          <span>{post.viewCount}</span>
-                        </div>
-                        <div className="flex items-center">
-                          <Heart className="w-3 h-3 mr-1" />
-                          <span>{post.likeCount}</span>
-                        </div>
-                        <div className="flex items-center">
-                          <MessageCircle className="w-3 h-3 mr-1" />
-                          <span>{post.commentCount}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <Link to={`/dashboard/posts/edit/${post.id}`}>
-                        <Button variant="ghost" size="sm">
-                          <Edit3 className="w-4 h-4" />
-                        </Button>
-                      </Link>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDelete(post.id, post.title)}
-                      >
-                        <Trash2 className="w-4 h-4 text-red-500" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )
-      ) : (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <FileText className="w-16 h-16 mx-auto text-gray-400 dark:text-gray-600 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-              Không tìm thấy bài viết nào
-            </h3>
-            <p className="text-gray-500 dark:text-gray-400 mb-6">
-              {searchTerm ?
-                `Không tìm thấy bài viết nào phù hợp với "${searchTerm}"` :
-                'Bạn chưa có bài viết nào. Hãy bắt đầu viết bài đầu tiên của bạn!'}
-            </p>
-            <Link to="/dashboard/posts/new">
-              <Button>
-                <Plus className="w-4 h-4 mr-2" />
+            <Link to="/dashboard/posts/new" className="mt-2">
+              <Button size="lg" className="bg-white text-primary hover:bg-white/90 shadow-lg dark:text-black">
+                <Plus className="w-5 h-5 mr-2" />
                 Viết bài mới
               </Button>
             </Link>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Pagination */}
-      {!isLoading && (
-        <div className="flex justify-center mt-6">
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page === 0}
-              onClick={() => setPage(page - 1)}
-            >
-              Trước
-            </Button>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              Trang {page + 1}
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={!hasNextPage}
-              onClick={() => setPage(page + 1)}
-            >
-              Sau
-            </Button>
           </div>
         </div>
-      )}
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 md:px-0 pb-12">
+        <div className="mb-8">
+          <div className="flex flex-col md:flex-row gap-4 md:items-center justify-between">
+            <div className="relative max-w-2xl flex-1">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Tìm kiếm bài viết..."
+                className="w-full pl-12 pr-4 py-3 rounded-lg border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value)
+                  setPage(0)
+                }}
+              />
+            </div>
+            <div className="flex gap-2 bg-muted/50 p-1 rounded-lg w-fit">
+              <Button
+                variant={viewMode === "grid" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode("grid")}
+                className="gap-2"
+              >
+                <Grid3x3 className="w-4 h-4" />
+                <span className="hidden sm:inline">Grid</span>
+              </Button>
+              <Button
+                variant={viewMode === "list" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode("list")}
+                className="gap-2"
+              >
+                <List className="w-4 h-4" />
+                <span className="hidden sm:inline">Danh sách</span>
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {isLoading ? (
+          <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-4"}>
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className={`bg-card rounded-lg overflow-hidden shadow-sm border border-border animate-pulse ${
+                  viewMode === "list" ? "flex gap-4 p-4" : ""
+                }`}
+              >
+                <div
+                  className={viewMode === "grid" ? "h-40 w-full bg-muted" : "h-24 w-24 flex-shrink-0 bg-muted rounded"}
+                />
+                <div className={viewMode === "grid" ? "p-6 space-y-3 w-full" : "flex-1 space-y-2"}>
+                  <div className="h-5 bg-muted rounded w-3/4"></div>
+                  <div className="h-4 bg-muted rounded w-full"></div>
+                  <div className="h-4 bg-muted rounded w-2/3"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : posts.length > 0 ? (
+          <>
+            {viewMode === "grid" ? (
+             <PostList  posts={posts}/>
+            ) : (
+              <ListView posts={posts}  />
+            )}
+
+            {!isLoading && posts.length > 0 && (
+              <div className="flex justify-center items-center gap-2 mt-12 pt-8 border-t border-border">
+                <Button variant="outline" disabled={page === 0} onClick={() => setPage(page - 1)}>
+                  Trước
+                </Button>
+                <span className="px-4 py-2 text-sm font-medium">Trang {page + 1}</span>
+                <Button variant="outline" disabled={!hasNextPage} onClick={() => setPage(page + 1)}>
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="text-center py-16">
+            <div className="inline-block p-4 rounded-full bg-secondary mb-4">
+              <BookOpen className="w-12 h-12 text-primary/60" />
+            </div>
+            <h3 className="text-2xl font-bold text-foreground mb-2">Chưa có bài viết nào</h3>
+            <p className="text-muted-foreground mb-6">Bắt đầu viết bài đầu tiên để chia sẻ những suy nghĩ của bạn</p>
+            <Link to="/dashboard/posts/new">
+              <Button size="lg">
+                <Plus className="w-5 h-5 mr-2" />
+                Viết bài mới
+              </Button>
+            </Link>
+          </div>
+        )}
+      </div>
     </div>
-  );
+  )
 }

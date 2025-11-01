@@ -144,24 +144,8 @@ export const useAuthStore = create<AuthStore>()(
       onRehydrateStorage: () => (state) => {
         if (state) {
           console.log("Auth store rehydrated");
-
-          if (state.token && isTokenExpired(state.token)) {
-            console.log("Token expired on rehydration, attempting refresh...");
-            state
-              .refreshAccessToken()
-              .then((newToken) => {
-                state.isAuthenticated = !!newToken;
-              })
-              .catch(() => {
-                state.user = null;
-                state.token = null;
-                state.isAuthenticated = false;
-              });
-          } else if (state.token) {
-            state.isAuthenticated = true;
-          } else {
-            state.isAuthenticated = false;
-          }
+          // Chỉ set flag hydrated, để initializeAuth xử lý token refresh
+          // Tránh duplicate refresh token requests
         }
         state?.setHasHydrated(true);
       },

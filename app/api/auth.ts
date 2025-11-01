@@ -48,7 +48,7 @@ export const authApi = {
     const { user, token, refreshToken } = response.data;
 
     // Save user + access token vào store
-    useAuthStore.getState().login(user, token );
+    useAuthStore.getState().login(user, token);
     // console.log(response.data)
     return response.data;
   },
@@ -117,39 +117,29 @@ export const authApi = {
     return response.data;
   },
 
-  //Refresh access token by sending refreshToken in body
-  // async refreshToken(refreshToken: string): Promise<string> {
-  //   const res = await axiosInstance.post(
-  //     "/auth/refresh-token",
-  //     { refreshToken },
-  //     { withCredentials: true }
-  //   );
 
-  //   const { token } = res.data; 
-  //   return token;
-  // },
-
-
-  // refreshToken: async (refreshToken: string) => {
-  //   const response = await axiosInstance.post("/auth/refresh-token", {
-  //     refreshToken,
-  //   });
-
-  //   const { accessToken, refreshToken: newRefreshToken } = response.data;
-  //   return { accessToken, refreshToken: newRefreshToken };
-  // },
-
-
-  refreshToken: async () => {
+  // ~/api/auth.ts
+refreshToken: async () => {
+  try {
     const response = await axiosInstance.post(
       "/auth/refresh-token",
-      {}, // hông truyền refreshToken trong body nữa
-      { withCredentials: true } // Quan trọng để cookie gửi đi
+      {},
+      { withCredentials: true }
     );
 
-    const { accessToken } = response.data;
-    return { accessToken };
-  },
+   
 
+    const { accessToken, refreshToken } = response.data || {};
+
+    if (!accessToken) {
+      throw new Error("No new access token returned from server");
+    }
+
+    return { accessToken, refreshToken };
+  } catch (error: any) {
+    console.error("Refresh token request failed:", error);
+    throw error;
+  }
+},
 
 };

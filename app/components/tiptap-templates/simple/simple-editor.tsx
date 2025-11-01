@@ -151,18 +151,18 @@ const MainToolbarContent = ({
 
       {isMobile && <ToolbarSeparator />}
 
-      <ToolbarGroup>
+      {/* <ToolbarGroup>
         <Button onClick={() => setIsSaveDialogOpen(true)} className="gap-2">
           <Save className="h-4 w-4" />
         </Button>
-      </ToolbarGroup>
+      </ToolbarGroup> */}
       {/* <ToolbarGroup>
         <ThemeToggle />
       </ToolbarGroup> */}
-      <SavePostDialog
+      {/* <SavePostDialog
         open={isSaveDialogOpen}
         onOpenChange={setIsSaveDialogOpen}
-      />
+      /> */}
     </>
   );
 };
@@ -196,13 +196,22 @@ const MobileToolbarContent = ({
   </>
 );
 
-export function SimpleEditor() {
+export function SimpleEditor({
+  value,
+  onChange,
+}: {
+  value?: string;
+  onChange?: (v: string) => void;
+}) {
+
+
   const isMobile = useIsMobile();
   const { height } = useWindowSize();
   const [mobileView, setMobileView] = React.useState<
     "main" | "highlighter" | "link"
   >("main");
   const toolbarRef = React.useRef<HTMLDivElement>(null);
+
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -242,7 +251,12 @@ export function SimpleEditor() {
         onError: (error) => console.error("Upload failed:", error),
       }),
     ],
-    content,
+    content: value || content,
+    onUpdate: ({ editor }) => {
+      if (onChange) {
+        onChange(editor.getHTML());
+      }
+    },
   });
 
   const rect = useCursorVisibility({

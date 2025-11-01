@@ -18,28 +18,46 @@ import {
 } from "lucide-react";
 import { PostCard } from "~/components/post";
 import { Input } from "~/components/ui/Input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
 import type { Route } from "../+types/root";
 import { PostCardSkeleton } from "~/components/skeleton/PostDetailSkeleton";
+import { ListArticles } from "~/components/post/ListArticles";
 
 export function meta({}: Route.MetaArgs) {
   return [
     { title: "Blog - Khám phá bài viết mới nhất từ cộng đồng" },
-    { name: "description", content: "Tổng hợp các bài viết hay nhất về công nghệ, lập trình, chia sẻ kinh nghiệm và xu hướng mới từ cộng đồng. Tìm kiếm, lọc và khám phá nội dung phù hợp với bạn." },
-    { name: "keywords", content: "blog, bài viết, lập trình, công nghệ, chia sẻ, kinh nghiệm, xu hướng" },
+    {
+      name: "description",
+      content:
+        "Tổng hợp các bài viết hay nhất về công nghệ, lập trình, chia sẻ kinh nghiệm và xu hướng mới từ cộng đồng. Tìm kiếm, lọc và khám phá nội dung phù hợp với bạn.",
+    },
+    {
+      name: "keywords",
+      content:
+        "blog, bài viết, lập trình, công nghệ, chia sẻ, kinh nghiệm, xu hướng",
+    },
     { property: "og:title", content: "Blog cộng đồng - Bài viết mới nhất" },
-    { property: "og:description", content: "Khám phá các bài viết nổi bật và xu hướng. Tìm kiếm theo chủ đề bạn yêu thích." },
+    {
+      property: "og:description",
+      content:
+        "Khám phá các bài viết nổi bật và xu hướng. Tìm kiếm theo chủ đề bạn yêu thích.",
+    },
     { property: "og:type", content: "website" },
   ];
 }
-
 
 export default function PostsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [page, setPage] = useState(0);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showSidebar, setShowSidebar] = useState(true);
-  const pageSize = viewMode === 'grid' ? 6 : 10;
+  const pageSize = viewMode === "grid" ? 6 : 5;
 
   // Initialize filters from URL params
   const [filters, setFilters] = useState<FilterOptions>({
@@ -61,7 +79,6 @@ export default function PostsPage() {
     setSearchInput(filters.search);
   }, [filters.search]);
 
-  
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       setFilters((prev) => ({ ...prev, search: searchInput }));
@@ -190,15 +207,29 @@ export default function PostsPage() {
                 className="w-full md:max-w-md"
               />
               {filters.search && (
-                <Button variant="outline" size="sm" onClick={() => setFilters((p) => ({...p, search: ""}))}>Xóa</Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setFilters((p) => ({ ...p, search: "" }))}
+                >
+                  Xóa
+                </Button>
               )}
             </div>
             <div className="flex items-center gap-2">
               <Select
                 value={filters.sortBy}
-                onValueChange={(v) => { setFilters((p) => ({...p, sortBy: v as FilterOptions["sortBy"]})); setPage(0); }}
+                onValueChange={(v) => {
+                  setFilters((p) => ({
+                    ...p,
+                    sortBy: v as FilterOptions["sortBy"],
+                  }));
+                  setPage(0);
+                }}
               >
-                <SelectTrigger size="sm" className="min-w-36"><SelectValue placeholder="Sắp xếp" /></SelectTrigger>
+                <SelectTrigger size="sm" className="min-w-36">
+                  <SelectValue placeholder="Sắp xếp" />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="newest">Mới nhất</SelectItem>
                   <SelectItem value="oldest">Cũ nhất</SelectItem>
@@ -208,9 +239,17 @@ export default function PostsPage() {
               </Select>
               <Select
                 value={filters.timeRange}
-                onValueChange={(v) => { setFilters((p) => ({...p, timeRange: v as FilterOptions["timeRange"]})); setPage(0); }}
+                onValueChange={(v) => {
+                  setFilters((p) => ({
+                    ...p,
+                    timeRange: v as FilterOptions["timeRange"],
+                  }));
+                  setPage(0);
+                }}
               >
-                <SelectTrigger size="sm" className="min-w-32"><SelectValue placeholder="Khoảng thời gian" /></SelectTrigger>
+                <SelectTrigger size="sm" className="min-w-32">
+                  <SelectValue placeholder="Khoảng thời gian" />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Tất cả</SelectItem>
                   <SelectItem value="today">Hôm nay</SelectItem>
@@ -221,9 +260,17 @@ export default function PostsPage() {
               </Select>
               <Select
                 value={filters.featured}
-                onValueChange={(v) => { setFilters((p) => ({...p, featured: v as FilterOptions["featured"]})); setPage(0); }}
+                onValueChange={(v) => {
+                  setFilters((p) => ({
+                    ...p,
+                    featured: v as FilterOptions["featured"],
+                  }));
+                  setPage(0);
+                }}
               >
-                <SelectTrigger size="sm" className="min-w-32"><SelectValue placeholder="Loại" /></SelectTrigger>
+                <SelectTrigger size="sm" className="min-w-32">
+                  <SelectValue placeholder="Loại" />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Tất cả</SelectItem>
                   <SelectItem value="featured">Nổi bật</SelectItem>
@@ -262,20 +309,30 @@ export default function PostsPage() {
             {/* Unified states */}
             {isLoading && (
               <div className="space-y-6">
-                <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'}`}>
-                  {[...Array(pageSize)].map((_, i) => (<PostCardSkeleton key={i} />))}
+                <div
+                  className={`grid gap-6 ${viewMode === "grid" ? "grid-cols-1 md:grid-cols-2 xl:grid-cols-3" : "grid-cols-1"}`}
+                >
+                  {[...Array(pageSize)].map((_, i) => (
+                    <PostCardSkeleton key={i} />
+                  ))}
                 </div>
               </div>
             )}
             {!isLoading && error && (
               <div className="text-center py-12">
-                <div className="text-red-500 mb-4">Không tải được danh sách bài viết</div>
-                <Button onClick={() => window.location.reload()}>Thử lại</Button>
+                <div className="text-red-500 mb-4">
+                  Không tải được danh sách bài viết
+                </div>
+                <Button onClick={() => window.location.reload()}>
+                  Thử lại
+                </Button>
               </div>
             )}
             {!isLoading && !error && (postsData?.content.length ?? 0) === 0 && (
               <div className="text-center py-12">
-                <div className="text-gray-500 dark:text-gray-400 mb-4">Không có bài viết phù hợp</div>
+                <div className="text-gray-500 dark:text-gray-400 mb-4">
+                  Không có bài viết phù hợp
+                </div>
                 <Button onClick={clearAllFilters}>Xóa bộ lọc</Button>
               </div>
             )}
@@ -284,15 +341,26 @@ export default function PostsPage() {
             {!isLoading && !error && postsData?.content?.length ? (
               <>
                 {/* Inline rendering for both grid and list modes */}
-                <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'}`}>
-                  {postsData.content.map((p) => (
+
+               {viewMode === 'grid' ? (
+                  <div className="grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+                    {postsData.content.map((p) => (
                       <PostCard key={p.id} post={p} />
                     ))}
-                </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {postsData.content.map((p) => (
+                      <ListArticles key={p.id} post={p} />
+                    ))}
+                  </div>
+                )}
+
                 {postsData.totalPages > 1 && (
                   <div className="flex justify-between items-center mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
                     <div className="text-sm text-gray-600 dark:text-gray-400">
-                      Trang {page + 1} / {postsData.totalPages} • Hiển thị {postsData.content.length} / {postsData.totalElements}
+                      Trang {page + 1} / {postsData.totalPages} • Hiển thị{" "}
+                      {postsData.content.length} / {postsData.totalElements}
                     </div>
 
                     <div className="flex items-center space-x-2">
