@@ -221,12 +221,12 @@ export default function HomePage() {
                 Hand-picked content from our community
               </p>
             </div>
-            <Link to="/posts?featured=true">
+            {/* <Link to="/posts?featured=true">
               <Button variant="outline" className="flex items-center space-x-2">
                 <span className="text-gray-600 dark:text-gray-400">View All</span>
                 <ArrowRight className="h-4 w-4" />
               </Button>
-            </Link>       
+            </Link>        */}
           </div>
 
           <PostList
@@ -246,12 +246,12 @@ export default function HomePage() {
                 Explore content by topic
               </p>
             </div>
-            <Link to="/categories">
+            {/* <Link to="/categories">
               <Button variant="outline" className="flex items-center space-x-2">
                 <span className="text-gray-600 dark:text-gray-400">All Categories</span>
                 <ArrowRight className="h-4 w-4" />
               </Button>
-            </Link>
+            </Link> */}
           </div>
 
           {categoriesLoading ? (
@@ -307,7 +307,7 @@ export default function HomePage() {
                 Fresh content from our writers
               </p>
             </div>
-            <Link to="/posts">
+            <Link to="/articles">
               <Button variant="outline" className="flex items-center space-x-2">
                 <span className="text-gray-600 dark:text-gray-400">View All</span>
                 <ArrowRight className="h-4 w-4" />

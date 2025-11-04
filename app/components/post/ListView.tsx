@@ -100,7 +100,7 @@ export function ListView({ posts, onDelete, formatDateSimple: formatDate = forma
               </div>
 
               <div className=" flex md:flex-col items-center gap-2 justify-end">
-                <Link to={`/dashboard/posts/edit/${post.id}`} onClick={(e) => e.stopPropagation()}>
+                <Link to={`/dashboard/article/${post.id}/edit`} onClick={(e) => e.stopPropagation()}>
                   <Button variant="outline" size="sm" className="hover:bg-primary/10 bg-transparent">
                     <Edit3 className="w-4 h-4" />
                     <span className="sr-only">Edit post</span>

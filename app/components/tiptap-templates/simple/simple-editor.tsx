@@ -251,7 +251,7 @@ export function SimpleEditor({
         onError: (error) => console.error("Upload failed:", error),
       }),
     ],
-    content: value || content,
+    content: value,
     onUpdate: ({ editor }) => {
       if (onChange) {
         onChange(editor.getHTML());

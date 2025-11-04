@@ -70,7 +70,7 @@ export default function ProfileDisplayPage() {
       <div className="bg-white dark:bg-black p-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <ProfileStats user={user} />
-          <SocialLinks socialMediaLinks={user.socialMediaLinks} />
+          {/* <SocialLinks socialMediaLinks={user.socialMediaLinks} /> */}
         </div>
       </div>
 

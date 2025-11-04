@@ -29,6 +29,7 @@ interface SavePostDialogProps {
   onSave?: (metadata: {
     title: string
     excerpt: string
+    content: string
     category: number
     tags: string[]
     thumbnail?: string
@@ -37,6 +38,7 @@ interface SavePostDialogProps {
   }) => void
   existingPost?: Post
   isLoading?: boolean
+  content?: string
 }
 
 export function SavePostDialog({ 
@@ -44,7 +46,8 @@ export function SavePostDialog({
   onOpenChange, 
   onSave, 
   existingPost, 
-  isLoading = false 
+  isLoading = false,
+  content = "" 
 }: SavePostDialogProps) {
   // Form state
   const [title, setTitle] = useState("")
@@ -159,6 +162,7 @@ export function SavePostDialog({
       onSave({
         title: title.trim(),
         excerpt: excerpt.trim(),
+        content: content,
         category: parseInt(category),
         tags,
         thumbnail: thumbnail || undefined,

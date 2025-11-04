@@ -14,6 +14,7 @@ route("dashboard", "routes/dashboard/_layout.tsx", [
   route("bookmarks", "routes/dashboard/bookmarks.tsx"),
   route("my-posts", "routes/dashboard/my-posts.tsx"), // Thêm route mới cho My Posts
   route("settings", "routes/dashboard/settings.tsx"),
+  
   // route("posts/new", "routes/dashboard/posts/.tsx"),
   // route("posts/edit/:id", "routes/dashboard/posts/edit.tsx"), //Route edit post
   route("analytics", "routes/dashboard/analytics.tsx"),
@@ -21,6 +22,7 @@ route("dashboard", "routes/dashboard/_layout.tsx", [
   route("profile/edit", "routes/dashboard/profile/edit.tsx"),
   route("newsletter", "routes/dashboard/newsletter.tsx"), // Newsletter management for users
   route("article",  "routes/dashboard/posts/article.tsx"),
+  route("article/:id/edit", "routes/dashboard/posts/edit-article.tsx"),
   route("series", "routes/dashboard/series/index.tsx"),
   route("series/new", "routes/dashboard/series/new.tsx"),
   route("series/:id/edit", "routes/dashboard/series/edit.tsx"),

@@ -68,7 +68,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="bg-bg-primary text-text-primary transition-colors duration-200">
+      <body >
         <QueryClientProvider client={queryClient}>
           <Toaster position="top-right" theme={useThemeStore(state => state.actualTheme) as any} />
           <ThemeInitializer />

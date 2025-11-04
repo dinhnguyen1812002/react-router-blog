@@ -1,18 +1,3 @@
-/**
- * Article Editor Page
- * 
- * Tính năng soạn thảo/chỉnh sửa bài viết với các chức năng:
- * - Rich text editor với TipTap
- * - Upload thumbnail thông qua API upload
- * - Chọn category (single select)
- * - Chọn tags (multiple select)
- * - Form validation đầy đủ
- * - Loading states và error handling
- * - Hỗ trợ cả tạo mới và chỉnh sửa bài viết
- * 
- * @author React/TypeScript Developer
- */
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -23,6 +8,7 @@ import { authorApi, type CreateAuthorPostRequest } from "~/api/author";
 import type { Route } from "../+types";
 import { useEditor } from "@tiptap/react";
 import { SaveAll } from "lucide-react";
+import { toast } from "sonner";
 
 
 export function meta({}: Route.MetaArgs) {
@@ -44,8 +30,6 @@ export default function ArticlePage() {
     queryKey: ["post", id],
     queryFn: () => authorApi.getPostById(id!),
     enabled: isEditMode && !!id,
-
-    
   });
 
   // Create mutation
@@ -54,9 +38,12 @@ export default function ArticlePage() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["author", "posts"] });
       navigate("/dashboard/my-posts");
+      toast.success("Post update successfully");
     },
+
     onError: (error) => {
       console.error("Create post error:", error);
+      toast.error("Failed to update post");
     },
   });
 
@@ -106,6 +93,7 @@ export default function ArticlePage() {
   const handleSave = (metadata: {
     title: string;
     excerpt: string;
+    content: string;
     category: number;
     tags: string[];
     thumbnail?: string;
@@ -116,7 +104,7 @@ export default function ArticlePage() {
     const postData: CreateAuthorPostRequest = {
       title: metadata.title,
       excerpt: metadata.excerpt, // Tóm tắt bài viết
-      content: editorContent, // Nội dung từ rich text editor
+      content: metadata.content, // Nội dung từ rich text editor
       thumbnail: metadata.thumbnail, // URL của ảnh đã upload
       categories: [String(metadata.category)], // Convert to string array
       tags: metadata.tags, // Array of tag UUIDs (already strings)
@@ -173,7 +161,7 @@ export default function ArticlePage() {
 
         <main className="flex-1 overflow-auto dark:text-white dark:bg-black/40">
           <SimpleEditor 
-            value={editorContent}
+            value={existingPost?.content}
             onChange={setEditorContent}
           />
         </main>
@@ -184,6 +172,7 @@ export default function ArticlePage() {
           onSave={handleSave}
           existingPost={existingPost}
           isLoading={createMutation.isPending || updateMutation.isPending}
+          content={editorContent}
         />
       </div>
 

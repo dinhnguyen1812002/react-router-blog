@@ -21,7 +21,7 @@ export default function HeroSection() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-                <Link  to={"/posts"}>
+                <Link  to={"/articles"}>
                 
                 <Button 
                 size="lg" 

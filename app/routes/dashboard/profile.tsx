@@ -3,7 +3,7 @@ import { User, Globe, MapPin, Calendar, Settings, Edit3, Share2, Users, MessageC
 import { useState } from 'react';
 import { authApi } from '~/api/auth';
 import { ProfileSkeleton } from '~/components/skeleton/ProfileSkeleton';
- import Avatar from "boring-avatars";
+import Avatar from "boring-avatars";
 import type { ProfileUser } from '~/types';
 import { Link } from 'react-router';
 // Types
@@ -33,14 +33,12 @@ interface ApiResponse<T> {
 }
 
 // Mock API service (replace with your actual API)
-const apiService = {
-  profile: async (): Promise<ApiResponse<ProfileUser>> => {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    const response = await authApi.profile();
-    return response;
-  }
-};
+// const apiService = {
+//   profile: async (): Promise<ApiResponse<ProfileUser>> => {
+//     const response = await authApi.profile();
+//     return response;
+//   }
+// };
 
 // Social media icon mapping
 const getSocialIcon = (platform: string) => {
@@ -48,16 +46,16 @@ const getSocialIcon = (platform: string) => {
     case 'linkedin':
       return (
         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
         </svg>
       );
     case 'twitter':
       return (
-       <Twitter className="w-5 h-5" />
+        <Twitter className="w-5 h-5" />
       );
     case 'instagram':
       return (
-       <Instagram className="w-5 h-5" />
+        <Instagram className="w-5 h-5" />
       );
     default:
       return <Globe className="w-5 h-5" />;
@@ -95,7 +93,7 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
   };
 
   return (
-    <div 
+    <div
       className="prose prose-sm max-w-none"
       dangerouslySetInnerHTML={{ __html: renderMarkdown(content) }}
     />
@@ -111,15 +109,15 @@ export default function Profile() {
     error,
     refetch
   } = useQuery({
-    queryKey: ['profile'],
-    queryFn: apiService.profile,
+    queryKey: ['user', 'profile'],
+    queryFn: authApi.profile,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
   if (isLoading) return <ProfileSkeleton />;
-  
+
   if (error) return <ErrorMessage error={error as Error} onRetry={refetch} />;
-  
+
   if (!response?.data) return <div>No profile data found</div>;
 
   const user = response.data;
@@ -146,14 +144,14 @@ export default function Profile() {
             {/* Avatar */}
             <div className="relative">
 
-                 <div className="w-32 h-32 rounded-full  border-3 border-transition-colors shadow-lg flex items-center justify-center">
-                    <Avatar name={user.username} 
-                    variant="geometric" 
-                    size={128} 
-                    colors={['#FF5733', '#FFC300', '#DAF7A6']} 
-               />
-                </div>
-                {/* im gonna do this shit later */}
+              <div className="w-32 h-32 rounded-full  border-3 border-transition-colors shadow-lg flex items-center justify-center">
+                <Avatar name={user.username}
+                  variant="geometric"
+                  size={128}
+                  colors={['#FF5733', '#FFC300', '#DAF7A6']}
+                />
+              </div>
+              {/* im gonna do this shit later */}
               {/* {user.avatar ? (
                 <img
                   src={user.avatar }
@@ -185,7 +183,7 @@ export default function Profile() {
                   </span>
                 )}
               </div>
-              
+
               <p className="text-gray-600 mb-4">{user.email}</p>
 
               {/* Stats */}
@@ -236,12 +234,12 @@ export default function Profile() {
               {/* <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
                 Edit Profile
               </button> */}
-                 <Link 
-                  to="/dashboard/profile/edit"
-                  className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  Edit Profile
-                </Link>
+              <Link
+                to="/dashboard/profile/edit"
+                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Edit Profile
+              </Link>
               <button className="bg-gray-100 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-200 transition-colors">
                 View Public Profile
               </button>
@@ -262,11 +260,10 @@ export default function Profile() {
               <button
                 key={id}
                 onClick={() => setActiveTab(id)}
-                className={`flex items-center gap-2 px-6 py-4 font-medium transition-colors ${
-                  activeTab === id
+                className={`flex items-center gap-2 px-6 py-4 font-medium transition-colors ${activeTab === id
                     ? 'border-b-2 border-blue-600 text-blue-600'
                     : 'text-gray-600 hover:text-gray-900'
-                }`}
+                  }`}
               >
                 <Icon className="w-4 h-4" />
                 {label}
