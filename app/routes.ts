@@ -35,6 +35,7 @@ route("dashboard", "routes/dashboard/_layout.tsx", [
   route("series/:slug", "routes/series.$slug.tsx"),
   route("categories", "routes/category.index.tsx"),
   route("search", "routes/search.tsx"),
+  route("about","routes/about.tsx"),
   // route("auth-error-test", "routes/auth-error-test.tsx"),
 
   // Dashboard routes

@@ -20,6 +20,7 @@ import stylesheet from "./app.css?url";
 import theme from "./styles/theme.css?url";
 
 import LoadingSpinner from "./components/Loading";
+import NotFound from "./components/error/NotFound";
 
 
 export const links: Route.LinksFunction = () => [
@@ -127,13 +128,14 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 
   return (
     <main className="pt-16 p-4 container mx-auto">
-      <h1>{message}</h1>a
+      {/* <h1>{message}</h1>a
       <p>{details}</p>
       {stack && (
         <pre className="w-full p-4 overflow-x-auto">
           <code>{stack}</code>
         </pre>
-      )}
+      )} */}
+      <NotFound />
     </main>
   );
 }
