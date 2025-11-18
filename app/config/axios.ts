@@ -27,12 +27,7 @@ axiosInstance.interceptors.request.use(
     }
     
     // Development logging
-    if (process.env.NODE_ENV === "development") {
-      console.log(`API Request: ${config.method?.toUpperCase()} ${config.url}`, {
-        hasAuth: !!config.headers.Authorization,
-        tokenLength: token?.length || 0,
-      });
-    }
+
     
     return config;
   },

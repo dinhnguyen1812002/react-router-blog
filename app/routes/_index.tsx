@@ -10,8 +10,8 @@ import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
 import HeroSection from "~/components/layout/Hero";
 import NewLetters from "~/components/NewLetters";
-import GlobalSearch from "~/components/search/GlobalSearch";
-import { formatNumber } from "~/lib/utils";
+// import GlobalSearch from "~/components/search/GlobalSearch";
+
 
 import {
   TrendingUp,
@@ -40,6 +40,7 @@ import { userApi } from "~/api/user";
 import Avatar from "boring-avatars";
 import UserAvatar from "~/components/ui/boring-avatar";
 import type { Route } from "../+types/root";
+import { formatNumber } from "~/lib/utils";
 
 
 

@@ -1,8 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router";
 import { postsApi } from "~/api/posts";
-import { formatDate, calculateReadingTime } from "~/lib/utils";
+
 import { Star, Clock, Eye, TrendingUp } from "lucide-react";
+import { calculateReadingTime } from "../post/ReadingProgressBar";
+import { formatDateSimple } from "~/lib/utils";
 
 interface FeaturedPostsSidebarProps {
   maxPosts?: number;
@@ -105,7 +107,7 @@ export default function FeaturedPostsSidebar({
 
                     {/* Meta info */}
                     <div className="flex items-center space-x-3 text-xs text-gray-500 dark:text-gray-400">
-                      <span>{formatDate(post.createdAt)}</span>
+                      <span>{formatDateSimple(post.createdAt)}</span>
                       <div className="flex items-center space-x-1">
                         <Clock className="h-3 w-3" />
                         <span>{calculateReadingTime(post.content)} min</span>

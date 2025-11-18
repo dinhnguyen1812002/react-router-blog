@@ -200,14 +200,14 @@ export default function NewsletterTable({
                       )}
 
                       {/* Delete button for all statuses */}
-                      <button
+                      {/* <button
                         onClick={() => onDelete(subscriber.id)}
                         className="text-gray-600 hover:text-red-900 bg-gray-50 px-2 py-1 rounded text-xs font-medium border border-gray-200 hover:bg-red-50 hover:border-red-200 transition-colors"
                         title="Xóa người đăng ký"
                       >
                         <Trash2 className="h-3 w-3 inline mr-1" />
                         Xóa
-                      </button>
+                      </button> */}
                     </div>
                   </td>
                 </tr>

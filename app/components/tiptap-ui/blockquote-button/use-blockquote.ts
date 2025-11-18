@@ -1,6 +1,6 @@
-"use client"
 
-import * as React from "react"
+
+import  React from "react"
 import type { Editor } from "@tiptap/react"
 import { NodeSelection, TextSelection } from "@tiptap/pm/state"
 

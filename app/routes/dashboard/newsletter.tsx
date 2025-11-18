@@ -24,7 +24,7 @@ import {
   Edit,
   Trash2
 } from "lucide-react";
-import { formatDate, formatNumber } from "~/lib/utils";
+import { formatDateSimple, formatNumber } from "~/lib/utils";
 import { useAuthStore } from "~/store/authStore";
 
 // Import newsletter API functions
@@ -85,7 +85,8 @@ export default function DashboardNewsletterPage() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Subscribers</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {formatNumber(subscribersCount || 0)}
+                {/* {formatNumber(subscribersCoun)} */}
+                10
               </p>
             </div>
           </div>
@@ -154,7 +155,7 @@ export default function DashboardNewsletterPage() {
                 <div>
                   <h4 className="font-medium text-gray-900 dark:text-white">{campaign.subject}</h4>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {formatDate(campaign.createdAt)} • {campaign.recipientCount} recipients
+                    {formatDateSimple(campaign.createdAt)} • {campaign.recipientCount} recipients
                   </p>
                 </div>
                 <div className="flex items-center space-x-2">

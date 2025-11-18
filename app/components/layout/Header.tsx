@@ -7,6 +7,7 @@ import { Link } from "react-router"
 import { ThemeSwitch } from "../ui/ThemeToggle"
 import { useAuthStore } from "~/store/authStore"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/Avatar"
+import { NotificationCenter } from "../notification/NotificationCenter"
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)
@@ -41,12 +42,7 @@ export function Header() {
     { label: "About", href: "/about" },
   ]
 
-  const notifications = [
-    { id: 1, message: "New article from your favorite author", time: "2 hours ago" },
-    { id: 2, message: "Your article got 50 likes!", time: "5 hours ago" },
-    { id: 3, message: "New comment on your post", time: "1 day ago" },
-  ]
-
+  
   const userMenuItems = [
     { label: "Profile", icon: User, href: `/profile/${user?.username}` },
     { label: "Dashboard", icon: PanelsLeftBottom, href: "/dashboard" },
@@ -103,46 +99,8 @@ export function Header() {
               <Search className="w-5 h-5" />
             </Button>
 
-            {/* Notifications Dropdown */}
-            <div className="relative">
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label="Notifications"
-                onClick={() => {
-                  setIsNotificationDropdownOpen(!isNotificationDropdownOpen)
-                  setIsUserDropdownOpen(false)
-                }}
-                className="relative"
-              >
-                <Bell className="w-5 h-5" />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full" />
-              </Button>
-
-              {isNotificationDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-80 bg-card border border-border rounded-lg shadow-lg overflow-hidden">
-                  <div className="p-4 border-b border-border">
-                    <h3 className="font-semibold text-foreground">Notifications</h3>
-                  </div>
-                  <div className="max-h-96 overflow-y-auto">
-                    {notifications.map((notif) => (
-                      <div
-                        key={notif.id}
-                        className="px-4 py-3 border-b border-border hover:bg-muted transition-colors cursor-pointer last:border-b-0"
-                      >
-                        <p className="text-sm text-foreground">{notif.message}</p>
-                        <p className="text-xs text-muted-foreground mt-1">{notif.time}</p>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="p-3 border-t border-border text-center">
-                    <Link to="/notifications" className="text-sm text-primary hover:underline">
-                      View all notifications
-                    </Link>
-                  </div>
-                </div>
-              )}
-            </div>
+         
+            <NotificationCenter/>
 
             <ThemeSwitch />
 

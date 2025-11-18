@@ -1,6 +1,6 @@
-"use client"
 
-import * as React from "react"
+
+import  React from "react"
 
 // --- Lib ---
 import { parseShortcutKeys } from "~/lib/tiptap-utils"

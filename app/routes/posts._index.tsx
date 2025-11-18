@@ -342,7 +342,7 @@ export default function PostsPage() {
               <>
                 {/* Inline rendering for both grid and list modes */}
 
-               {viewMode === 'grid' ? (
+                {viewMode === "grid" ? (
                   <div className="grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
                     {postsData.content.map((p) => (
                       <PostCard key={p.id} post={p} />
@@ -381,7 +381,7 @@ export default function PostsPage() {
                             const pageNum =
                               Math.max(
                                 0,
-                                Math.min(postsData.totalPages - 5, page - 2)
+                                Math.min(postsData.totalPages - 5, page - 2),
                               ) + i;
                             return (
                               <button
@@ -396,7 +396,7 @@ export default function PostsPage() {
                                 {pageNum + 1}
                               </button>
                             );
-                          }
+                          },
                         )}
                       </div>
 

@@ -24,7 +24,30 @@ import {
   ChevronsRight,
 } from "lucide-react";
 import { Button } from "~/components/ui/button";
+import type { Route } from "./+types";
 
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Login page" },
+    {
+      name: "description",
+      content:
+        "Tổng hợp các bài viết hay nhất về công nghệ, lập trình, chia sẻ kinh nghiệm và xu hướng mới từ cộng đồng. Tìm kiếm, lọc và khám phá nội dung phù hợp với bạn.",
+    },
+    {
+      name: "keywords",
+      content:
+        "blog, bài viết, lập trình, công nghệ, chia sẻ, kinh nghiệm, xu hướng",
+    },
+    { property: "og:title", content: "Blog cộng đồng - Bài viết mới nhất" },
+    {
+      property: "og:description",
+      content:
+        "Khám phá các bài viết nổi bật và xu hướng. Tìm kiếm theo chủ đề bạn yêu thích.",
+    },
+    { property: "og:type", content: "website" },
+  ];
+}
 const loginSchema = z.object({
   email: z.string().email("Email không hợp lệ"),
   password: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
@@ -101,36 +124,61 @@ export default function LoginPage() {
                <Link to="/">
                 <ChevronsRight className="h-5 w-5 text-white" />
                </Link>
-         
+
               </div> */}
             </div>
             <h2 className="text-4xl font-bold mb-4 leading-tight">
               Welcome back to your workspace
             </h2>
             <p className="text-lg text-slate-300 leading-relaxed">
-              Sign in to access your personalized dashboard, manage your projects, and collaborate with your team.
+              Sign in to access your personalized dashboard, manage your
+              projects, and collaborate with your team.
             </p>
             <div className="mt-12 space-y-4">
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                 </div>
                 <span className="text-slate-200">Secure authentication</span>
               </div>
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                 </div>
                 <span className="text-slate-200">Fast and reliable</span>
               </div>
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                 </div>
                 <span className="text-slate-200">24/7 support available</span>
@@ -149,8 +197,12 @@ export default function LoginPage() {
           </div>
 
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">Welcome Back</h1>
-            <p className="text-slate-600">Sign in to continue to your account</p>
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">
+              Welcome Back
+            </h1>
+            <p className="text-slate-600">
+              Sign in to continue to your account
+            </p>
           </div>
 
           {error && (
@@ -171,9 +223,16 @@ export default function LoginPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-6"
+            noValidate
+          >
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-slate-700 mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-semibold text-slate-700 mb-2"
+              >
                 Email Address
               </label>
               <div className="relative">
@@ -186,24 +245,31 @@ export default function LoginPage() {
                   {...register("email")}
                   className={`block w-full pl-10 pr-3 py-3 border ${
                     errors.email
-                      ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-                      : 'border-slate-300 focus:border-slate-500 focus:ring-slate-500'
+                      ? "border-red-300 focus:border-red-500 focus:ring-red-500"
+                      : "border-slate-300 focus:border-slate-500 focus:ring-slate-500"
                   } rounded-lg focus:outline-none focus:ring-2 transition-colors`}
                   placeholder="you@example.com"
                   aria-label="Email Address"
-                  aria-invalid={errors.email ? 'true' : 'false'}
-                  aria-describedby={errors.email ? 'email-error' : undefined}
+                  aria-invalid={errors.email ? "true" : "false"}
+                  aria-describedby={errors.email ? "email-error" : undefined}
                 />
               </div>
               {errors.email && (
-                <p id="email-error" className="mt-2 text-sm text-red-600" role="alert">
+                <p
+                  id="email-error"
+                  className="mt-2 text-sm text-red-600"
+                  role="alert"
+                >
                   {errors.email.message}
                 </p>
               )}
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-semibold text-slate-700 mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-semibold text-slate-700 mb-2"
+              >
                 Password
               </label>
               <div className="relative">
@@ -211,30 +277,40 @@ export default function LoginPage() {
                   <Lock className="h-5 w-5 text-slate-400" />
                 </div>
                 <input
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   id="password"
                   {...register("password")}
                   className={`block w-full pl-10 pr-12 py-3 border ${
                     errors.password
-                      ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-                      : 'border-slate-300 focus:border-slate-500 focus:ring-slate-500'
+                      ? "border-red-300 focus:border-red-500 focus:ring-red-500"
+                      : "border-slate-300 focus:border-slate-500 focus:ring-slate-500"
                   } rounded-lg focus:outline-none focus:ring-2 transition-colors`}
                   placeholder="••••••••"
                   aria-label="Password"
-                  aria-invalid={errors.password ? 'true' : 'false'}
-                  aria-describedby={errors.password ? 'password-error' : undefined}
+                  aria-invalid={errors.password ? "true" : "false"}
+                  aria-describedby={
+                    errors.password ? "password-error" : undefined
+                  }
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
                 </button>
               </div>
               {errors.password && (
-                <p id="password-error" className="mt-2 text-sm text-red-600" role="alert">
+                <p
+                  id="password-error"
+                  className="mt-2 text-sm text-red-600"
+                  role="alert"
+                >
                   {errors.password.message}
                 </p>
               )}
@@ -249,7 +325,10 @@ export default function LoginPage() {
                   className="h-4 w-4 text-slate-700 border-slate-300 rounded focus:ring-slate-500 focus:ring-2 transition-colors cursor-pointer"
                   aria-label="Remember me"
                 />
-                <label htmlFor="rememberMe" className="ml-2 block text-sm text-slate-700 cursor-pointer">
+                <label
+                  htmlFor="rememberMe"
+                  className="ml-2 block text-sm text-slate-700 cursor-pointer"
+                >
                   Remember me
                 </label>
               </div>
@@ -265,7 +344,7 @@ export default function LoginPage() {
               type="submit"
               disabled={isSubmitting}
               className="w-full bg-gradient-to-r from-slate-700 to-slate-900 text-white font-semibold py-3 px-4 rounded-lg hover:from-slate-800 hover:to-slate-950 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-              aria-label={isSubmitting ? 'Signing in...' : 'Sign in'}
+              aria-label={isSubmitting ? "Signing in..." : "Sign in"}
             >
               {isSubmitting ? (
                 <>
@@ -287,7 +366,9 @@ export default function LoginPage() {
                 <div className="w-full border-t border-slate-200"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-slate-50 lg:bg-white text-slate-500">Don't have an account?</span>
+                <span className="px-4 bg-slate-50 lg:bg-white text-slate-500">
+                  Don't have an account?
+                </span>
               </div>
             </div>
             <button

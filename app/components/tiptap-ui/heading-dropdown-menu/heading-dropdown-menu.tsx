@@ -1,4 +1,4 @@
-import * as React from "react"
+import  React from "react"
 
 // --- Icons ---
 import { ChevronDownIcon } from "~/components/tiptap-icons/chevron-down-icon"

@@ -1,4 +1,4 @@
-import * as React from "react"
+import  React from "react"
 
 export const StrikeIcon = React.memo(
   ({ className, ...props }: React.SVGProps<SVGSVGElement>) => {

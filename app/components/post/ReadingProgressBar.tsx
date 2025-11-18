@@ -253,7 +253,9 @@ export function useReadingProgress(targetRef?: React.RefObject<HTMLElement>) {
 }
 
 // Estimated reading time calculator
-export function calculateReadingTime(content: string, wordsPerMinute: number = 200): number {
-  const words = content.trim().split(/\s+/).length;
+export function calculateReadingTime(content: string | null | undefined, wordsPerMinute: number = 200): number {
+  const text = (content ?? '').toString().trim();
+  if (text.length === 0) return 0;
+  const words = text.split(/\s+/).length;
   return Math.ceil(words / wordsPerMinute);
 }

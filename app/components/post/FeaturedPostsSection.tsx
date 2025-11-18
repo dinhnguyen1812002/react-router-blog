@@ -15,8 +15,8 @@ import {
   FileText,
 } from 'lucide-react';
 import { postsApi } from '~/api/posts';
-import { formatDate } from '~/lib/utils';
-import type { Post } from '~/types';
+import { formatDateSimple } from '~/lib/utils';
+
 
 interface FeaturedPostsSectionProps {
   className?: string;
@@ -191,7 +191,7 @@ export default function FeaturedPostsSection({
             <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mb-6">
               <div className="flex items-center space-x-1">
                 <Calendar className="h-4 w-4" />
-                <span>{formatDate(currentPost.createdAt)}</span>
+                <span>{formatDateSimple(currentPost.createdAt)}</span>
               </div>
               <div className="flex items-center space-x-1">
                 <Clock className="h-4 w-4" />
@@ -285,7 +285,7 @@ export default function FeaturedPostsSection({
                     {post.title}
                   </h4>
                   <div className="flex items-center space-x-3 text-xs text-gray-500 dark:text-gray-400">
-                    <span>{formatDate(post.createdAt)}</span>
+                    <span>{formatDateSimple(post.createdAt)}</span>
                     <span>•</span>
                     <span>{calculateReadingTime(post.content)} phút</span>
                   </div>

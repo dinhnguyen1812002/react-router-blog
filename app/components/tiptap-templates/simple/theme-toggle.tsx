@@ -1,4 +1,4 @@
-import * as React from "react"
+import  React from "react"
 
 // --- UI Primitives ---
 import { Button } from "~/components/tiptap-ui-primitive/button"

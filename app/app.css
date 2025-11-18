@@ -4,6 +4,8 @@
 @import './styles/_keyframe-animations.scss';
 @plugin "@tailwindcss/typography";
 
+@plugin "tailwindcss-animate";
+
 @custom-variant dark (&:is(.dark *));
 
 @theme {

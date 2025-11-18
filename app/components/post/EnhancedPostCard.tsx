@@ -13,8 +13,9 @@ import {
   TrendingUp,
   FileText
 } from 'lucide-react';
-import { formatDate } from '~/lib/utils';
+
 import type { Post } from '~/types';
+import { formatDateSimple } from '~/lib/utils';
 
 interface EnhancedPostCardProps {
   post: Post;
@@ -134,7 +135,7 @@ export default function EnhancedPostCard({
                 <div className="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
                   <div className="flex items-center space-x-1">
                     <Calendar className="h-3 w-3" />
-                    <span>{formatDate(post.createdAt)}</span>
+                    <span>{formatDateSimple(post.createdAt)}</span>
                   </div>
                   <div className="flex items-center space-x-1">
                     <Clock className="h-3 w-3" />
@@ -197,7 +198,7 @@ export default function EnhancedPostCard({
           </Link>
           
           <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-            <span>{formatDate(post.createdAt)}</span>
+            <span>{formatDateSimple(post.createdAt)}</span>
             {showStats && (
               <div className="flex items-center space-x-2">
                 <span className="flex items-center space-x-1">
@@ -307,7 +308,7 @@ export default function EnhancedPostCard({
             <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
               <div className="flex items-center space-x-1">
                 <Calendar className="h-4 w-4" />
-                <span>{formatDate(post.createdAt)}</span>
+                <span>{ formatDateSimple(post.createdAt)}</span>
               </div>
               <div className="flex items-center space-x-1">
                 <Clock className="h-4 w-4" />
@@ -438,7 +439,7 @@ export default function EnhancedPostCard({
           <div className="flex items-center space-x-3">
             <div className="flex items-center space-x-1">
               <Calendar className="h-3 w-3" />
-              <span>{formatDate(post.createdAt)}</span>
+              <span>{formatDateSimple(post.createdAt)}</span>
             </div>
             <div className="flex items-center space-x-1">
               <Clock className="h-3 w-3" />

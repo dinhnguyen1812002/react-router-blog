@@ -1,4 +1,4 @@
-import * as React from "react"
+import  React from "react"
 
 // --- Tiptap UI ---
 import type { UseBlockquoteConfig } from "~/components/tiptap-ui/blockquote-button"

@@ -1,6 +1,6 @@
-"use client"
 
-import * as React from "react"
+
+import  React from "react"
 import type { NodeViewProps } from "@tiptap/react"
 import { NodeViewWrapper } from "@tiptap/react"
 import { Button } from "~/components/tiptap-ui-primitive/button"

@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/Avatar';
 import { CommentForm } from './CommentForm';
 import { commentsApi } from '~/api/comments';
 import { useAuthStore } from '~/store/authStore';
-import { formatDate } from '~/lib/utils';
+import { formatDateSimple } from '~/lib/utils';
 import type { Comment as CommentType } from '~/types';
 import { Button } from "~/components/ui/button";
 import { 
@@ -189,7 +189,7 @@ export const CommentItem = ({
                   
                   <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                     <Clock className="w-3 h-3" />
-                    <span>{formatDate(comment.createdAt)}</span>
+                    <span>{formatDateSimple(comment.createdAt)}</span>
                     
                     {comment.isEdited && (
                       <span className="bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded-full">

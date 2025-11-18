@@ -1,5 +1,4 @@
 import { Link, Outlet, useLocation } from "react-router";
-import { use, useState } from "react";
 import { useAuthStore } from "~/store/authStore";
 import {
   Home,
@@ -25,7 +24,8 @@ import { ThemeToggle } from "../tiptap-templates/simple/theme-toggle";
 import { ThemeSwitch } from "../ui/ThemeToggle";
 
 import UserAvatar from "../ui/boring-avatar";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/Avatar";
+
 
 interface SidebarProps {
   collapsed: boolean;

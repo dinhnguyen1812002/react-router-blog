@@ -5,10 +5,10 @@ import { MainLayout } from "~/components/layout/MainLayout";
 
 import { Button } from "~/components/ui/button";
 import { postsApi } from "~/api/posts";
-import { formatDate, calculateReadingTime, formatNumber } from "~/lib/utils";
+import {  formatDateSimple, formatNumber } from "~/lib/utils";
 import { CommentSection } from "~/components/comment/CommentSection";
 import { PostActions } from "~/components/post/PostActions";
-import ReadingProgressBar from "~/components/post/ReadingProgressBar";
+import ReadingProgressBar, { calculateReadingTime } from "~/components/post/ReadingProgressBar";
 import TableOfContents from "~/components/post/TableOfContents";
 import EnhancedPostCard from "~/components/post/EnhancedPostCard";
 import { LikeButton } from "~/components/post/LikeButton";
@@ -287,7 +287,7 @@ export default function PostDetailPage() {
                   <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600 dark:text-gray-400">
                     <div className="flex items-center space-x-2">
                       <Calendar className="w-4 h-4" />
-                      <span>{formatDate(post.createdAt)}</span>
+                      <span>{formatDateSimple(post.createdAt)}</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Clock className="w-4 h-4" />
@@ -468,7 +468,7 @@ export default function PostDetailPage() {
                         {post.user.username}
                       </Link>
                       <p className="text-sm text-gray-600 dark:text-gray-400">
-                        Author • Joined {formatDate(post.createdAt)}
+                        Author • Joined {formatDateSimple(post.createdAt)}
                       </p>
                     </div>
                     {isAuthenticated && user?.id !== post.user.id && (

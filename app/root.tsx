@@ -6,14 +6,11 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useState, useEffect } from 'react';
-import { useAuthInit } from '~/hooks/useAuthInit';
-import { Toaster, toast } from 'sonner';
-import { useThemeStore } from '~/store/themeStore';
-
-
-
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { useAuthInit } from "~/hooks/useAuthInit";
+import { Toaster, toast } from "sonner";
+import { useThemeStore } from "~/store/themeStore";
 
 import type { Route } from "./+types/root";
 import stylesheet from "./app.css?url";
@@ -22,9 +19,7 @@ import theme from "./styles/theme.css?url";
 import LoadingSpinner from "./components/Loading";
 import NotFound from "./components/error/NotFound";
 
-
 export const links: Route.LinksFunction = () => [
-
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
 
   {
@@ -38,7 +33,7 @@ export const links: Route.LinksFunction = () => [
   },
   {
     rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    href: "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap",
   },
   // { rel: "stylesheet", href: theme },
   { rel: "stylesheet", href: stylesheet },
@@ -48,17 +43,20 @@ export const links: Route.LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
-  const [queryClient] = useState(() => new QueryClient({
-    defaultOptions: {
-      queries: {
-        staleTime: 1000 * 60 * 5, // 5 minutes
-        retry: 1,
-        // Prevent hydration mismatches by ensuring consistent behavior
-        refetchOnWindowFocus: false,
-        refetchOnMount: false,
-      },
-    },
-  }));
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 1000 * 60 * 5, // 5 minutes
+            retry: 1,
+            // Prevent hydration mismatches by ensuring consistent behavior
+            refetchOnWindowFocus: false,
+            refetchOnMount: false,
+          },
+        },
+      }),
+  );
 
   return (
     <html lang="vi" suppressHydrationWarning>
@@ -69,9 +67,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body >
+      <body className="bg-dark dark:bg-gray-900">
         <QueryClientProvider client={queryClient}>
-          <Toaster position="top-right" theme={useThemeStore(state => state.actualTheme) as any} />
+          <Toaster
+            position="top-right"
+            theme={useThemeStore((state) => state.actualTheme) as any}
+          />
           <ThemeInitializer />
           {children}
           {/* <AuthDebug /> */}
@@ -89,7 +90,7 @@ function ThemeInitializer() {
 
   useEffect(() => {
     // Apply theme class to html element
-    document.documentElement.classList.toggle('dark', theme === 'dark');
+    document.documentElement.classList.toggle("dark", theme === "dark");
   }, [theme]);
 
   return null;
