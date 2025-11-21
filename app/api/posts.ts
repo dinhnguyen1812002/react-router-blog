@@ -1,4 +1,4 @@
-import type { s } from 'node_modules/react-router/dist/development/components-CjQijYga.mjs';
+
 import axiosInstance from '~/config/axios';
 import type {ApiResponse, PaginatedResponse, Post} from '~/types';
 import type { FilterOptions } from '~/types/filters';

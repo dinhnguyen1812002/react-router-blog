@@ -107,7 +107,7 @@ export default function MyPostsPage() {
   const hasNextPage = posts.length >= size
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <div className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground py-8 md:py-12 px-4 md:px-0 mb-8 ">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-start justify-between gap-4">
@@ -169,9 +169,8 @@ export default function MyPostsPage() {
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className={`bg-card rounded-lg overflow-hidden shadow-sm border border-border animate-pulse ${
-                  viewMode === "list" ? "flex gap-4 p-4" : ""
-                }`}
+                className={`bg-card rounded-lg overflow-hidden shadow-sm border border-border animate-pulse ${viewMode === "list" ? "flex gap-4 p-4" : ""
+                  }`}
               >
                 <div
                   className={viewMode === "grid" ? "h-40 w-full bg-muted" : "h-24 w-24 flex-shrink-0 bg-muted rounded"}
@@ -187,9 +186,9 @@ export default function MyPostsPage() {
         ) : posts.length > 0 ? (
           <>
             {viewMode === "grid" ? (
-             <PostList  posts={posts}/>
+              <PostList posts={posts} />
             ) : (
-              <ListView posts={posts}  />
+              <ListView posts={posts} />
             )}
 
             {!isLoading && posts.length > 0 && (

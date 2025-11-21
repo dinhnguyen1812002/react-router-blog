@@ -1,13 +1,19 @@
 
 import { useState, useEffect } from "react"
 
-import { Menu, X, Search, Bell, User, LogOut, Settings, Heart, Moon, Sun, PenSquare, PanelsLeftBottom } from "lucide-react"
+import {
+  Menu, X, Search, Bell, User,
+  LogOut, Settings, Heart, Moon, Sun, PenSquare, PanelsLeftBottom
+} from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { Link } from "react-router"
 import { ThemeSwitch } from "../ui/ThemeToggle"
 import { useAuthStore } from "~/store/authStore"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/Avatar"
 import { NotificationCenter } from "../notification/NotificationCenter"
+
+
+import BoringAvatar from "boring-avatars";
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)
@@ -33,7 +39,7 @@ export function Header() {
     setIsDarkMode(isDark)
   }, [])
 
- 
+
 
   const navLinks = [
     { label: "Home", href: "/" },
@@ -42,20 +48,19 @@ export function Header() {
     { label: "About", href: "/about" },
   ]
 
-  
+
   const userMenuItems = [
     { label: "Profile", icon: User, href: `/profile/${user?.username}` },
     { label: "Dashboard", icon: PanelsLeftBottom, href: "/dashboard" },
     { label: "Admin", icon: Settings, href: "/admin" },
-    { label: "Logout", icon: LogOut, href: "/logout" },
+
   ]
 
 
   return (
     <header
-      className={`sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300 ${
-        isScrolled ? "shadow-md" : ""
-      }`}
+      className={`sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300 ${isScrolled ? "shadow-md" : ""
+        }`}
     >
       <nav className="mx-auto container px-4 sm:px-6 lg:px-8">
         <div
@@ -99,15 +104,15 @@ export function Header() {
               <Search className="w-5 h-5" />
             </Button>
 
-         
-            <NotificationCenter/>
+
+            <NotificationCenter />
 
             <ThemeSwitch />
 
             {user ? (
               <>
                 <Link to="/dashboard/article" className="hidden sm:block">
-                  <Button className="gap-2 border border-dashed border-primary"  variant="ghost">
+                  <Button className="gap-2 border border-dashed border-primary" variant="ghost">
                     <PenSquare className="w-4 h-4" />
                     <span className="hidden md:inline">Write</span>
                   </Button>
@@ -131,11 +136,11 @@ export function Header() {
                         <AvatarFallback>{user.username?.[0]?.toUpperCase() || 'U'}</AvatarFallback>
                       </Avatar>
                     ) : (
-                      <Avatar className="h-8 w-8">
-                        <AvatarFallback>
-                          <User className="w-5 h-5" />
-                        </AvatarFallback>
-                      </Avatar>
+                      <BoringAvatar name={user.username}
+                        variant="beam"
+                        size={100}
+                        colors={['#FF5733', '#FFC300', '#DAF7A6']}
+                      />
                     )}
                   </Button>
 
@@ -160,6 +165,10 @@ export function Header() {
                             </Link>
                           )
                         })}
+                        <Link to="/logout" className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors">
+                          <LogOut className="w-4 h-4" />
+                          Đăng xuất
+                        </Link>
                       </div>
                     </div>
                   )}

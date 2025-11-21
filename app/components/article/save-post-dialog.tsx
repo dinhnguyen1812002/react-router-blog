@@ -41,13 +41,13 @@ interface SavePostDialogProps {
   content?: string
 }
 
-export function SavePostDialog({ 
-  open, 
-  onOpenChange, 
-  onSave, 
-  existingPost, 
+export function SavePostDialog({
+  open,
+  onOpenChange,
+  onSave,
+  existingPost,
   isLoading = false,
-  content = "" 
+  content = ""
 }: SavePostDialogProps) {
   // Form state
   const [title, setTitle] = useState("")
@@ -58,7 +58,7 @@ export function SavePostDialog({
   const [thumbnail, setThumbnail] = useState<string>("")
   const [tagSelectorOpen, setTagSelectorOpen] = useState(false)
   const [isPublish, setIsPublish] = useState(false)
-  
+
   // Validation state
   const [errors, setErrors] = useState<{
     title?: string;
@@ -87,7 +87,7 @@ export function SavePostDialog({
       setTags(existingPost.tags?.map(t => t.uuid) || [])
       setThumbnail(existingPost.thumbnail || existingPost.thumbnailUrl || "")
       setIsPublish(existingPost.is_publish || false)
-      
+
       // Set publish date if available
       if (existingPost.public_date) {
         const dateStr = new Date(existingPost.public_date).toISOString().slice(0, 16)
@@ -95,7 +95,7 @@ export function SavePostDialog({
       }
     }
   }, [existingPost])
-  
+
   // Reset form when dialog closes
   useEffect(() => {
     if (!open) {
@@ -123,11 +123,11 @@ export function SavePostDialog({
   const handleThumbnailRemove = () => {
     setThumbnail("")
   }
-  
+
   // Form validation
   const validateForm = (): boolean => {
     const newErrors: typeof errors = {}
-    
+
     if (!title.trim()) {
       newErrors.title = "Tiêu đề là bắt buộc"
     } else if (title.trim().length < 5) {
@@ -135,7 +135,7 @@ export function SavePostDialog({
     } else if (title.trim().length > 200) {
       newErrors.title = "Tiêu đề không được quá 200 ký tự"
     }
-    
+
     if (!excerpt.trim()) {
       newErrors.excerpt = "Tóm tắt là bắt buộc"
     } else if (excerpt.trim().length < 10) {
@@ -143,11 +143,11 @@ export function SavePostDialog({
     } else if (excerpt.trim().length > 500) {
       newErrors.excerpt = "Tóm tắt không được quá 500 ký tự"
     }
-    
+
     if (!category) {
       newErrors.category = "Vui lòng chọn danh mục"
     }
-    
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -157,7 +157,7 @@ export function SavePostDialog({
     if (!validateForm()) {
       return
     }
-    
+
     if (onSave) {
       onSave({
         title: title.trim(),
@@ -172,7 +172,7 @@ export function SavePostDialog({
     }
     onOpenChange(false)
   }
- 
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange} >
@@ -208,7 +208,7 @@ export function SavePostDialog({
               </div>
             )}
           </div>
-          
+
           {/* Excerpt Input */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-foreground dark:text-white">
@@ -272,8 +272,8 @@ export function SavePostDialog({
                 <FolderOpen className="h-4 w-4" />
                 Danh mục <span className="text-red-500">*</span>
               </label>
-              <Select 
-                value={category} 
+              <Select
+                value={category}
                 onValueChange={(value) => {
                   setCategory(value)
                   setErrors(prev => ({ ...prev, category: undefined }))
@@ -311,11 +311,15 @@ export function SavePostDialog({
                 <Calendar className="h-4 w-4" />
                 Ngày xuất bản
               </label>
-              <Input 
-                type="datetime-local" 
-                value={date} 
-                onChange={(e) => setDate(e.target.value)} 
-                className="w-full" 
+              <Input
+                type="datetime-local"
+
+                value={date}
+                onChange={(e) => {
+                  console.log("Datetime selected:", e.target.value)
+                  setDate(e.target.value)
+                }}
+                className="w-full"
               />
             </div>
           </div>
@@ -376,9 +380,9 @@ export function SavePostDialog({
                       className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm bg-primary/10 text-primary border border-primary/20"
                     >
                       {tag?.name || tagUuid}
-                      <button 
+                      <button
                         type="button"
-                        onClick={() => handleRemoveTag(tagUuid)} 
+                        onClick={() => handleRemoveTag(tagUuid)}
                         className="hover:text-primary/70 transition-colors"
                       >
                         <X className="h-3 w-3" />
@@ -392,16 +396,16 @@ export function SavePostDialog({
         </div>
 
         <DialogFooter className="gap-2">
-          <Button 
+          <Button
             type="button"
-            variant="outline" 
+            variant="outline"
             onClick={() => onOpenChange(false)}
             className="dark:text-white"
             disabled={isLoading}
           >
             Hủy
           </Button>
-          <Button 
+          <Button
             type="button"
             variant={isPublish ? "secondary" : "default"}
             onClick={() => setIsPublish(!isPublish)}
@@ -409,9 +413,9 @@ export function SavePostDialog({
           >
             {isPublish ? "Lưu nháp" : "Xuất bản ngay"}
           </Button>
-          <Button 
+          <Button
             type="button"
-            onClick={handleSave} 
+            onClick={handleSave}
             disabled={isLoading || !title.trim() || !excerpt.trim() || !category}
           >
             {isLoading ? "Đang lưu..." : "Lưu bài viết"}

@@ -20,7 +20,8 @@ import {
 import { useAdminStats } from "~/hooks/useAdminStats";
 import adminMockData from "~/data/admin-mock-data.json";
 import type { Route } from "./+types";
-export function meta({}: Route.MetaArgs) {
+import { ChartAreaInteractive } from "~/components/chart/chart-area-interactive";
+export function meta({ }: Route.MetaArgs) {
   return [
     // Basic SEO Metadata
     { title: "Admin - Manage Page" },
@@ -360,7 +361,7 @@ export default function AdminDashboard() {
           ))}
         </div>
       )}
-
+      <ChartAreaInteractive />
       {/* Top Posts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Most Viewed Posts */}

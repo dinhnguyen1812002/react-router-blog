@@ -7,7 +7,7 @@ interface NotificationItemProps {
   onMarkAsRead: (id: string) => void;
 }
 
-const iconMap = {
+const iconMap: Record<Notification["type"], React.ComponentType<any>> = {
   success: CheckCircle,
   info: Info,
   warning: AlertTriangle,
@@ -25,7 +25,7 @@ export const NotificationItem = ({
   notification,
   onMarkAsRead,
 }: NotificationItemProps) => {
-  const Icon = iconMap[notification.type];
+  const Icon = iconMap[notification.type] ?? Info;
   const colorClass = colorMap[notification.type];
 
   const handleClick = () => {

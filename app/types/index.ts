@@ -9,7 +9,7 @@ export interface User {
   username: string;
   email: string;
   roles: string[];
-  avatar?: string ;
+  avatar?: string;
   socialMediaLinks: socialMediaLinks[];
 }
 
@@ -17,7 +17,7 @@ export interface LoginResponse {
   id: string;
   username: string;
   email: string;
-  avatar?: string ;
+  avatar?: string;
   roles: string[];
   accessToken: string;
   token: string;
@@ -32,7 +32,7 @@ export interface RegisterResponse extends LoginResponse {
 export interface Post {
   id: string;
   title: string;
-  excerpt:string;
+  excerpt: string;
   slug: string;
   content: string;
   contentType?: "RICHTEXT" | "MARKDOWN";
@@ -56,8 +56,8 @@ export interface Post {
   userRating: number | null;
   comments?: Comment[];
   public_date: string,
-  is_publish : boolean
-  
+  is_publish: boolean
+
 }
 
 export type Category = {
@@ -152,6 +152,46 @@ export interface Meme {
   views?: number;
 }
 
+// Profile-related types
+export interface SocialMediaLinks {
+  GITHUB?: string;
+  TWITTER?: string;
+  LINKEDIN?: string;
+  FACEBOOK?: string;
+  INSTAGRAM?: string;
+  [key: string]: string | undefined;
+}
+
+export interface UserProfileResponse {
+  id: string;
+  username: string;
+  email: string;
+  avatar?: string;
+  roles: string[];
+  socialMediaLinks?: SocialMediaLinks;
+  postsCount: number;
+  savedPostsCount: number;
+  commentsCount: number;
+  customProfileMarkdown?: string;
+  bio?: string;
+  website?: string;
+  customInformation?: string;
+}
+
+export interface UpdateProfileRequest {
+  username?: string;
+  email?: string;
+  avatar?: string;
+  bio?: string;
+  website?: string;
+  customInformation?: string;
+  socialMediaLinks?: SocialMediaLinks;
+}
+
+export interface AvatarUploadResponse {
+  url: string;
+}
+
 // Series types
 export interface Series {
   id: string;
@@ -169,7 +209,6 @@ export interface Series {
   posts: SeriesPost[];
   createdAt: string;
   updatedAt: string;
-  // Legacy support - will be removed
   author?: {
     id: string;
     username: string;
@@ -195,6 +234,7 @@ export interface UpdateSeriesRequest {
   slug?: string;
   description?: string;
 }
+
 
 export interface AddPostToSeriesRequest {
   postId: string;

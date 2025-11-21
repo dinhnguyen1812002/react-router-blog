@@ -23,9 +23,10 @@ import { authorApi, type CreateAuthorPostRequest } from "~/api/author";
 import type { Route } from "../+types";
 import { useEditor } from "@tiptap/react";
 import { SaveAll } from "lucide-react";
+import { toLocalISOString } from "~/utils/datetime";
 
 
-export function meta({}: Route.MetaArgs) {
+export function meta({ }: Route.MetaArgs) {
   return [{ title: "Write your thought" }];
 }
 
@@ -45,7 +46,7 @@ export default function ArticlePage() {
     queryFn: () => authorApi.getPostById(id!),
     enabled: isEditMode && !!id,
 
-    
+
   });
 
   // Create mutation
@@ -135,57 +136,57 @@ export default function ArticlePage() {
   if (isLoadingPost) {
     return (
 
-        <div className="flex items-center justify-center h-screen">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading post...</p>
-          </div>
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading post...</p>
         </div>
+      </div>
 
     );
   }
 
   return (
 
-      <div className="flex flex-col h-screen">
-        <div className="border-b bg-background px-4 py-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-xl font-semibold">
-                {isEditMode ? "Edit Post" : "Create New Post"}
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                {isEditMode
-                  ? "Edit your post content and metadata"
-                  : "Write your new post here"}
-              </p>
-            </div>
-            <Button
-              onClick={() => setIsSaveDialogOpen(true)}
-              className="gap-2"
-              disabled={!editorContent.trim()}
-            >
-             <SaveAll />
-              {isEditMode ? "Edit" : "Save"}
-            </Button>
+    <div className="flex flex-col h-screen">
+      <div className="border-b bg-background px-4 py-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-semibold">
+              {isEditMode ? "Edit Post" : "Create New Post"}
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              {isEditMode
+                ? "Edit your post content and metadata"
+                : "Write your new post here"}
+            </p>
           </div>
+          <Button
+            onClick={() => setIsSaveDialogOpen(true)}
+            className="gap-2"
+            disabled={!editorContent.trim()}
+          >
+            <SaveAll />
+            {isEditMode ? "Edit" : "Save"}
+          </Button>
         </div>
-
-        <main className="flex-1 overflow-auto dark:text-white dark:bg-black/40">
-          <SimpleEditor 
-            value={editorContent}
-            onChange={setEditorContent}
-          />
-        </main>
-
-        <SavePostDialog
-          open={isSaveDialogOpen}
-          onOpenChange={setIsSaveDialogOpen}
-          onSave={handleSave}
-          existingPost={existingPost}
-          isLoading={createMutation.isPending || updateMutation.isPending}
-        />
       </div>
+
+      <main className="flex-1 overflow-auto dark:text-white dark:bg-black/40">
+        <SimpleEditor
+          value={editorContent}
+          onChange={setEditorContent}
+        />
+      </main>
+
+      <SavePostDialog
+        open={isSaveDialogOpen}
+        onOpenChange={setIsSaveDialogOpen}
+        onSave={handleSave}
+        existingPost={existingPost}
+        isLoading={createMutation.isPending || updateMutation.isPending}
+      />
+    </div>
 
   );
 }

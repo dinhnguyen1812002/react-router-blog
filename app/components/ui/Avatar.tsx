@@ -1,9 +1,10 @@
 
 
-import  React from "react"
+import React from "react"
 import * as AvatarPrimitive from "@radix-ui/react-avatar"
 
 import { cn } from "~/lib/utils"
+import { resolveAvatarUrl } from "~/utils/image"
 
 function Avatar({
   className,
@@ -23,12 +24,17 @@ function Avatar({
 
 function AvatarImage({
   className,
+  src,
   ...props
 }: React.ComponentProps<typeof AvatarPrimitive.Image>) {
+  // Resolve the avatar URL to handle relative paths from the backend
+  const resolvedSrc = src ? resolveAvatarUrl(src) : undefined;
+
   return (
     <AvatarPrimitive.Image
       data-slot="avatar-image"
       className={cn("aspect-square size-full", className)}
+      src={resolvedSrc}
       {...props}
     />
   )

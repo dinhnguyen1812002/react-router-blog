@@ -9,8 +9,8 @@ const axiosInstance = axios.create({
   baseURL: env.API_BASE_URL,
   timeout: env.API_TIMEOUT,
   withCredentials: true, // Required for cookies (refreshToken)
-  headers: { 
-    "Content-Type": "application/json" 
+  headers: {
+    "Content-Type": "application/json"
   },
 });
 
@@ -20,15 +20,15 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const { token } = useAuthStore.getState();
-    
+
     // Attach access token to Authorization header
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    
+
     // Development logging
 
-    
+
     return config;
   },
   (error) => {
@@ -63,7 +63,7 @@ const processQueue = (error: any = null, token: string | null = null): void => {
       promise.resolve(token);
     }
   });
-  
+
   failedQueue = [];
 };
 
@@ -72,7 +72,7 @@ const processQueue = (error: any = null, token: string | null = null): void => {
  */
 const shouldRetryRequest = (config: InternalAxiosRequestConfig | undefined): boolean => {
   if (!config?.url) return false;
-  
+
   // Don't retry auth-related requests
   const authEndpoints = [
     '/auth/refresh-token',
@@ -80,7 +80,7 @@ const shouldRetryRequest = (config: InternalAxiosRequestConfig | undefined): boo
     '/auth/logout',
     '/auth/register'
   ];
-  
+
   return !authEndpoints.some(endpoint => config.url?.includes(endpoint));
 };
 
@@ -89,14 +89,14 @@ const shouldRetryRequest = (config: InternalAxiosRequestConfig | undefined): boo
  */
 const refreshAccessToken = async (): Promise<string> => {
   const { refreshAccessToken: storeRefresh } = useAuthStore.getState();
-  
+
   try {
     const newToken = await storeRefresh();
-    
+
     if (!newToken) {
       throw new Error("Failed to refresh token");
     }
-    
+
     return newToken;
   } catch (error) {
     console.error("Token refresh failed in interceptor:", error);
@@ -113,33 +113,33 @@ axiosInstance.interceptors.response.use(
     }
     return response;
   },
-  
+
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
-    
+
     // Handle 401 Unauthorized
-    if (error.response?.status === 401) {
-      
+    if (error.response?.status === 500) {
+
       // Check if request should be retried
       if (!shouldRetryRequest(originalRequest)) {
         console.log("401 on non-retryable endpoint, rejecting");
         return Promise.reject(error);
       }
-      
+
       // Check if already retried
       if (originalRequest._retry) {
         console.log("Request already retried, giving up");
         useAuthStore.getState().logout();
         return Promise.reject(error);
       }
-      
+
       // Mark request as retried
       originalRequest._retry = true;
-      
+
       // If refresh is already in progress, queue this request
       if (isRefreshing && refreshPromise) {
         console.log("Token refresh in progress, queueing request...");
-        
+
         return new Promise((resolve, reject) => {
           failedQueue.push({
             resolve: (token: string) => {
@@ -152,55 +152,55 @@ axiosInstance.interceptors.response.use(
           });
         });
       }
-      
+
       // Start token refresh
       isRefreshing = true;
       console.log("Starting token refresh due to 401...");
-      
+
       // Create refresh promise
       refreshPromise = refreshAccessToken();
-      
+
       try {
         const newToken = await refreshPromise;
-        
+
         console.log("Token refreshed successfully, processing queue");
-        
+
         // Process all queued requests with new token
         processQueue(null, newToken);
-        
+
         // Retry original request with new token
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return axiosInstance(originalRequest);
-        
+
       } catch (refreshError) {
         console.error("Token refresh failed, logging out user");
-        
+
         // Process queue with error
         processQueue(refreshError, null);
-        
+
         // Logout user
         useAuthStore.getState().logout();
-        
+
         return Promise.reject(refreshError);
-        
+
       } finally {
         // Reset refresh state
         isRefreshing = false;
         refreshPromise = null;
       }
     }
-    
+
     // Handle 403 Forbidden
     if (error.response?.status === 403) {
       const url = error.config?.url || '';
-      
+
       // If refresh token endpoint returns 403, logout immediately
       if (url.includes('/auth/refresh-token')) {
         console.error("Refresh token invalid or expired, logging out");
         useAuthStore.getState().logout();
       }
     }
-    
+
     // Development error logging
     if (process.env.NODE_ENV === "development") {
       console.error("API Error:", {
@@ -211,7 +211,7 @@ axiosInstance.interceptors.response.use(
         data: error.response?.data,
       });
     }
-    
+
     return Promise.reject(error);
   }
 );

@@ -56,9 +56,9 @@ export const NotificationList = ({
       ) : (
         <ScrollArea className="flex-1">
           <div className="flex flex-col">
-            {notifications.map((notification) => (
+            {notifications.map((notification, index) => (
               <NotificationItem
-                key={notification.id}
+                key={notification.id || `notification-${index}`}
                 notification={notification}
                 onMarkAsRead={onMarkAsRead}
               />

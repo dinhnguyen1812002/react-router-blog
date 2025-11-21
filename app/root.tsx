@@ -11,6 +11,7 @@ import { useState, useEffect } from "react";
 import { useAuthInit } from "~/hooks/useAuthInit";
 import { Toaster, toast } from "sonner";
 import { useThemeStore } from "~/store/themeStore";
+import { WebSocketProvider } from "~/context/WebSocketContext";
 
 import type { Route } from "./+types/root";
 import stylesheet from "./app.css?url";
@@ -69,13 +70,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body className="bg-dark dark:bg-gray-900">
         <QueryClientProvider client={queryClient}>
-          <Toaster
-            position="top-right"
-            theme={useThemeStore((state) => state.actualTheme) as any}
-          />
-          <ThemeInitializer />
-          {children}
-          {/* <AuthDebug /> */}
+          <WebSocketProvider>
+            <Toaster
+              position="top-right"
+              theme={useThemeStore((state) => state.actualTheme) as any}
+            />
+            <ThemeInitializer />
+            {children}
+            {/* <AuthDebug /> */}
+          </WebSocketProvider>
         </QueryClientProvider>
         <ScrollRestoration />
         <Scripts />

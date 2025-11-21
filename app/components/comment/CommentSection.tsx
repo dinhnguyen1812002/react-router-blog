@@ -4,10 +4,10 @@ import { CommentItem } from './CommentItem';
 import { useAuthStore } from '~/store/authStore';
 import { usePendingComment } from '~/hooks/usePendingComment';
 import type { Comment as CommentType } from '~/types';
-import { 
-  MessageCircle, 
-  Users, 
-  TrendingUp, 
+import {
+  MessageCircle,
+  Users,
+  TrendingUp,
   Filter,
   SortDesc,
   Heart,
@@ -17,6 +17,8 @@ import {
   Loader
 } from 'lucide-react';
 import { Button } from '~/components/ui/button';
+import { useWebSocket } from "~/context/WebSocketContext";
+import { useEffect } from "react";
 
 interface CommentSectionProps {
   postId: string;
@@ -36,9 +38,26 @@ export const CommentSection = ({
   const [sortBy, setSortBy] = useState<SortType>('newest');
   const [showCommentForm, setShowCommentForm] = useState(false);
 
+  // ...
+
   const { isSubmittingPending, pendingError } = usePendingComment(postId, (newComment) => {
     handleCommentAdded(newComment);
   });
+
+  const { subscribe, connected } = useWebSocket();
+
+  useEffect(() => {
+    if (!connected || !postId) return;
+
+    const subscription = subscribe(`/topic/comments/${postId}`, (newComment: CommentType) => {
+      console.log("Real-time comment received:", newComment);
+      handleCommentAdded(newComment);
+    });
+
+    return () => {
+      if (subscription) subscription.unsubscribe();
+    };
+  }, [connected, postId, subscribe]);
 
   // Handle comment updates
   const handleCommentAdded = (newComment: CommentType) => {
@@ -178,11 +197,10 @@ export const CommentSection = ({
                 <button
                   key={value}
                   onClick={() => setSortBy(value as SortType)}
-                  className={`px-3 py-2 text-xs font-medium transition-colors flex items-center space-x-1 ${
-                    sortBy === value
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-white dark:bg-black text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                  }`}
+                  className={`px-3 py-2 text-xs font-medium transition-colors flex items-center space-x-1 ${sortBy === value
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white dark:bg-black text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                    }`}
                 >
                   <Icon className="w-3 h-3" />
                   <span>{label}</span>
@@ -336,13 +354,12 @@ export const CommentSection = ({
 
           <div className="space-y-6">
             {rootComments.map((comment, index) => (
-              <div 
+              <div
                 key={comment.id}
-                className={`${
-                  index !== rootComments.length - 1 
-                    ? 'border-b border-gray-100 dark:border-gray-700 pb-6' 
-                    : ''
-                }`}
+                className={`${index !== rootComments.length - 1
+                  ? 'border-b border-gray-100 dark:border-gray-700 pb-6'
+                  : ''
+                  }`}
               >
                 <CommentItem
                   comment={comment}
