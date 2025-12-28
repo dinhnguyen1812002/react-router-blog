@@ -165,16 +165,3 @@ export const checkApiHealth = async (): Promise<boolean> => {
   }
 };
 
-// Development helpers
-if (env.DEV) {
-  // Log API endpoints in development
-  console.log("🔗 API Endpoints:", {
-    baseUrl: env.API_BASE_URL,
-    timeout: env.API_TIMEOUT,
-    sampleEndpoints: {
-      posts: apiEndpoints.posts.list(),
-      memes: apiEndpoints.memes.list(),
-      auth: apiEndpoints.auth.login(),
-    },
-  });
-}

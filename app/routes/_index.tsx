@@ -9,9 +9,8 @@ import { useAuthStore } from "~/store/authStore";
 import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
 import HeroSection from "~/components/layout/Hero";
-import NewLetters from "~/components/NewLetters";
+import NewLetter from "~/components/NewLetters";
 // import GlobalSearch from "~/components/search/GlobalSearch";
-
 
 import {
   TrendingUp,
@@ -41,8 +40,7 @@ import Avatar from "boring-avatars";
 import UserAvatar from "~/components/ui/boring-avatar";
 import type { Route } from "../+types/root";
 import { formatNumber } from "~/lib/utils";
-
-
+import { resolveImageUrl } from "~/utils/image";
 
 export function meta({ }: Route.MetaArgs) {
   return [
@@ -60,7 +58,10 @@ export function meta({ }: Route.MetaArgs) {
     },
 
     // Open Graph (OG) Metadata for Social Media (e.g., Facebook, LinkedIn)
-    { property: "og:title", content: "Blog App - Your Source for Inspiring Content" },
+    {
+      property: "og:title",
+      content: "Blog App - Your Source for Inspiring Content",
+    },
     {
       property: "og:description",
       content:
@@ -79,7 +80,10 @@ export function meta({ }: Route.MetaArgs) {
       content:
         "Read and share inspiring articles on our blog platform. Join a community of writers and explore trending topics today!",
     },
-    { name: "twitter:image", content: "https://your-blog-app.com/twitter-image.jpg" }, // Replace with a relevant image URL
+    {
+      name: "twitter:image",
+      content: "https://your-blog-app.com/twitter-image.jpg",
+    }, // Replace with a relevant image URL
     { name: "twitter:site", content: "@YourBlogHandle" }, // Replace with your Twitter handle
 
     // Additional Metadata
@@ -101,13 +105,13 @@ export default function HomePage() {
   // Fetch latest posts
   const { data: latestPosts, isLoading: latestLoading } = useQuery({
     queryKey: ["posts", "latest"],
-    queryFn: () => postsApi.getPosts(0, 4),
+    queryFn: () => postsApi.getPosts({ page: 0, size: 4 }),
   });
 
   // Fetch popular posts
   const { data: popularPosts, isLoading: popularLoading } = useQuery({
     queryKey: ["posts", "popular"],
-    queryFn: () => postsApi.getPosts(0, 4), // TODO: Add popular sorting
+    queryFn: () => postsApi.getPosts({ page: 0, size: 4 }), // TODO: Add popular sorting
   });
 
   // Fetch categories
@@ -132,7 +136,7 @@ export default function HomePage() {
   const categories = categoriesData;
 
   const trendingTags = tagsData;
- 
+
   return (
     <MainLayout>
       {/* Enhanced Hero Section */}
@@ -268,7 +272,7 @@ export default function HomePage() {
               {categories?.map((category: Category) => (
                 <Link
                   key={category.id}
-                  to={`/posts?category=${category.slug}`}
+                  to={`/articles?categorySlug=${category.slug}`}
                   className="group p-6 bg-white dark:bg-black dark:border dark:border-gray-700  rounded-lg shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105"
                 >
                   <div className="flex items-center space-x-3 mb-3">
@@ -277,7 +281,7 @@ export default function HomePage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3
-                        className="font-semibold  
+                        className="font-semibold
                       dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate"
                         style={{
                           border: category.backgroundColor || "#6B7280",
@@ -310,7 +314,9 @@ export default function HomePage() {
             </div>
             <Link to="/articles">
               <Button variant="outline" className="flex items-center space-x-2">
-                <span className="text-gray-600 dark:text-gray-400">View All</span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  View All
+                </span>
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
@@ -335,7 +341,9 @@ export default function HomePage() {
             </div>
             <Link to="/tags">
               <Button variant="outline" className="flex items-center space-x-2">
-                <span className="text-gray-600 dark:text-gray-400">All Tags</span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  All Tags
+                </span>
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
@@ -354,7 +362,7 @@ export default function HomePage() {
               {trendingTags?.map((tag: Tag) => (
                 <Link
                   key={tag.uuid}
-                  to={`/posts?tag=${tag.slug}`}
+                  to={`/articles?tagSlug=${tag.slug}`}
                   className="group inline-flex items-center space-x-2 px-4 py-2 bg-white dark:bg-black rounded-full shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105 border border-gray-200 dark:border-gray-700"
                   style={{ borderColor: tag.color }}
                 >
@@ -387,7 +395,9 @@ export default function HomePage() {
             <Link to="/posts?sort=popular">
               <Button variant="outline" className="flex items-center space-x-2">
                 <TrendingUp className="h-4 w-4" />
-                <span className="text-gray-600 dark:text-gray-400">View Trending</span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  View Trending
+                </span>
               </Button>
             </Link>
           </div>
@@ -399,7 +409,7 @@ export default function HomePage() {
         </section>
 
         {/* Author Spotlight */}
-        <section className="">
+        {/*<section className="">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
               Author Spotlight
@@ -415,14 +425,13 @@ export default function HomePage() {
                 key={author.id}
                 className=" rounded-lg p-6 text-center shadow-sm"
               >
-              
                 <UserAvatar
-                  src={author.avatar ?? "/avatar/avatar.jpg"}
+                  src={resolveImageUrl(author.avatar) || ""}
                   alt={author.username}
                   name={author.username}
                   size={80}
                   variant="beam"
-                  colors={['#FF5733', '#FFC300', '#DAF7A6']}
+                  colors={["#FF5733", "#FFC300", "#DAF7A6"]}
                   className="w-20 h-20 rounded-full mx-auto mb-4 object-cover"
                 />
 
@@ -446,15 +455,13 @@ export default function HomePage() {
                     </>
                   )}
                 </div>
-                {/* <Button size="sm" variant="outline" className="text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                  Follow
-                </Button> */}
+
               </div>
             ))}
           </div>
-        </section>
+        </section>*/}
 
-        <NewLetters />
+        <NewLetter />
       </div>
     </MainLayout>
   );

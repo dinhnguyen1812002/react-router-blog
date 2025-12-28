@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { Meta, useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -17,6 +17,28 @@ import {
   ChevronsRight,
 } from "lucide-react";
 
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Register page" },
+    {
+      name: "description",
+      content:
+        "Tổng hợp các bài viết hay nhất về công nghệ, lập trình, chia sẻ kinh nghiệm và xu hướng mới từ cộng đồng. Tìm kiếm, lọc và khám phá nội dung phù hợp với bạn.",
+    },
+    {
+      name: "keywords",
+      content:
+        "blog, bài viết, lập trình, công nghệ, chia sẻ, kinh nghiệm, xu hướng",
+    },
+    { property: "og:title", content: "Blog cộng đồng - Bài viết mới nhất" },
+    {
+      property: "og:description",
+      content:
+        "Khám phá các bài viết nổi bật và xu hướng. Tìm kiếm theo chủ đề bạn yêu thích.",
+    },
+    { property: "og:type", content: "website" },
+  ];
+}
 const registerSchema = z
   .object({
     username: z.string().min(5, "Tên đăng nhập phải có ít nhất 5 ký tự"),
@@ -160,13 +182,13 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div className="min-h-screen bg-slate-50 flex dark:bg-black">
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 to-slate-800/90 z-10"></div>
+        <div className="absolute inset-0  from-slate-900/90 to-slate-800/90 z-10"></div>
         <img
-          src="https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop"
+          src="/register.jpg"
           alt="Team collaboration"
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover bg-gray-600 opacity-50"
         />
         <div className="relative z-20 flex flex-col justify-center px-12 text-white">
           <div className="max-w-md">
@@ -239,7 +261,7 @@ export default function RegisterPage() {
           </div>
 
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">
+            <h1 className="text-3xl font-bold text-slate-900 mb-2 dark:text-white">
               Create Account
             </h1>
             <p className="text-slate-600">Join us today and get started</p>
@@ -269,7 +291,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="username"
-                className="block text-sm font-semibold text-slate-700 mb-2"
+                className="block text-sm font-semibold text-slate-700 mb-2 dark:text-white"
               >
                 Username
               </label>
@@ -308,7 +330,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-semibold text-slate-700 mb-2"
+                className="block text-sm font-semibold text-slate-700 mb-2  dark:text-white"
               >
                 Email Address
               </label>
@@ -345,7 +367,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-semibold text-slate-700 mb-2"
+                className="block text-sm font-semibold text-slate-700 mb-2  dark:text-white"
               >
                 Password
               </label>
@@ -424,7 +446,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="confirmPassword"
-                className="block text-sm font-semibold text-slate-700 mb-2"
+                className="block text-sm font-semibold text-slate-700 mb-2 dark:text-white"
               >
                 Confirm Password
               </label>
@@ -498,19 +520,19 @@ export default function RegisterPage() {
                 <div className="ml-3">
                   <label
                     htmlFor="agreeToTerms"
-                    className="text-sm text-slate-700 cursor-pointer"
+                    className="text-sm text-slate-700 cursor-pointer "
                   >
                     I agree to the{" "}
                     <button
                       type="button"
-                      className="font-semibold text-slate-900 hover:underline"
+                      className="font-semibold text-slate-900 hover:underline dark:text-slate-300"
                     >
                       Terms and Conditions
                     </button>{" "}
                     and{" "}
                     <button
                       type="button"
-                      className="font-semibold text-slate-900 hover:underline"
+                      className="font-semibold text-slate-900 hover:underline dark:text-slate-300"
                     >
                       Privacy Policy
                     </button>

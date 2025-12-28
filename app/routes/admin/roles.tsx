@@ -1,8 +1,26 @@
-import { useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { Shield, Plus, Edit, Trash2, Users, Check, X } from "lucide-react";
 import AddRoleModal from "~/components/admin/AddRoleModal";
 
-const roles = [
+const colorClasses = {
+  red: "bg-red-100 text-red-800 border-red-200",
+  blue: "bg-blue-100 text-blue-800 border-blue-200",
+  gray: "bg-gray-100 text-gray-800 border-gray-200",
+  green: "bg-green-100 text-green-800 border-green-200",
+  purple: "bg-purple-100 text-purple-800 border-purple-200",
+} as const;
+
+type Role = {
+  id: number;
+  name: string;
+  displayName: string;
+  description: string;
+  userCount: number;
+  permissions: string[];
+  color: keyof typeof colorClasses;
+};
+
+const roles: Role[] = [
   {
     id: 1,
     name: "ADMIN",
@@ -40,7 +58,7 @@ const roles = [
     description: "Có thể đọc và tương tác với bài viết",
     userCount: 234,
     permissions: [
-      "Đọc b��i viết",
+      "Đọc bài viết",
       "Bình luận",
       "Thích bài viết",
       "Lưu bài viết",
@@ -67,27 +85,12 @@ const allPermissions = [
   { id: "manage_profile", name: "Quản lý hồ sơ cá nhân", category: "Cá nhân" },
 ];
 
-const colorClasses = {
-  red: "bg-red-100 text-red-800 border-red-200",
-  blue: "bg-blue-100 text-blue-800 border-blue-200",
-  gray: "bg-gray-100 text-gray-800 border-gray-200",
-  green: "bg-green-100 text-green-800 border-green-200",
-  purple: "bg-purple-100 text-purple-800 border-purple-200",
-};
-
 export default function AdminRoles() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [selectedRole, setSelectedRole] = useState(null);
-  const [newRole, setNewRole] = useState({
-    name: "",
-    displayName: "",
-    description: "",
-    permissions: [],
-    color: "blue"
-  });
+  const [selectedRole, setSelectedRole] = useState<Role | null>(null);
 
-  const handleEditRole = (role) => {
+  const handleEditRole = (role: Role) => {
     setSelectedRole(role);
     setShowEditModal(true);
   };
@@ -102,13 +105,15 @@ export default function AdminRoles() {
     setShowAddModal(false);
   };
 
-  const groupedPermissions = allPermissions.reduce((acc, permission) => {
-    if (!acc[permission.category]) {
-      acc[permission.category] = [];
-    }
-    acc[permission.category].push(permission);
-    return acc;
-  }, {});
+  const groupedPermissions = useMemo(() => {
+    return allPermissions.reduce<Record<string, typeof allPermissions[number][]>>((acc, permission) => {
+      if (!acc[permission.category]) {
+        acc[permission.category] = [];
+      }
+      acc[permission.category].push(permission);
+      return acc;
+    }, {});
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -200,8 +205,8 @@ export default function AdminRoles() {
             </thead>
             <tbody>
               {Object.entries(groupedPermissions).map(([category, permissions]) => (
-                <>
-                  <tr key={category} className="bg-gray-50">
+                <Fragment key={category}>
+                  <tr className="bg-gray-50">
                     <td colSpan={roles.length + 1} className="py-2 px-4 font-medium text-gray-800 text-sm">
                       {category}
                     </td>
@@ -220,7 +225,7 @@ export default function AdminRoles() {
                       ))}
                     </tr>
                   ))}
-                </>
+                </Fragment>
               ))}
             </tbody>
           </table>

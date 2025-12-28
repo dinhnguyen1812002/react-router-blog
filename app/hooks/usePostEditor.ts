@@ -55,9 +55,7 @@ export function usePostEditor({ postId, onSuccess, onError }: UsePostEditorOptio
     queryKey: ['post', postId],
     queryFn: async () => {
       if (!postId) throw new Error('Post ID is required');
-      console.log('[usePostEditor] Fetching post with ID:', postId);
       const response = await authorApi.getPostById(postId);
-      console.log('[usePostEditor] Post data received:', response);
       return response; // Returns Post directly
     },
     enabled: !!postId,
@@ -68,8 +66,6 @@ export function usePostEditor({ postId, onSuccess, onError }: UsePostEditorOptio
   // Populate form when post loads
   useEffect(() => {
     if (!post) return;
-    
-    console.log('[usePostEditor] Populating form with post data:', post);
     
     // Populate form fields
     setValue('title', post.title || '');
@@ -101,14 +97,12 @@ export function usePostEditor({ postId, onSuccess, onError }: UsePostEditorOptio
     const tagUuids = post.tags?.map((t: any) => t.uuid) || [];
     setSelectedTags(tagUuids);
     
-    console.log('[usePostEditor] Form populated successfully');
   }, [post, setValue]);
 
   // Create post mutation
   const createPostMutation = useMutation({
     mutationFn: authorApi.createPost,
     onSuccess: () => {
-      console.log('[usePostEditor] Post created successfully');
       onSuccess?.();
       navigate('/dashboard/content');
     },
@@ -127,9 +121,6 @@ export function usePostEditor({ postId, onSuccess, onError }: UsePostEditorOptio
         throw new Error('Không tìm thấy ID bài viết');
       }
       
-      console.log('[usePostEditor] Updating post with ID:', postId);
-      console.log('[usePostEditor] Form data:', data);
-      console.log('[usePostEditor] Selected tags:', selectedTags);
       
       const payload: CreateAuthorPostRequest = {
         title: data.title,
@@ -142,15 +133,11 @@ export function usePostEditor({ postId, onSuccess, onError }: UsePostEditorOptio
         public_date: data.public_date || undefined,
       };
       
-      console.log('[usePostEditor] Update payload:', payload);
-      
       const response = await authorApi.updatePost(String(postId), payload);
-      console.log('[usePostEditor] Update response:', response);
       
       return response;
     },
     onSuccess: (response) => {
-      console.log('[usePostEditor] Post updated successfully:', response);
       setAutoSaveStatus('saved');
       setLastSaved(new Date());
       onSuccess?.();
@@ -178,7 +165,6 @@ export function usePostEditor({ postId, onSuccess, onError }: UsePostEditorOptio
     
     if (!contentValue || !titleValue || !postId) return;
     
-    console.log('[usePostEditor] Auto-saving...');
     setAutoSaveStatus('saving');
     
     try {
@@ -197,7 +183,6 @@ export function usePostEditor({ postId, onSuccess, onError }: UsePostEditorOptio
       await authorApi.updatePost(String(postId), payload);
       setAutoSaveStatus('saved');
       setLastSaved(new Date());
-      console.log('[usePostEditor] Auto-save successful');
     } catch (error) {
       console.error('[usePostEditor] Auto-save error:', error);
       setAutoSaveStatus('error');
@@ -211,7 +196,6 @@ export function usePostEditor({ postId, onSuccess, onError }: UsePostEditorOptio
       return;
     }
     
-    console.log('[usePostEditor] Manual save triggered');
     setAutoSaveStatus('saving');
     
     try {
@@ -235,16 +219,12 @@ export function usePostEditor({ postId, onSuccess, onError }: UsePostEditorOptio
         public_date: formData.public_date || undefined,
       };
       
-      console.log('[usePostEditor] Saving post manually:', payload);
-      
       await authorApi.updatePost(String(postId), payload);
       
       setAutoSaveStatus('saved');
       setLastSaved(new Date());
       
       showToast('Đã lưu bài viết!', 'success');
-      
-      console.log('[usePostEditor] Post saved successfully');
     } catch (error: any) {
       console.error('[usePostEditor] Save error:', error);
       setAutoSaveStatus('error');
@@ -256,16 +236,13 @@ export function usePostEditor({ postId, onSuccess, onError }: UsePostEditorOptio
 
   // Submit handler
   const onSubmit = (data: PostForm) => {
-    console.log('[usePostEditor] Form submitted:', data);
     setSubmitError(null);
     
     if (postId) {
       // Update existing post
-      console.log('[usePostEditor] Updating existing post...');
       updatePostMutation.mutate(data);
     } else {
       // Create new post
-      console.log('[usePostEditor] Creating new post...');
       const payload: CreateAuthorPostRequest = {
         title: data.title,
         excerpt: data.excerpt,

@@ -15,17 +15,17 @@ export const usePostActions = (postId: string) => {
     mutationFn: () => postsApi.likePost(postId),
     onSuccess: (response) => {
       console.log('✅ Post liked successfully:', response);
-      
+
       // Invalidate post queries to refresh data
       queryClient.invalidateQueries({ queryKey: ['post', postId] });
       queryClient.invalidateQueries({ queryKey: ['posts'] });
-      
+
       return response;
     },
     onError: (error: any) => {
-      console.error('❌ Like post error:', error);
-      
-      if (error.response?.status === 401 ) {
+      console.error('Like post error:', error);
+
+      if (error.response?.status === 500) {
         // Redirect to login if not authenticated
         navigate('/login', {
           state: {
@@ -41,17 +41,17 @@ export const usePostActions = (postId: string) => {
     mutationFn: (data: RatePostRequest) => postsApi.ratePost(postId, data),
     onSuccess: (response) => {
       console.log('✅ Post rated successfully:', response);
-      
+
       // Invalidate post queries to refresh data
       queryClient.invalidateQueries({ queryKey: ['post', postId] });
       queryClient.invalidateQueries({ queryKey: ['posts'] });
-      
+
       return response;
     },
     onError: (error: any) => {
-      console.error('❌ Rate post error:', error);
-      
-      if (error.response?.status === 401 ) {
+      console.error(' Rate post error:', error);
+
+      if (error.response?.status === 401) {
         // Redirect to login if not authenticated
         navigate('/login', {
           state: {
@@ -100,15 +100,15 @@ export const usePostActions = (postId: string) => {
     // Actions
     handleLike,
     handleRate,
-    
+
     // States
     isLiking: likeMutation.isPending,
     isRating: rateMutation.isPending,
-    
+
     // Errors
     likeError: likeMutation.error,
     ratingError: rateMutation.error,
-    
+
     // Data
     likeData: likeMutation.data,
     ratingData: rateMutation.data,

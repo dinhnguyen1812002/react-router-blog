@@ -1,7 +1,14 @@
 
 import axiosInstance from '~/config/axios';
-import type {ApiResponse, PaginatedResponse, Post} from '~/types';
-import type { FilterOptions } from '~/types/filters';
+import type { ApiResponse, PaginatedResponse, Post } from '~/types';
+
+export interface GetPostsParams {
+  page?: number;
+  size?: number;
+  sortBy?: 'newest' | 'views';
+  categorySlug?: string;
+  tagSlug?: string;
+}
 
 export interface RatePostRequest {
   score: number; // 1-5
@@ -20,53 +27,36 @@ export interface RatingResponse {
 
 
 export const postsApi = {
-  getPosts: async (
-    page = 0,
-    size = 10,
-    filters?: Partial<FilterOptions>
-  ): Promise<PaginatedResponse<Post>> => {
-    try {
-      const params: Record<string, any> = { page, size };
-      if (filters) {
-        if (filters.search) params.search = filters.search;
-        if (filters.sortBy) params.sort = filters.sortBy;
-        if (filters.timeRange && filters.timeRange !== 'all') params.time = filters.timeRange;
-        if (filters.featured && filters.featured !== 'all') params.featured = filters.featured;
-        if (typeof filters.minReadTime === 'number' && filters.minReadTime > 0) params.minRead = filters.minReadTime;
-        if (typeof filters.maxReadTime === 'number' && filters.maxReadTime > 0) params.maxRead = filters.maxReadTime;
-        if (filters.categories && filters.categories.length > 0) params.categories = filters.categories.join(',');
-        if (filters.tags && filters.tags.length > 0) params.tags = filters.tags.join(',');
-      }
-      const response = await axiosInstance.get(`/post`, { params });
-      console.log('Posts API Response:', response.data);
-      
-      // Handle both formats
-      // if (response.data && response.data.content) {
-        
-      // } else if (response.data) {
-      //   // Direct array, wrap it in PaginatedResponse format
-      //   return {
-      //     content: response.data,
-      //     totalElements: response.data.length,
-      //     totalPages: 1,
-      //     size: response.data.length,
-      //     number: 0
-      //   };
-      // } else {
-      //   throw new Error('Invalid response format');
-      // }
-      return response.data; // Already in PaginatedResponse format
-    } catch (error) {
-      console.error('Posts API Error:', error);
-      throw error;
-    }
+  /**
+   * Get filtered posts with pagination and sorting
+   * @param params - Query parameters: page, size, sortBy, categorySlug, tagSlug
+   * @returns Paginated response with posts
+   */
+  getPosts: async (params: GetPostsParams = {}): Promise<PaginatedResponse<Post>> => {
+    const {
+      page = 0,
+      size = 10,
+      sortBy = 'newest',
+      categorySlug,
+      tagSlug
+    } = params;
+
+    const queryParams: Record<string, string | number> = { page, size, sortBy };
+
+    if (categorySlug) queryParams.categorySlug = categorySlug;
+    if (tagSlug) queryParams.tagSlug = tagSlug;
+
+    const response = await axiosInstance.get<PaginatedResponse<Post>>('/post', {
+      params: queryParams
+    });
+
+    return response.data;
   },
 
   getFeaturedPosts: async (): Promise<ApiResponse<Post[]>> => {
     try {
       const response = await axiosInstance.get('/post/featured');
-      console.log('Featured Posts API Response:', response.data);
-      
+
       // Handle both formats
       if (response.data && response.data.data) {
         return response.data; // Already in ApiResponse format
@@ -90,8 +80,7 @@ export const postsApi = {
   getPostBySlug: async (slug: string): Promise<ApiResponse<Post>> => {
     try {
       const response = await axiosInstance.get(`/post/${slug}`);
-      console.log('Post API Response:', response.data);
-      
+
       // Handle both formats: { data: post } and direct post object
       if (response.data && response.data.data) {
         return response.data; // Already in ApiResponse format
@@ -130,9 +119,7 @@ export const postsApi = {
   // Like functionality
   likePost: async (postId: string): Promise<LikeResponse> => {
     try {
-      console.log('🔄 Liking post:', postId);
       const response = await axiosInstance.post(`/post/${postId}/like`);
-      console.log('✅ Like post response:', response.data);
 
       // Handle different response formats
       if (response.data && typeof response.data === 'object') {
@@ -160,9 +147,7 @@ export const postsApi = {
   // Rating functionality
   ratePost: async (postId: string, data: RatePostRequest): Promise<RatingResponse> => {
     try {
-      console.log('🔄 Rating post:', { postId, score: data.score });
       const response = await axiosInstance.post(`/post/${postId}/rate?score=${data.score}`);
-      console.log('✅ Rate post response:', response.data);
 
       // Handle different response formats
       if (response.data && typeof response.data === 'object') {

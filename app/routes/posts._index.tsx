@@ -1,22 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router";
 import { postsApi } from "~/api/posts";
-import type { FilterOptions } from "~/types/filters";
-// Removed PostList usage; rendering inline
-import PostSkeleton from "~/components/skeleton/PostSkeleton";
-import { Button } from "~/components/ui/button";
+import { categoriesApi } from "~/api/categories";
+import { tagsApi } from "~/api/tags";
 import { MainLayout } from "~/components/layout/MainLayout";
-import FeaturedPostsSidebar from "~/components/sidebar/FeaturedPostsSidebar";
-
-import {
-  ChevronLeft,
-  ChevronRight,
-  Grid,
-  List as ListIcon,
-  Filter,
-} from "lucide-react";
-import { PostCard } from "~/components/post";
+import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/Input";
 import {
   Select,
@@ -25,299 +14,249 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import type { Route } from "../+types/root";
-import { PostCardSkeleton } from "~/components/skeleton/PostDetailSkeleton";
+import { PostCard } from "~/components/post";
 import { ListArticles } from "~/components/post/ListArticles";
+import { PostCardSkeleton } from "~/components/skeleton/PostDetailSkeleton";
+import FeaturedPostsSidebar from "~/components/sidebar/FeaturedPostsSidebar";
+import { Grid, List as ListIcon, ChevronLeft, ChevronRight, X } from "lucide-react";
+import type { Route } from "../+types/root";
+import type { Category, Tag } from "~/types";
 
-export function meta({}: Route.MetaArgs) {
+export function meta({ }: Route.MetaArgs) {
   return [
     { title: "Blog - Khám phá bài viết mới nhất từ cộng đồng" },
     {
       name: "description",
       content:
-        "Tổng hợp các bài viết hay nhất về công nghệ, lập trình, chia sẻ kinh nghiệm và xu hướng mới từ cộng đồng. Tìm kiếm, lọc và khám phá nội dung phù hợp với bạn.",
+        "Tổng hợp các bài viết hay nhất về công nghệ, lập trình, chia sẻ kinh nghiệm và xu hướng mới từ cộng đồng.",
     },
-    {
-      name: "keywords",
-      content:
-        "blog, bài viết, lập trình, công nghệ, chia sẻ, kinh nghiệm, xu hướng",
-    },
-    { property: "og:title", content: "Blog cộng đồng - Bài viết mới nhất" },
-    {
-      property: "og:description",
-      content:
-        "Khám phá các bài viết nổi bật và xu hướng. Tìm kiếm theo chủ đề bạn yêu thích.",
-    },
-    { property: "og:type", content: "website" },
   ];
 }
 
 export default function PostsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [page, setPage] = useState(0);
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [showSidebar, setShowSidebar] = useState(true);
-  const pageSize = viewMode === "grid" ? 6 : 5;
+  const [viewMode, setViewMode] = useState<"grid" | "list">("list");
 
-  // Initialize filters from URL params
-  const [filters, setFilters] = useState<FilterOptions>({
-    search: searchParams.get("search") || "",
-    sortBy: (searchParams.get("sort") as any) || "newest",
-    timeRange: (searchParams.get("time") as any) || "all",
-    featured: (searchParams.get("featured") as any) || "all",
-    minReadTime: parseInt(searchParams.get("minRead") || "0"),
-    maxReadTime: parseInt(searchParams.get("maxRead") || "60"),
-    categories:
-      searchParams.get("categories")?.split(",").map(Number).filter(Boolean) ||
-      [],
-    tags: searchParams.get("tags")?.split(",").filter(Boolean) || [],
-  });
+  // Parse URL params with defaults
+  const page = parseInt(searchParams.get("page") || "0");
+  const size = viewMode === "grid" ? 9 : 6;
+  const sortBy = (searchParams.get("sortBy") as "newest" | "views") || "newest";
+  const categorySlug = searchParams.get("categorySlug") || undefined;
+  const tagSlug = searchParams.get("tagSlug") || undefined;
 
-  // Debounced search value for input UX
-  const [searchInput, setSearchInput] = useState(filters.search);
-  useEffect(() => {
-    setSearchInput(filters.search);
-  }, [filters.search]);
-
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setFilters((prev) => ({ ...prev, search: searchInput }));
-      setPage(0);
-    }, 350);
-    return () => clearTimeout(timeoutId);
-  }, [searchInput]);
-
-  // Update URL when filters change
-  useEffect(() => {
-    const params = new URLSearchParams();
-    if (filters.search) params.set("search", filters.search);
-    if (filters.sortBy !== "newest") params.set("sort", filters.sortBy);
-    if (filters.timeRange !== "all") params.set("time", filters.timeRange);
-    if (filters.featured !== "all") params.set("featured", filters.featured);
-    if (filters.minReadTime > 0)
-      params.set("minRead", filters.minReadTime.toString());
-    if (filters.maxReadTime < 60)
-      params.set("maxRead", filters.maxReadTime.toString());
-    if (filters.categories.length > 0)
-      params.set("categories", filters.categories.join(","));
-    if (filters.tags.length > 0) params.set("tags", filters.tags.join(","));
-
-    setSearchParams(params);
-  }, [filters, setSearchParams]);
-
+  // Fetch posts
   const {
     data: postsData,
     isLoading,
     error,
-    isFetching,
   } = useQuery({
-    queryKey: ["posts", page, pageSize, filters],
-    queryFn: () => postsApi.getPosts(page, pageSize, filters),
-    staleTime: 2 * 60 * 1000, // 2 minutes
+    queryKey: ["posts", page, size, sortBy, categorySlug, tagSlug],
+    queryFn: () => postsApi.getPosts({ page, size, sortBy, categorySlug, tagSlug }),
+    staleTime: 2 * 60 * 1000,
   });
 
-  const handleNextPage = () => {
-    if (postsData && page < postsData.totalPages - 1) {
-      setPage(page + 1);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  };
+  // Fetch categories and tags for filters
+  const { data: categories = [] } = useQuery<Category[]>({
+    queryKey: ["categories"],
+    queryFn: categoriesApi.getAll,
+  });
 
-  const handlePrevPage = () => {
-    if (page > 0) {
-      setPage(page - 1);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  };
+  const { data: tags = [] } = useQuery<Tag[]>({
+    queryKey: ["tags"],
+    queryFn: tagsApi.getAll,
+  });
 
-  const handleFiltersChange = (newFilters: FilterOptions) => {
-    setFilters(newFilters);
-    setPage(0); // Reset to first page when filters change
-  };
+  // Update URL params
+  const updateParams = (updates: Record<string, string | number | undefined>) => {
+    const newParams = new URLSearchParams(searchParams);
 
-  const clearAllFilters = () => {
-    setFilters({
-      search: "",
-      sortBy: "newest",
-      timeRange: "all",
-      featured: "all",
-      minReadTime: 0,
-      maxReadTime: 60,
-      categories: [],
-      tags: [],
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value === undefined || value === "") {
+        newParams.delete(key);
+      } else {
+        newParams.set(key, String(value));
+      }
     });
-    setPage(0);
+
+    // Reset page when filters change
+    if (updates.sortBy || updates.categorySlug || updates.tagSlug) {
+      newParams.set("page", "0");
+    }
+
+    setSearchParams(newParams);
   };
 
-  const handleSearch = (query: string) => {
-    setFilters((prev) => ({ ...prev, search: query }));
-    setPage(0);
+  const handleSortChange = (value: string) => {
+    updateParams({ sortBy: value as "newest" | "views" });
   };
 
-  const handleTagClick = (tag: any) => {
-    setFilters((prev) => ({
-      ...prev,
-      tags: prev.tags.includes(tag.uuid)
-        ? prev.tags.filter((t) => t !== tag.uuid)
-        : [...prev.tags, tag.uuid],
-    }));
-    setPage(0);
+  const handleCategoryChange = (slug: string) => {
+    updateParams({ categorySlug: slug || undefined });
   };
 
-  const handleCategoryClick = (category: any) => {
-    setFilters((prev) => ({
-      ...prev,
-      categories: prev.categories.includes(category.id)
-        ? prev.categories.filter((c) => c !== category.id)
-        : [...prev.categories, category.id],
-    }));
-    setPage(0);
+  const handleTagChange = (slug: string) => {
+    updateParams({ tagSlug: slug || undefined });
   };
+
+  const clearFilters = () => {
+    setSearchParams({});
+  };
+
+  const handlePageChange = (newPage: number) => {
+    updateParams({ page: newPage });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const hasActiveFilters = categorySlug || tagSlug;
 
   return (
     <MainLayout>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="space-y-4 mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                Bài viết
-              </h1>
-              <p className="text-gray-600 dark:text-gray-400">
-                Khám phá các bài viết mới nhất từ cộng đồng
-              </p>
-            </div>
-            {/* Sidebar Toggle */}
-            <button
-              onClick={() => setShowSidebar(!showSidebar)}
-              className="lg:hidden p-2 rounded-lg bg-gray-100 dark:bg-black text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            Bài viết
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            Khám phá các bài viết mới nhất từ cộng đồng
+          </p>
+        </div>
+
+        {/* Filters Bar */}
+        <div className="flex flex-col gap-4 mb-8 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-200 dark:border-gray-700">
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Sort By */}
+            <Select value={sortBy} onValueChange={handleSortChange}>
+              <SelectTrigger className="w-[140px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">Mới nhất</SelectItem>
+                <SelectItem value="views">Nhiều lượt xem</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* Category Filter */}
+            <Select
+              value={categorySlug || "all"}
+              onValueChange={(v) => handleCategoryChange(v === "all" ? "" : v)}
             >
-              <Filter className="h-5 w-5" />
-            </button>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Danh mục" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tất cả danh mục</SelectItem>
+                {categories.map((cat) => (
+                  <SelectItem key={cat.id} value={cat.slug}>
+                    {cat.category}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {/* Tag Filter */}
+            <Select
+              value={tagSlug || "all"}
+              onValueChange={(v) => handleTagChange(v === "all" ? "" : v)}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Thẻ" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tất cả thẻ</SelectItem>
+                {tags.map((tag) => (
+                  <SelectItem key={tag.uuid} value={tag.slug}>
+                    {tag.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {/* View Mode Toggle */}
+            <div className="flex items-center gap-1 ml-auto bg-white dark:bg-gray-800 rounded-lg p-1 border border-gray-200 dark:border-gray-700">
+              <button
+                onClick={() => setViewMode("grid")}
+                className={`p-2 rounded transition-colors ${viewMode === "grid"
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                  }`}
+                aria-label="Grid view"
+              >
+                <Grid className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => setViewMode("list")}
+                className={`p-2 rounded transition-colors ${viewMode === "list"
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                  }`}
+                aria-label="List view"
+              >
+                <ListIcon className="h-4 w-4" />
+              </button>
+            </div>
           </div>
 
-          {/* Toolbar */}
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div className="flex-1 flex items-center gap-2">
-              <Input
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                placeholder="Tìm kiếm bài viết..."
-                className="w-full md:max-w-md"
-              />
-              {filters.search && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setFilters((p) => ({ ...p, search: "" }))}
-                >
-                  Xóa
-                </Button>
+          {/* Active Filters */}
+          {hasActiveFilters && (
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Bộ lọc:</span>
+              {categorySlug && (
+                <div className="flex items-center gap-1 px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm">
+                  <span>
+                    {categories.find(c => c.slug === categorySlug)?.category || categorySlug}
+                  </span>
+                  <button
+                    onClick={() => handleCategoryChange("")}
+                    className="ml-1 hover:text-blue-900 dark:hover:text-blue-100"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
               )}
+              {tagSlug && (
+                <div className="flex items-center gap-1 px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-sm">
+                  <span>
+                    {tags.find(t => t.slug === tagSlug)?.name || tagSlug}
+                  </span>
+                  <button
+                    onClick={() => handleTagChange("")}
+                    className="ml-1 hover:text-green-900 dark:hover:text-green-100"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={clearFilters}
+                className="text-sm"
+              >
+                Xóa tất cả
+              </Button>
             </div>
-            <div className="flex items-center gap-2">
-              <Select
-                value={filters.sortBy}
-                onValueChange={(v) => {
-                  setFilters((p) => ({
-                    ...p,
-                    sortBy: v as FilterOptions["sortBy"],
-                  }));
-                  setPage(0);
-                }}
-              >
-                <SelectTrigger size="sm" className="min-w-36">
-                  <SelectValue placeholder="Sắp xếp" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="newest">Mới nhất</SelectItem>
-                  <SelectItem value="oldest">Cũ nhất</SelectItem>
-                  <SelectItem value="popular">Phổ biến</SelectItem>
-                  <SelectItem value="trending">Xu hướng</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select
-                value={filters.timeRange}
-                onValueChange={(v) => {
-                  setFilters((p) => ({
-                    ...p,
-                    timeRange: v as FilterOptions["timeRange"],
-                  }));
-                  setPage(0);
-                }}
-              >
-                <SelectTrigger size="sm" className="min-w-32">
-                  <SelectValue placeholder="Khoảng thời gian" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tất cả</SelectItem>
-                  <SelectItem value="today">Hôm nay</SelectItem>
-                  <SelectItem value="week">Tuần này</SelectItem>
-                  <SelectItem value="month">Tháng này</SelectItem>
-                  <SelectItem value="year">Năm nay</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select
-                value={filters.featured}
-                onValueChange={(v) => {
-                  setFilters((p) => ({
-                    ...p,
-                    featured: v as FilterOptions["featured"],
-                  }));
-                  setPage(0);
-                }}
-              >
-                <SelectTrigger size="sm" className="min-w-32">
-                  <SelectValue placeholder="Loại" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tất cả</SelectItem>
-                  <SelectItem value="featured">Nổi bật</SelectItem>
-                  <SelectItem value="regular">Thông thường</SelectItem>
-                </SelectContent>
-              </Select>
-              <div className="flex items-center space-x-1 bg-gray-100 dark:bg-black rounded-lg p-1">
-                <button
-                  onClick={() => setViewMode("grid")}
-                  className={`p-2 rounded transition-colors ${
-                    viewMode === "grid"
-                      ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400"
-                      : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-                  }`}
-                >
-                  <Grid className="h-4 w-4" />
-                </button>
-                <button
-                  onClick={() => setViewMode("list")}
-                  className={`p-2 rounded transition-colors ${
-                    viewMode === "list"
-                      ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400"
-                      : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-                  }`}
-                >
-                  <ListIcon className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-3">
-            {/* Unified states */}
+            {/* Loading State */}
             {isLoading && (
-              <div className="space-y-6">
-                <div
-                  className={`grid gap-6 ${viewMode === "grid" ? "grid-cols-1 md:grid-cols-2 xl:grid-cols-3" : "grid-cols-1"}`}
-                >
-                  {[...Array(pageSize)].map((_, i) => (
-                    <PostCardSkeleton key={i} />
-                  ))}
-                </div>
+              <div
+                className={`grid gap-6 ${viewMode === "grid"
+                    ? "grid-cols-1 md:grid-cols-2 xl:grid-cols-3"
+                    : "grid-cols-1"
+                  }`}
+              >
+                {[...Array(size)].map((_, i) => (
+                  <PostCardSkeleton key={i} />
+                ))}
               </div>
             )}
+
+            {/* Error State */}
             {!isLoading && error && (
               <div className="text-center py-12">
                 <div className="text-red-500 mb-4">
@@ -328,75 +267,80 @@ export default function PostsPage() {
                 </Button>
               </div>
             )}
+
+            {/* Empty State */}
             {!isLoading && !error && (postsData?.content.length ?? 0) === 0 && (
               <div className="text-center py-12">
                 <div className="text-gray-500 dark:text-gray-400 mb-4">
                   Không có bài viết phù hợp
                 </div>
-                <Button onClick={clearAllFilters}>Xóa bộ lọc</Button>
+                {hasActiveFilters && (
+                  <Button onClick={clearFilters}>Xóa bộ lọc</Button>
+                )}
               </div>
             )}
 
             {/* Posts Grid/List */}
             {!isLoading && !error && postsData?.content?.length ? (
               <>
-                {/* Inline rendering for both grid and list modes */}
-
                 {viewMode === "grid" ? (
                   <div className="grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
-                    {postsData.content.map((p) => (
-                      <PostCard key={p.id} post={p} />
+                    {postsData.content.map((post) => (
+                      <PostCard key={post.id} post={post} />
                     ))}
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {postsData.content.map((p) => (
-                      <ListArticles key={p.id} post={p} />
+                    {postsData.content.map((post) => (
+                      <ListArticles key={post.id} post={post} />
                     ))}
                   </div>
                 )}
 
+                {/* Pagination */}
                 {postsData.totalPages > 1 && (
-                  <div className="flex justify-between items-center mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+                  <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
                     <div className="text-sm text-gray-600 dark:text-gray-400">
-                      Trang {page + 1} / {postsData.totalPages} • Hiển thị{" "}
-                      {postsData.content.length} / {postsData.totalElements}
+                      Trang {page + 1} / {postsData.totalPages} •{" "}
+                      {postsData.totalElements} bài viết
                     </div>
 
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center gap-2">
                       <Button
                         variant="outline"
                         size="sm"
                         disabled={page === 0}
-                        onClick={handlePrevPage}
+                        onClick={() => handlePageChange(page - 1)}
                       >
-                        <ChevronLeft className="h-4 w-4" />
+                        <ChevronLeft className="h-4 w-4 mr-1" />
                         Trước
                       </Button>
 
-                      <div className="flex items-center space-x-1">
+                      <div className="flex items-center gap-1">
                         {Array.from(
                           { length: Math.min(5, postsData.totalPages) },
                           (_, i) => {
-                            const pageNum =
-                              Math.max(
-                                0,
-                                Math.min(postsData.totalPages - 5, page - 2),
-                              ) + i;
+                            const startPage = Math.max(
+                              0,
+                              Math.min(
+                                postsData.totalPages - 5,
+                                page - 2
+                              )
+                            );
+                            const pageNum = startPage + i;
                             return (
                               <button
                                 key={pageNum}
-                                onClick={() => setPage(pageNum)}
-                                className={`px-3 py-2 text-sm rounded-md transition-colors ${
-                                  pageNum === page
+                                onClick={() => handlePageChange(pageNum)}
+                                className={`px-3 py-2 text-sm rounded-md transition-colors ${pageNum === page
                                     ? "bg-blue-600 text-white"
                                     : "bg-white dark:bg-black text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700"
-                                }`}
+                                  }`}
                               >
                                 {pageNum + 1}
                               </button>
                             );
-                          },
+                          }
                         )}
                       </div>
 
@@ -404,10 +348,10 @@ export default function PostsPage() {
                         variant="outline"
                         size="sm"
                         disabled={page >= postsData.totalPages - 1}
-                        onClick={handleNextPage}
+                        onClick={() => handlePageChange(page + 1)}
                       >
                         Sau
-                        <ChevronRight className="h-4 w-4" />
+                        <ChevronRight className="h-4 w-4 ml-1" />
                       </Button>
                     </div>
                   </div>
@@ -417,48 +361,12 @@ export default function PostsPage() {
           </div>
 
           {/* Sidebar */}
-          <div
-            className={`lg:col-span-1 space-y-8 ${showSidebar ? "block" : "hidden lg:block"}`}
-          >
-            {/* Search */}
-            {/* <SearchSidebar onSearch={handleSearch} className="lg:block" /> */}
-
-            {/* Advanced Filters */}
-            {/* <AdvancedFiltersSidebar
-              filters={filters}
-              onFiltersChange={handleFiltersChange}
-              onClearFilters={clearAllFilters}
-              totalResults={postsData?.totalElements || 0}
-              className="lg:block"
-            /> */}
-
-            {/* Featured Posts */}
+          <div className="lg:col-span-1 space-y-8">
             <FeaturedPostsSidebar
-              maxPosts={3}
+              maxPosts={5}
               showThumbnails={true}
               showStats={true}
-              className="lg:block"
             />
-
-            {/* Tags Cloud */}
-            {/* <TagsCloudSidebar
-              maxTags={20}
-              variant="cloud"
-              showSearch={false}
-              onTagClick={handleTagClick}
-              selectedTags={filters.tags}
-              className="lg:block"
-            /> */}
-
-            {/* Categories */}
-            {/* <CategoriesListSidebar
-              maxCategories={15}
-              variant="list"
-              showSearch={false}
-              onCategoryClick={handleCategoryClick}
-              selectedCategories={filters.categories}
-              className="lg:block"
-            /> */}
           </div>
         </div>
       </div>

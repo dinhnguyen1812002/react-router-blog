@@ -46,14 +46,21 @@ export const profileApi = {
     },
 
     // Get current user profile
-    getCurrentProfile: async () => {
-        const response = await apiClient.get<UserProfileResponse>('/profile/profile');
-        return response.data;
-    },
+    // getCurrentProfile: async () => {
+    //     const response = await apiClient.get<UserProfileResponse>('/profile/profile');
+    //     return response.data;
+    // },
 
     // Get profile by ID (public)
-    getProfileById: async (userId: string) => {
-        const response = await apiClient.get<UserProfileResponse>(`/profile/profile/${userId}`);
-        return response.data;
-    },
+    getCurrentProfile: async (): Promise<UserProfileResponse> => {
+        try {
+            const response = await apiClient.get('/profile');
+            console.log("Profile API Response:", response.data);
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching profile:", error);
+            throw error;
+        }
+    }
+
 };

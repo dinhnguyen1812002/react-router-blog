@@ -1,6 +1,12 @@
-import type { promises } from 'dns';
-import { apiClient } from './client';
-import type {ApiResponse, PaginatedResponse, Post, ProfileUser} from '~/types';
+import type { promises } from "dns";
+import { apiClient } from "./client";
+import type {
+  ApiResponse,
+  PaginatedResponse,
+  Post,
+  ProfileUser,
+  UserProfileResponse,
+} from "~/types";
 
 interface UserProfile {
   id: string;
@@ -21,7 +27,6 @@ interface UserProfile {
   };
 }
 
-
 export interface TopUser {
   id: string;
   username: string;
@@ -33,26 +38,36 @@ export interface TopUser {
 }
 
 export const userApi = {
-  getProfile: async (userId: string): Promise<ApiResponse<UserProfile>> => {
-    const response = await apiClient.get(`/user/${userId}`);
+  getProfile: async (username: string): Promise<UserProfileResponse> => {
+    const response = await apiClient.get(`/profile/${username}`);
     return response.data;
   },
 
-  updateProfile: async (profileData: Partial<UserProfile>): Promise<ApiResponse<UserProfile>> => {
-    const response = await apiClient.put('/user/profile', profileData);
+  updateProfile: async (
+    profileData: Partial<UserProfile>,
+  ): Promise<ApiResponse<UserProfile>> => {
+    const response = await apiClient.put("/user/profile", profileData);
     return response.data;
   },
 
   // Update custom profile markdown content
-  updateCustomProfile: async (markdownContent: string): Promise<ApiResponse<any>> => {
-    const response = await apiClient.put('/users/profile/custom', {
-      markdownContent
+  updateCustomProfile: async (
+    markdownContent: string,
+  ): Promise<ApiResponse<any>> => {
+    const response = await apiClient.put("/users/profile/custom", {
+      markdownContent,
     });
     return response.data;
   },
 
-  getUserPosts: async (userId: string, page: number = 0, size: number = 10): Promise<PaginatedResponse<Post>> => {
-    const response = await apiClient.get(`/user/${userId}/posts?page=${page}&size=${size}`);
+  getUserPosts: async (
+    userId: string,
+    page: number = 0,
+    size: number = 10,
+  ): Promise<PaginatedResponse<Post>> => {
+    const response = await apiClient.get(
+      `/user/${userId}/posts?page=${page}&size=${size}`,
+    );
     return response.data;
   },
 
@@ -60,22 +75,19 @@ export const userApi = {
     currentPassword: string;
     newPassword: string;
   }): Promise<ApiResponse<any>> => {
-    const response = await apiClient.put('/user/change-password', passwordData);
+    const response = await apiClient.put("/user/change-password", passwordData);
     return response.data;
   },
 
+  getTopUser: async (): Promise<TopUser[]> => {
+    const res = await apiClient.get("/users/top-authors");
+    return res.data; // vì API trả array trực tiếp
+  },
 
-  
- getTopUser: async (): Promise<TopUser[]> => {
-  const res = await apiClient.get('/users/top-authors');
-  return res.data; // vì API trả array trực tiếp
- },
- 
   // NEW: Fetch public user by username
-  getPublicUserByUsername: async (username: string): Promise<ProfileUser> => { 
+  getPublicUserByUsername: async (username: string): Promise<ProfileUser> => {
     const res = await apiClient.get(`/user/public/${username}`);
     console.log(res.data);
     return res.data;
-  }
-
+  },
 };

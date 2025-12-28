@@ -71,7 +71,7 @@ export default function PostDetailPage() {
   // Fetch related posts
   const { data: relatedPostsData } = useQuery({
     queryKey: ["posts", "related", postResponse?.data?.id],
-    queryFn: () => postsApi.getPosts(0, 6),
+    queryFn: () => postsApi.getPosts({ page: 0, size: 6 }),
     enabled: !!postResponse?.data,
   });
 

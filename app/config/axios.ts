@@ -26,9 +26,6 @@ axiosInstance.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    // Development logging
-
-
     return config;
   },
   (error) => {
@@ -107,10 +104,6 @@ const refreshAccessToken = async (): Promise<string> => {
 // Response interceptor
 axiosInstance.interceptors.response.use(
   (response) => {
-    // Development logging
-    if (process.env.NODE_ENV === "development") {
-      console.log(`API Response: ${response.status} ${response.config.url}`);
-    }
     return response;
   },
 
@@ -118,17 +111,15 @@ axiosInstance.interceptors.response.use(
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
     // Handle 401 Unauthorized
-    if (error.response?.status === 500) {
+    if (error.response?.status === 401) {
 
       // Check if request should be retried
       if (!shouldRetryRequest(originalRequest)) {
-        console.log("401 on non-retryable endpoint, rejecting");
         return Promise.reject(error);
       }
 
       // Check if already retried
       if (originalRequest._retry) {
-        console.log("Request already retried, giving up");
         useAuthStore.getState().logout();
         return Promise.reject(error);
       }
@@ -138,8 +129,6 @@ axiosInstance.interceptors.response.use(
 
       // If refresh is already in progress, queue this request
       if (isRefreshing && refreshPromise) {
-        console.log("Token refresh in progress, queueing request...");
-
         return new Promise((resolve, reject) => {
           failedQueue.push({
             resolve: (token: string) => {
@@ -155,15 +144,11 @@ axiosInstance.interceptors.response.use(
 
       // Start token refresh
       isRefreshing = true;
-      console.log("Starting token refresh due to 401...");
-
       // Create refresh promise
       refreshPromise = refreshAccessToken();
 
       try {
         const newToken = await refreshPromise;
-
-        console.log("Token refreshed successfully, processing queue");
 
         // Process all queued requests with new token
         processQueue(null, newToken);

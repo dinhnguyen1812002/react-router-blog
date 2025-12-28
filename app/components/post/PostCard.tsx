@@ -16,6 +16,7 @@ import { RatingComponent } from "./RatingComponent";
 import { BookmarkButton } from "./BookmarkButton";
 import type { Post } from "~/types";
 import UserAvatar from "../ui/boring-avatar";
+import { resolveAvatarUrl } from "~/utils/image";
 
 interface PostCardProps {
   post: Post;
@@ -73,7 +74,7 @@ export const PostCard = ({ post }: PostCardProps) => {
       <div className="p-3 sm:p-4 flex flex-col justify-between h-full">
         <Link to={`/articles/${post.slug}`} className="block group mb-2">
           <h3
-            className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 
+            className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100
           group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2"
           >
             {post.title}
@@ -96,7 +97,7 @@ export const PostCard = ({ post }: PostCardProps) => {
             </Avatar> */}
             <UserAvatar
               name={post.user.username}
-              src={post.user.avatar}
+              src={resolveAvatarUrl(post.user.avatar)}
               size={20}
               variant="marble"
               alt={post.user.username}
@@ -139,7 +140,7 @@ export const PostCard = ({ post }: PostCardProps) => {
             initialLiked={post.isLikedByCurrentUser}
             initialLikeCount={post.likeCount}
             variant="minimal" // hoặc "compact", "minimal"
-            size="md"         // hoặc "sm", "lg"
+            size="md" // hoặc "sm", "lg"
             showCount={true}
             className="custom-class"
           />

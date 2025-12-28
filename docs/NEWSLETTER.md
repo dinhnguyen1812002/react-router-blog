@@ -78,9 +78,7 @@ API này cho phép người dùng hủy đăng ký nhận bản tin.
 
 ---
 
-## 3. API cho Quản trị viên (Admin)
 
-Các API dưới đây yêu cầu quyền `ROLE_ADMIN`.
 
 ### 3.1. Lấy danh sách tất cả người đăng ký
 

@@ -27,19 +27,11 @@ export const authMigration = {
       const legacyUserStr = localStorage.getItem('auth-user');
       
       if (!legacyToken || !legacyUserStr) {
-        console.log('📦 No legacy data to migrate');
         return false;
       }
 
       const legacyUser = JSON.parse(legacyUserStr);
       const { login } = useAuthStore.getState();
-
-      console.log('🔄 Migrating legacy auth data to Zustand...');
-      console.log('📦 Legacy data:', {
-        hasToken: !!legacyToken,
-        hasUser: !!legacyUser,
-        user: legacyUser.username
-      });
 
       // Migrate to Zustand store
       login(legacyUser, legacyToken);
@@ -48,7 +40,6 @@ export const authMigration = {
       localStorage.removeItem('auth-token');
       localStorage.removeItem('auth-user');
 
-      console.log('✅ Migration completed successfully');
       return true;
     } catch (error) {
       console.error('❌ Migration failed:', error);
@@ -64,7 +55,6 @@ export const authMigration = {
     
     localStorage.removeItem('auth-token');
     localStorage.removeItem('auth-user');
-    console.log('🧹 Cleaned up legacy storage data');
   },
 
   /**
@@ -77,41 +67,26 @@ export const authMigration = {
     const legacyToken = localStorage.getItem('auth-token');
     const legacyUser = localStorage.getItem('auth-user');
 
-    console.log('🔍 Checking storage consistency...');
-    console.log('📦 Current state:', {
-      zustandToken: !!token,
-      zustandUser: !!user,
-      isAuthenticated,
-      legacyToken: !!legacyToken,
-      legacyUser: !!legacyUser
-    });
-
     // If Zustand has data but legacy doesn't, we're good
     if (token && user && !legacyToken && !legacyUser) {
-      console.log('✅ Storage is consistent (Zustand only)');
       return;
     }
 
     // If legacy has data but Zustand doesn't, migrate
     if (legacyToken && legacyUser && (!token || !user)) {
-      console.log('🔄 Legacy data found, migrating...');
       authMigration.migrateLegacyData();
       return;
     }
 
     // If both have data, clear legacy
     if (token && user && (legacyToken || legacyUser)) {
-      console.log('🧹 Both systems have data, cleaning up legacy...');
       authMigration.cleanupLegacyData();
       return;
     }
 
     // If neither has data, we're good
     if (!token && !user && !legacyToken && !legacyUser) {
-      console.log('✅ Storage is consistent (no data)');
       return;
     }
-
-    console.log('⚠️ Inconsistent state detected');
   }
 }; 

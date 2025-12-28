@@ -109,25 +109,25 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div className="min-h-screen bg-slate-50 dark:bg-black flex ">
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 to-slate-800/90 z-10"></div>
         <img
-          src="https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop"
+          // src="https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop"
+          src="/login.jpg"
           alt="Modern workspace"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="relative z-20 flex flex-col justify-center px-12 text-white">
+        <div className="relative z-20 flex flex-col justify-center px-12 text-white dark:text-black">
           <div className="max-w-md">
             <div className="mb-8">
-              {/* <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 backdrop-blur-sm rounded-2xl mb-6">
-               <Link to="/">
-                <ChevronsRight className="h-5 w-5 text-white" />
-               </Link>
-
-              </div> */}
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 backdrop-blur-sm rounded-2xl mb-6">
+                <Link to="/">
+                  <ChevronsRight className="h-5 w-5 text-white" />
+                </Link>
+              </div>
             </div>
-            <h2 className="text-4xl font-bold mb-4 leading-tight">
+            <h2 className="text-4xl font-bold mb-4 leading-tight text-white">
               Welcome back to your workspace
             </h2>
             <p className="text-lg text-slate-300 leading-relaxed">
@@ -197,7 +197,7 @@ export default function LoginPage() {
           </div>
 
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">
+            <h1 className="text-3xl font-bold text-slate-900 mb-2 dark:text-white">
               Welcome Back
             </h1>
             <p className="text-slate-600">
@@ -231,7 +231,7 @@ export default function LoginPage() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-semibold text-slate-700 mb-2"
+                className="block text-sm font-semibold text-slate-700 mb-2 dark:text-amber-50"
               >
                 Email Address
               </label>
@@ -243,7 +243,7 @@ export default function LoginPage() {
                   type="email"
                   id="email"
                   {...register("email")}
-                  className={`block w-full pl-10 pr-3 py-3 border ${
+                  className={`block w-full pl-10 pr-3 py-3 border  dark:text-amber-50${
                     errors.email
                       ? "border-red-300 focus:border-red-500 focus:ring-red-500"
                       : "border-slate-300 focus:border-slate-500 focus:ring-slate-500"
@@ -268,7 +268,7 @@ export default function LoginPage() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-semibold text-slate-700 mb-2"
+                className="block text-sm font-semibold text-slate-700 mb-2  dark:text-amber-50"
               >
                 Password
               </label>

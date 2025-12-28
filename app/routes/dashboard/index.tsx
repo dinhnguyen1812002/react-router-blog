@@ -162,7 +162,7 @@ export default function DashboardPage() {
 
         <ChartAreaIcons />
         <ChartRadialText />
-        <Link to="/dashboard/posts/new">
+        <Link to="/dashboard/article">
           <Card className="h-full card-hover cursor-pointer border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 group">
             <CardContent className="flex flex-col items-center justify-center p-8 text-center h-full">
               <div className="p-4 bg-blue-100 dark:bg-blue-900/30 rounded-full mb-4 group-hover:scale-110 transition-transform duration-200">

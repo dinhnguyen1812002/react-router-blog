@@ -16,6 +16,7 @@ import { Link } from "react-router";
 import { BookmarkButton } from "./BookmarkButton";
 import { RatingComponent } from "./RatingComponent";
 import { LikeButton } from "./LikeButton";
+import { formatDateSimple } from "~/lib/utils";
 
 interface PostCardProps {
   post: Post;
@@ -76,7 +77,8 @@ export const ListArticles = ({ post }: PostCardProps) => {
                 <div className="flex items-center gap-3 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <Calendar className="h-3 w-3" />
-                    {post.public_date}
+
+                    {formatDateSimple(post.public_date)}
                   </span>
                   <span className="flex items-center gap-1">
                     <Eye className="h-3 w-3" />
@@ -109,7 +111,7 @@ export const ListArticles = ({ post }: PostCardProps) => {
                 compact
               />
               {/* <LikeButton
-               
+
                 initialLiked={post.isLikedByCurrentUser}
                 initialLikeCount={post.likeCount}
               /> */}
@@ -118,7 +120,7 @@ export const ListArticles = ({ post }: PostCardProps) => {
                 initialLiked={false}
                 initialLikeCount={post.likeCount}
                 variant="minimal" // hoặc "compact", "minimal"
-                size="md"         // hoặc "sm", "lg"
+                size="md" // hoặc "sm", "lg"
                 showCount={true}
                 className="custom-class"
               />

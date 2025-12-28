@@ -7,7 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export function formatDateSimple(dateString: string): string {
   const date = new Date(dateString)
-  return date.toLocaleDateString("en-US", { 
+  return date.toLocaleDateString("vi-VN", { 
     year: 'numeric', 
     month: 'short', 
     day: 'numeric' 

@@ -1,8 +1,7 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
-import { clearAllAuthData } from "~/lib/auth-utils";
-import { authApi } from "~/api/auth";
+import { persist } from "zustand/middleware";
 import type { User } from "~/types";
+import { authApi } from "~/api/auth";
 
 // =====================
 // Helper: check token expiration
@@ -13,18 +12,18 @@ const isTokenExpired = (token: string): boolean => {
     const currentTime = Date.now() / 1000;
     return payload.exp < currentTime;
   } catch {
-    return true; // Nếu decode lỗi => coi như hết hạn
+    return true;
   }
 };
 
+
+
 interface AuthState {
   user: User | null;
-  token: string | null; // access token
+  token: string | null; // access token - stored in memory only
   isAuthenticated: boolean;
-
   isLoading: boolean;
   error: string | null;
-  _hasHydrated: boolean;
 }
 
 interface AuthActions {
@@ -34,14 +33,14 @@ interface AuthActions {
   logout: () => void;
   clearError: () => void;
   checkTokenValidity: () => boolean;
-  setHasHydrated: (hydrated: boolean) => void;
   refreshAccessToken: () => Promise<string | null>;
-  initializeAuth: () => Promise<void>;
+  setUser: (user: User | null) => void;
+  setToken: (token: string | null) => void;
 }
 
 type AuthStore = AuthState & AuthActions;
 
-export const useAuthStore = create<AuthStore>()(
+export const useAuthStore = create<AuthStore, [["zustand/persist", { user: User | null; isAuthenticated: boolean }]]>(
   persist(
     (set, get) => ({
       user: null,
@@ -49,15 +48,13 @@ export const useAuthStore = create<AuthStore>()(
       isAuthenticated: false,
       isLoading: false,
       error: null,
-      _hasHydrated: false,
 
       setLoading: (loading: boolean) => set({ isLoading: loading }),
       setError: (error: string | null) => set({ error }),
       clearError: () => set({ error: null }),
-      setHasHydrated: (hydrated: boolean) => set({ _hasHydrated: hydrated }),
 
-      // ✅ login chỉ còn 2 tham số
       login: (user: User, accessToken: string) => {
+      
         set({
           user,
           token: accessToken,
@@ -67,8 +64,7 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       logout: () => {
-        console.log("Logging out user...");
-        clearAllAuthData();
+    
         set({
           user: null,
           token: null,
@@ -78,16 +74,23 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       checkTokenValidity: () => {
-        const { token } = get();
-        if (!token) return false;
+        const { token, user } = get();
+
+        // When no token is available (e.g., after refresh or on initial load),
+        // defer to user state and let the initialization hook decide what to do.
+        if (!token) {
+          return !!user;
+        }
+
         if (isTokenExpired(token)) {
           console.log("Token expired");
+          get().logout();
           return false;
         }
         return true;
       },
 
-      refreshAccessToken: async () => {
+      refreshAccessToken: async (): Promise<string | null> => {
         try {
           const { accessToken } = await authApi.refreshToken();
           if (!accessToken) throw new Error("No new access token returned");
@@ -105,50 +108,22 @@ export const useAuthStore = create<AuthStore>()(
         }
       },
 
+      setUser: (user: User | null) => {
+        set({ user, isAuthenticated: !!user });
+      },
 
-      initializeAuth: async () => {
-        const { token, user } = get();
-
-        if (!token) {
-          set({ isAuthenticated: false, user: null });
-          return;
-        }
-
-        if (isTokenExpired(token)) {
-          try {
-            const newToken = await get().refreshAccessToken();
-            set({
-              token: newToken,
-              isAuthenticated: !!user,
-            });
-          } catch {
-            set({
-              user: null,
-              token: null,
-              isAuthenticated: false,
-            });
-          }
-        } else {
-          set({ isAuthenticated: true });
-        }
+      setToken: (token: string | null) => {
+        set({ token });
       },
     }),
     {
-      name: "auth-storage",
-      storage: createJSONStorage(() => localStorage),
+      name: "auth-store",
       partialize: (state) => ({
         user: state.user,
-        token: state.token,
+        isAuthenticated: state.isAuthenticated,
       }),
-
-      onRehydrateStorage: () => (state) => {
-        if (state) {
-          console.log("Auth store rehydrated");
-          // Chỉ set flag hydrated, để initializeAuth xử lý token refresh
-          // Tránh duplicate refresh token requests
-        }
-        state?.setHasHydrated(true);
-      },
+      version: 1,
+      onRehydrateStorage: () => (state, action) => {},
     }
   )
 );

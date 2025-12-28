@@ -1,47 +1,25 @@
-# ============================
-# Stage 1: Build
-# ============================
-FROM oven/bun:1 AS builder
-WORKDIR /app
+FROM oven/bun:1 AS base
+WORKDIR /usr/src/app
 
-# Copy package files first for better caching
-COPY package.json bun.lock* ./
+FROM base AS install
+RUN mkdir -p /temp/dev
+COPY package.json bun.lock /temp/dev/
+RUN cd /temp/dev && bun install --frozen-lockfile
 
-# Install ALL dependencies (including devDependencies for build)
-RUN bun install --frozen-lockfile
+RUN mkdir -p /temp/prod
+COPY package.json bun.lock /temp/prod/
+RUN cd /temp/prod && bun install --frozen-lockfile --production
 
-# Copy source code
+FROM base AS prerelease
+COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
-
-# Build the application
+ENV NODE_ENV=production
 RUN bun run build
 
-# ============================
-# Stage 2: Runtime
-# ============================
-FROM oven/bun:1-alpine AS runtime
-WORKDIR /app
+FROM base AS release
+COPY --from=install /temp/prod/node_modules node_modules
+COPY --from=prerelease /usr/src/app ./
 
-# Copy package files and install production dependencies only
-COPY package.json bun.lock* ./
-RUN bun install --production --frozen-lockfile
-
-# Copy built files from builder stage
-COPY --from=builder /app/build ./build
-
-# Create non-root user for security
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001 && \
-    chown -R nodejs:nodejs /app
-
-USER nodejs
-
-# Expose port
-EXPOSE 5173
-
-# Health check (optional)
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:5173 || exit 1
-
-# Start the application
-CMD ["bun", "run", "start", "--host", "0.0.0.0"]
+USER bun
+EXPOSE 3000
+ENTRYPOINT ["bun", "run", "start"]

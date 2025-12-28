@@ -19,39 +19,37 @@ export const useAuth = () => {
     logout: clearAuthState,
     clearError,
     checkTokenValidity,
+    refreshAccessToken,
   } = useAuthStore();
 
   // Check token validity periodically and auto-refresh
-useEffect(() => {
-  if (!isAuthenticated || !token) return;
+  useEffect(() => {
+    if (!isAuthenticated || !token) return;
 
-  const checkAndRefreshToken = async () => {
-    if (!checkTokenValidity()) {
-      console.log("Token expired, attempting refresh...");
-      try {
-        const newToken = await useAuthStore.getState().refreshAccessToken();
-        if (!newToken) {
-          console.log("Token refresh failed, redirecting to login...");
+    const checkAndRefreshToken = async () => {
+      if (!checkTokenValidity()) {
+    
+        try {
+          const newToken = await refreshAccessToken();
+          if (!newToken) {
+         
+            navigate("/login", { replace: true });
+          } 
+        } catch (error) {
+          console.error("Token refresh error:", error);
           navigate("/login", { replace: true });
-        } else {
-          console.log("🔁 Token refreshed successfully");
         }
-      } catch (error) {
-        console.error("Token refresh error:", error);
-        navigate("/login", { replace: true });
       }
-    }
-  };
+    };
 
-  // Check ngay khi mount
-  checkAndRefreshToken();
+    // Check immediately on mount
+    checkAndRefreshToken();
 
-  // Check định kỳ mỗi 5 phút
-  const interval = setInterval(checkAndRefreshToken, 5 * 60 * 1000);
+    // Check periodically every 5 minutes
+    const interval = setInterval(checkAndRefreshToken, 5 * 60 * 1000);
 
-  return () => clearInterval(interval);
-}, [isAuthenticated, token, checkTokenValidity, navigate]);
-
+    return () => clearInterval(interval);
+  }, [isAuthenticated, token, checkTokenValidity, refreshAccessToken, navigate]);
 
   const login = useCallback(
     async (credentials: LoginRequest) => {
@@ -60,9 +58,9 @@ useEffect(() => {
         setError(null);
 
         const response = await authApi.login(credentials);
-        const { id, username, email, roles, avatar, token, refreshToken } = response;
-        
-        // Tạo user object từ response data
+        const { id, username, email, roles, avatar, token } = response;
+
+        // Create user object from response data
         const usr = {
           id,
           username,
@@ -72,16 +70,8 @@ useEffect(() => {
           socialMediaLinks: [],
         };
 
-        // console.log("Login successful:", {
-        //   user: usr.username,
-        //   token: token ? token.substring(0, 20) + "..." : "None",
-
-        //   hasUser: !!usr,
-        //   hasToken: !!token,
-        // });
-
-        // Update store - Zustand's persist middleware handles localStorage
-        setAuthState(usr, token );
+        // Update store - token stored in memory only
+        setAuthState(usr, token);
 
         // Handle redirection
         const returnUrl = location.state?.returnUrl;
@@ -125,7 +115,7 @@ useEffect(() => {
 
         console.log("Registration successful, auto-logging in...");
 
-        // Update store - Zustand's persist middleware handles localStorage
+        // Update store - token stored in memory only
         setAuthState(user, token);
 
         const from = location.state?.from?.pathname || "/dashboard";
@@ -151,7 +141,7 @@ useEffect(() => {
     } catch (error) {
       console.error("Logout API error:", error);
     } finally {
-      // Clear state from Zustand store (which also clears localStorage via persist)
+      // Clear state from Zustand store (memory only)
       clearAuthState();
       // Redirect to login page
       navigate("/login", { replace: true });

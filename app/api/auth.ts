@@ -49,6 +49,13 @@ export const authApi = {
 
     // Save user + access token vào store
     useAuthStore.getState().login(user, token);
+
+    // Lưu refresh token vào sessionStorage (tạm thời cho đến khi backend set cookie)
+    if (refreshToken) {
+      sessionStorage.setItem('refreshToken', refreshToken);
+      console.log("✅ Refresh token saved to sessionStorage");
+    }
+
     // console.log(response.data)
     return response.data;
   },
@@ -88,6 +95,8 @@ export const authApi = {
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
+      // Xoá refresh token từ sessionStorage
+      sessionStorage.removeItem('refreshToken');
       useAuthStore.getState().logout();
     }
   },
@@ -118,28 +127,40 @@ export const authApi = {
   },
 
 
-  // ~/api/auth.ts
-refreshToken: async () => {
-  try {
-    const response = await axiosInstance.post(
-      "/auth/refresh-token",
-      {},
-      { withCredentials: true }
-    );
+  // Refresh access token using refresh token cookie
+  refreshToken: async () => {
+    try {
+    
+      // Get current token if available (some backends require it)
+      const { token } = useAuthStore.getState();
 
-   
+      const response = await axiosInstance.post(
+        "/auth/refresh-token",
+        {},
+        {
+          withCredentials: true,
+          // If backend requires access token for refresh, include it
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        }
+      );
 
-    const { accessToken, refreshToken } = response.data || {};
+      const { accessToken, refreshToken } = response.data || {};
 
-    if (!accessToken) {
-      throw new Error("No new access token returned from server");
+      if (!accessToken) {
+        throw new Error("No new access token returned from server");
+      }
+
+  
+      return { accessToken, refreshToken };
+    } catch (error: any) {
+      console.error("❌ Refresh token request failed:", {
+        status: error.response?.status,
+        message: error.response?.data?.message || error.message,
+        url: error.config?.url,
+        headers: error.config?.headers,
+      });
+      throw error;
     }
-
-    return { accessToken, refreshToken };
-  } catch (error: any) {
-    console.error("Refresh token request failed:", error);
-    throw error;
-  }
-},
+  },
 
 };

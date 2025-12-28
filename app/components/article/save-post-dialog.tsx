@@ -306,9 +306,9 @@ export function SavePostDialog({
             </div>
 
             {/* Date Picker */}
-            <div className="space-y-2 dark:text-white">
+            <div className="space-y-2  dark:text-white">
               <label className="flex items-center gap-2 text-sm font-medium text-foreground">
-                <Calendar className="h-4 w-4" />
+                <Calendar className="h-4 w-4 text-black dark:text-white" />
                 Ngày xuất bản
               </label>
               <Input
@@ -319,7 +319,7 @@ export function SavePostDialog({
                   console.log("Datetime selected:", e.target.value)
                   setDate(e.target.value)
                 }}
-                className="w-full"
+                className="w-full text-black dark:text-white"
               />
             </div>
           </div>

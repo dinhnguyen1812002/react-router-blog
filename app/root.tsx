@@ -59,6 +59,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
       }),
   );
 
+  const theme = useThemeStore((state) => state.actualTheme);
+
   return (
     <html lang="vi" suppressHydrationWarning>
       <head>
@@ -73,11 +75,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <WebSocketProvider>
             <Toaster
               position="top-right"
-              theme={useThemeStore((state) => state.actualTheme) as any}
+              theme={theme as any}
             />
             <ThemeInitializer />
             {children}
-            {/* <AuthDebug /> */}
           </WebSocketProvider>
         </QueryClientProvider>
         <ScrollRestoration />

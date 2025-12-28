@@ -1,77 +1,48 @@
+import { markIcons } from "~/components/tiptap-ui/mark-button";
+import axiosInstance from "~/config/axios";
+
 export interface Notification {
-  id: string;
-  type: "info" | "success" | "warning" | "error";
+  notificationId: string;
   title: string;
+  isRead: boolean;
   message: string;
-  timestamp: string;
-  read: boolean;
+  type: string;
+  createdAt: string;
 }
 
-interface PostNotification {
-  postId: string;
-  title: string;
-  slug: string;
-  excerpt: string;
-  publicDate: string;
-}
-
-import { apiClient } from './client';
-import { useAuthStore } from '~/store/authStore';
-import type { ApiResponse, Tag } from '~/types';
-
-/**
- * Get authentication token and ensure user is authenticated
- * Throws error if not authenticated
- */
-const getAuthToken = (): string => {
-  const { token, isAuthenticated } = useAuthStore.getState();
-  if (!token || !isAuthenticated) {
-    throw new Error('Authentication required. Please login first.');
-  }
-  return token;
-};
-
-export const notification = {
-  
+export const notify = {
   /**
    * Get all notifications for the authenticated user
-   * Requires authentication - Authorization header is explicitly added
+   * Backend endpoint: GET /api/v1/notifications
    */
   getNotify: async (): Promise<Notification[]> => {
-    const token = getAuthToken();
-    const response = await apiClient.get<Notification[]>('/notifications', {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
+    const response = await axiosInstance.get<Notification[]>("/notifications");
     return response.data;
   },
 
   /**
-   * Mark a specific notification as read
-   * Requires authentication - Authorization header is explicitly added
+   * Mark a notification as read
+   * Backend endpoint: PUT /api/v1/notifications/{id}/read
+   * @returns Updated notification object
    */
-  markAsRead: async (id: string): Promise<Notification> => {
-    const token = getAuthToken();
-    const response = await apiClient.put<Notification>(`/notifications/${id}/read`, undefined, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
+  markAsRead: async (notificationId: string): Promise<Notification> => {
+    const response = await axiosInstance.put<Notification>(`/notifications/${notificationId}/read`);
     return response.data;
   },
 
   /**
-   * Mark all notifications as read
-   * Requires authentication - Authorization header is explicitly added
+   * Mark all notifications as read for the authenticated user
+   * Backend endpoint: PUT /api/v1/notifications/read-all
    */
   markAllAsRead: async (): Promise<void> => {
-    const token = getAuthToken();
-    await apiClient.put<void>(`/notifications/read-all`, undefined, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
+    await axiosInstance.put("/notifications/read-all");
   },
- 
+
+  markAsUnread: async (notificationId: string): Promise<void> => {
+    await axiosInstance.post(`/notifications/${notificationId}/unread`);
+  },
+
+  markAsUntransferable: async (notificationId: string): Promise<void> => {
+    await axiosInstance.post(`/notifications/${notificationId}/untransferable`);
+  },
 };

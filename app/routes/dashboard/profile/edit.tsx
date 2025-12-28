@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { toast, useSonner } from "sonner";
+import { profileApi } from "~/api/profile";
 import { AvatarUpload } from "~/components/profile/AvatarUpload";
 import { MarkdownEditor } from "~/components/profile/MarkdownEditor";
 import { SocialLinks } from "~/components/profile/SocialLinks";
@@ -131,6 +133,30 @@ const EditProfile = () => {
       description: "Your changes have been cancelled.",
     });
   };
+
+  const {data: profileData} = useQuery({
+    queryKey: ['profile'],
+    queryFn: () => profileApi.getCurrentProfile(),
+  });
+
+useEffect(() => {
+  if (profileData) {
+    setFormData({
+      username: profileData.username || '',
+      email: profileData.email || '',
+      bio: profileData.bio || '',
+      avatar: profileData.avatar || null,
+      website: profileData.socialMediaLinks?.website || '',
+      github: profileData.socialMediaLinks?.github || '',
+      facebook: profileData.socialMediaLinks?.facebook || '',
+      instagram: profileData.socialMediaLinks?.instagram || '',
+      linkedin: profileData.socialMediaLinks?.linkedin || '',
+      customBio: profileData.customProfileMarkdown || '',
+    });
+  }
+}, [profileData]);
+
+
 
   return (
     <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
