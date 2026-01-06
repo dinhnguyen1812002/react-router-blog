@@ -41,6 +41,7 @@ import {
   Tag as TagIcon,
 } from "lucide-react";
 import UserAvatar from "~/components/ui/boring-avatar";
+import { resolveAvatarUrl } from "~/utils/image";
 
 
 export default function PostDetailPage() {
@@ -456,7 +457,7 @@ export default function PostDetailPage() {
 
                 <UserAvatar
                   name={post.user.username}
-                  src={post.user.avatar || ""}
+                  src={ resolveAvatarUrl(post.user.avatar)  }
                 />
                 <div className="flex-1">
                   <div className="flex items-center justify-between">

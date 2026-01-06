@@ -6,12 +6,25 @@ import TagModal from "~/components/admin/TagModal";
 import { tagsApi } from "~/api/tags";
 import type { Tag } from "~/types";
 
+ type TagData = {
+   id?: number;
+   name: string;
+   description: string;
+   color: string;
+ };
+
 export default function AdminTags() {
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
+
+  const toTagData = (tag: Tag): TagData => ({
+    name: tag.name,
+    description: tag.description ?? "",
+    color: tag.color,
+  });
 
   // Fetch tags
   const {
@@ -87,16 +100,21 @@ export default function AdminTags() {
     }
   };
 
-  const handleSubmitTag = (tagData: Partial<Tag>) => {
+  const handleSubmitTag = (tagData: TagData) => {
+    const payload: Partial<Tag> = {
+      name: tagData.name,
+      description: tagData.description,
+      color: tagData.color,
+    };
     if (selectedTag) {
       // Update existing tag
       updateTagMutation.mutate({
         id: selectedTag.uuid,
-        data: tagData
+        data: payload
       });
     } else {
       // Create new tag
-      createTagMutation.mutate(tagData);
+      createTagMutation.mutate(payload);
     }
   };
 
@@ -136,8 +154,8 @@ export default function AdminTags() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Quản lý thẻ</h1>
-          <p className="text-gray-600">Quản lý các thẻ để phân loại bài viết</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Quản lý thẻ</h1>
+          <p className="text-gray-600 dark:text-gray-400">Quản lý các thẻ để phân loại bài viết</p>
         </div>
         <div className="flex items-center space-x-3">
           <button
@@ -165,23 +183,23 @@ export default function AdminTags() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-black rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Tổng thẻ</p>
-              <p className="text-2xl font-bold text-gray-900">{tags.length}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Tổng thẻ</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{tags.length}</p>
             </div>
-            <div className="p-3 bg-blue-50 rounded-full">
-              <Tags className="h-6 w-6 text-blue-600" />
+            <div className="p-3 bg-blue-50 dark:bg-blue-500 rounded-full">
+              <Tags className="h-6 w-6 text-blue-600 dark:text-white" />
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-black rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Kết quả tìm kiếm</p>
-              <p className="text-2xl font-bold text-gray-900">{filteredTags.length}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{filteredTags.length}</p>
             </div>
             <div className="p-3 bg-green-50 rounded-full">
               <TrendingUp className="h-6 w-6 text-green-600" />
@@ -189,11 +207,11 @@ export default function AdminTags() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-black rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Đang tải</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Đang tải</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 {isFetching ? "..." : "✓"}
               </p>
             </div>
@@ -203,15 +221,15 @@ export default function AdminTags() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-black rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Trạng thái</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Trạng thái</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 {error ? "Lỗi" : "OK"}
               </p>
             </div>
-            <div className="p-3 bg-yellow-50 rounded-full">
+            <div className="p-3 bg-yellow-50 dark:bg-yellow-500 rounded-full">
               {error ? (
                 <AlertCircle className="h-6 w-6 text-red-600" />
               ) : (
@@ -223,7 +241,7 @@ export default function AdminTags() {
       </div>
 
       {/* Search and Filter */}
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-white dark:bg-black rounded-lg shadow p-6">
         <div className="flex items-center space-x-4">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -243,12 +261,12 @@ export default function AdminTags() {
 
       {/* Tags Grid */}
       {filteredTags.length === 0 ? (
-        <div className="bg-white rounded-lg shadow p-12 text-center">
-          <Tags className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
+        <div className="bg-white dark:bg-black rounded-lg shadow p-12 text-center">
+          <Tags className="h-12 w-12 text-gray-400 dark:text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
             {searchTerm ? "Không tìm thấy thẻ" : "Chưa có thẻ nào"}
           </h3>
-          <p className="text-gray-600 mb-4">
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
             {searchTerm
               ? `Không có thẻ nào phù hợp với "${searchTerm}"`
               : "Hãy tạo thẻ đầu tiên để bắt đầu"
@@ -257,7 +275,7 @@ export default function AdminTags() {
           {!searchTerm && (
             <button
               onClick={handleAddTag}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 mx-auto"
+              className="bg-blue-600 text-white dark:text-white px-4 py-2 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 flex items-center space-x-2 mx-auto"
             >
               <Plus className="h-4 w-4" />
               <span>Tạo thẻ đầu tiên</span>
@@ -267,14 +285,14 @@ export default function AdminTags() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {filteredTags.map((tag) => (
-            <div key={tag.uuid} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-4">
+            <div key={tag.uuid} className="bg-white dark:bg-black rounded-lg shadow-md hover:shadow-lg transition-shadow p-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-2">
                   <div
                     className="w-4 h-4 rounded-full"
                     style={{ backgroundColor: tag.color }}
                   />
-                  <h3 className="text-lg font-semibold text-gray-900">#{tag.name}</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">#{tag.name}</h3>
                 </div>
                 <div className="flex items-center space-x-1">
                   <button
@@ -311,8 +329,8 @@ export default function AdminTags() {
                 </div>
               </div>
 
-              <div className="mt-3 pt-3 border-t border-gray-100">
-                <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-800">
+                <div className="w-full bg-gray-200 dark:bg-gray-800 rounded-full h-2">
                   <div
                     className="h-2 rounded-full transition-all duration-300"
                     style={{
@@ -340,7 +358,7 @@ export default function AdminTags() {
         isOpen={showEditModal}
         onClose={() => setShowEditModal(false)}
         onSubmit={handleSubmitTag}
-        initialData={selectedTag}
+        initialData={selectedTag ? toTagData(selectedTag) : null}
         mode="edit"
       />
     </div>

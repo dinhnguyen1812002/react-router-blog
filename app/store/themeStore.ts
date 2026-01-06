@@ -57,7 +57,8 @@ export const useThemeStore = create<ThemeState>()(
               if (state.theme === 'system') {
                 const newActualTheme = getSystemTheme();
                 applyTheme(newActualTheme);
-                useThemeStore.setState({ actualTheme: newActualTheme });
+                // Update the state directly without calling the hook
+                state.actualTheme = newActualTheme;
               }
             };
             mediaQuery.addEventListener('change', handleChange);

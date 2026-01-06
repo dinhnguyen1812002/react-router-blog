@@ -59,7 +59,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       }),
   );
 
-  const theme = useThemeStore((state) => state.actualTheme);
+  const { actualTheme: theme } = useThemeStore();
 
   return (
     <html lang="vi" suppressHydrationWarning>

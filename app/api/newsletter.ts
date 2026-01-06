@@ -1,9 +1,12 @@
 import { apiClient } from './client';
 import type { PaginatedResponse } from '~/types';
 
+export type NewsletterFrequency = 'DAILY' | 'WEEKLY';
+
 export interface SubscribeRequest {
   email: string;
   name?: string;
+  frequency?: NewsletterFrequency;
 }
 
 export interface Subscriber {

@@ -16,6 +16,8 @@ const isTokenExpired = (token: string): boolean => {
   }
 };
 
+ let refreshInFlight: Promise<string | null> | null = null;
+
 
 
 interface AuthState {
@@ -84,28 +86,35 @@ export const useAuthStore = create<AuthStore, [["zustand/persist", { user: User 
 
         if (isTokenExpired(token)) {
           console.log("Token expired");
-          get().logout();
           return false;
         }
         return true;
       },
 
       refreshAccessToken: async (): Promise<string | null> => {
-        try {
-          const { accessToken } = await authApi.refreshToken();
-          if (!accessToken) throw new Error("No new access token returned");
+        if (refreshInFlight) return refreshInFlight;
 
-          set({
-            token: accessToken,
-            isAuthenticated: !!get().user,
-          });
+        refreshInFlight = (async () => {
+          try {
+            const { accessToken } = await authApi.refreshToken();
+            if (!accessToken) throw new Error("No new access token returned");
 
-          return accessToken;
-        } catch (err) {
-          console.error("Refresh token failed:", err);
-          get().logout();
-          return null;
-        }
+            set({
+              token: accessToken,
+              isAuthenticated: !!get().user,
+            });
+
+            return accessToken;
+          } catch (err) {
+            console.error("Refresh token failed:", err);
+            get().logout();
+            return null;
+          } finally {
+            refreshInFlight = null;
+          }
+        })();
+
+        return refreshInFlight;
       },
 
       setUser: (user: User | null) => {

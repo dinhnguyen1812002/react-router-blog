@@ -1,153 +1,79 @@
-// export const Footer = () => {
-//   return (
-//     <footer className="bg-gray-50 dark:bg-black border-t border-gray-200 dark:border-gray-700">
-//       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-//         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-//           <div>
-//             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">BlogPlatform</h3>
-//             <p className="text-gray-600 dark:text-gray-400">
-//               Nền tảng chia sẻ kiến thức và giải trí với blog và memes chất lượng cao.
-//             </p>
-//           </div>
-
-import { Facebook, Instagram, Linkedin, Mail, MapPinCheck, Phone } from "lucide-react";
-import { Link } from "react-router";
-
-//           <div>
-//             <h4 className="text-md font-medium text-gray-900 dark:text-gray-100 mb-4">Liên kết</h4>
-//             <ul className="space-y-2">
-//               <li><a href="/blog-frontend/public" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">Trang chủ</a></li>
-//               <li><a href="/posts" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">Bài viết</a></li>
-//               <li><a href="/memes" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">Memes</a></li>
-//             </ul>
-//           </div>
-
-//           <div>
-//             <h4 className="text-md font-medium text-gray-900 dark:text-gray-100 mb-4">Liên hệ</h4>
-//             <p className="text-gray-600 dark:text-gray-400">
-//               Email: contact@blogplatform.com<br />
-//               Phone: +84 123 456 789
-//             </p>
-//           </div>
-//         </div>
-
-//         <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700 text-center">
-//           <p className="text-gray-600 dark:text-gray-400">
-//             © 2024 BlogPlatform. All rights reserved.
-//           </p>
-//         </div>
-//       </div>
-//     </footer>
-//   );
-// };
+import { Github, Linkedin, Twitter } from "lucide-react"
 
 export const Footer = () => {
+  const year = new Date().getFullYear()
   return (
-    <footer className="bg-muted/50 border-t">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Company Info */}
-          <div className="space-y-4">
-            <h3 className="font-semibold text-lg text-gray-900 dark:text-white">Công ty</h3>
-            <p className="text-muted-foreground text-sm leading-relaxed ">
-              Chúng tôi cam kết mang đến những sản phẩm và dịch vụ chất lượng cao nhất cho khách hàng.
-            </p>
-          </div>
-
-          {/* Quick Links */}
-          <div className="space-y-4">
-            <h3 className="font-semibold text-lg text-gray-900 dark:text-white">Liên kết nhanh</h3>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link to="/about" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Về chúng tôi
-                </Link>
-              </li>
-              <li>
-                <Link to="/services" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Dịch vụ
-                </Link>
-              </li>
-              <li>
-                <Link to="/products" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Sản phẩm
-                </Link>
-              </li>
-              <li>    
-                <Link to="/news" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Tin tức
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Support */}
-          <div className="space-y-4">
-            <h3 className="font-semibold text-lg text-gray-900 dark:text-white">Hỗ trợ</h3>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link to="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Liên hệ
-                </Link>
-              </li>
-              <li>
-                <Link to="/faq" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Câu hỏi thường gặp
-                </Link>
-              </li>
-              <li>
-                <Link to="/privacy" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Chính sách bảo mật
-                </Link>
-              </li>
-              <li>
-                <Link to="/terms" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Điều khoản sử dụng
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Contact Info */}
-          <div className="space-y-4">
-            <h3 className="font-semibold text-lg text-gray-900 dark:text-white">Thông tin liên hệ</h3>
-            <div className="space-y-2 text-sm text-muted-foreground">
-              <p className="flex items-center gap-2">
-                <MapPinCheck className="w-4 h-4" />
-                
-                 123 Đường ABC, Quận 1, TP.HCM</p>
-              <p className="flex items-center gap-2">
-                <Phone className="w-4 h-4" />
-                (028) 1234 5678
+   <footer className="bg-slate-50 dark:bg-slate-950 pt-20 pb-10 px-6 border-t border-slate-200 dark:border-slate-800">
+        <div className="container mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-12 mb-20">
+            <div className="col-span-2">
+              <div className="flex items-center gap-2 mb-6">
+                <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-xl">I</span>
+                </div>
+                <span className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
+                  Inkwell
+                </span>
+              </div>
+              <p className="text-slate-600 dark:text-slate-300 max-w-xs mb-8">
+                Building the most beautiful, human-centric publishing platform on the web.
               </p>
-              <p className="flex items-center gap-2">
-                <Mail className="w-4 h-4" />
-                info@company.com
-              </p>
+              <div className="flex gap-4">
+                <a href="#" className="p-2 bg-white dark:bg-slate-900 rounded-lg text-slate-400 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 shadow-sm hover:shadow transition-all"><Twitter size={20} /></a>
+                <a href="#" className="p-2 bg-white dark:bg-slate-900 rounded-lg text-slate-400 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 shadow-sm hover:shadow transition-all"><Linkedin size={20} /></a>
+                <a href="#" className="p-2 bg-white dark:bg-slate-900 rounded-lg text-slate-400 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 shadow-sm hover:shadow transition-all"><Github size={20} /></a>
+              </div>
             </div>
-            <div className="flex space-x-4 pt-2">
-              <Link to="#" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-                <Facebook className="w-4 h-4" />
-              
-              </Link>
-              <Link to="#" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-                <Instagram className="w-4 h-4" />
-               
-              </Link>
-              <Link to="#" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-                <Linkedin className="w-4 h-4" />
-                
-              </Link>
+            
+            <div>
+              <h5 className="font-bold mb-6 text-slate-900 dark:text-slate-50">Product</h5>
+              <ul className="space-y-4 text-slate-600 dark:text-slate-300">
+                <li><a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">Editor</a></li>
+                <li><a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">Communities</a></li>
+                <li><a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">Pricing</a></li>
+                <li><a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">Integrations</a></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h5 className="font-bold mb-6 text-slate-900 dark:text-slate-50">Resources</h5>
+              <ul className="space-y-4 text-slate-600 dark:text-slate-300">
+                <li><a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">Blog</a></li>
+                <li><a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">Guidebook</a></li>
+                <li><a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">Help Center</a></li>
+                <li><a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">Developer API</a></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h5 className="font-bold mb-6 text-slate-900 dark:text-slate-50">Company</h5>
+              <ul className="space-y-4 text-slate-600 dark:text-slate-300">
+                <li><a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">About Us</a></li>
+                <li><a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">Careers</a></li>
+                <li><a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">Press</a></li>
+                <li><a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">Contact</a></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h5 className="font-bold mb-6 text-slate-900 dark:text-slate-50">Legal</h5>
+              <ul className="space-y-4 text-slate-600 dark:text-slate-300">
+                <li><a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">Privacy</a></li>
+                <li><a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">Terms</a></li>
+                <li><a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">Cookies</a></li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="pt-10 border-t border-slate-200 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 dark:text-slate-400 text-sm">
+            <p>© {year} Inkwell Inc. All rights reserved.</p>
+            <div className="flex gap-8">
+              <a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">Status</a>
+              <a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">Security</a>
+              <a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">Accessibility</a>
             </div>
           </div>
         </div>
-
-        {/* Bottom Bar */}
-        <div className="border-t mt-8 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground">
-          <p className="text-gray-900 dark:text-white">&copy; {new Date().getFullYear()} Công ty của bạn. Tất cả quyền được bảo lưu.</p>
-          <p className="mt-2 md:mt-0">Được thiết kế với ❤️ tại Việt Nam</p>
-        </div>
-      </div>
-    </footer> 
+      </footer>
   )
 }

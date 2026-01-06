@@ -21,7 +21,13 @@ axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const { token } = useAuthStore.getState();
 
-    // Attach access token to Authorization header
+    // Don't attach Authorization header for refresh token requests
+    // (backend chỉ cần refresh token cookie)
+    if (isRefreshTokenRequest(config)) {
+      return config;
+    }
+
+    // Attach access token to Authorization header for other requests
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -71,14 +77,21 @@ const shouldRetryRequest = (config: InternalAxiosRequestConfig | undefined): boo
   if (!config?.url) return false;
 
   // Don't retry auth-related requests
-  const authEndpoints = [
-    '/auth/refresh-token',
-    '/auth/login',
-    '/auth/logout',
-    '/auth/register'
-  ];
+const AUTH_PATHS = [
+  '/api/v1/auth/refresh-token',
+  '/api/v1/auth/login',
+  '/api/v1/auth/logout',
+  '/api/v1/auth/register'
+];
 
-  return !authEndpoints.some(endpoint => config.url?.includes(endpoint));
+  return !AUTH_PATHS.some(path => config.url?.includes(path));
+};
+
+/**
+ * Check if request is refresh token request
+ */
+const isRefreshTokenRequest = (config: InternalAxiosRequestConfig | undefined): boolean => {
+  return config?.url?.includes('/auth/refresh-token') || false;
 };
 
 /**
@@ -181,8 +194,14 @@ axiosInstance.interceptors.response.use(
 
       // If refresh token endpoint returns 403, logout immediately
       if (url.includes('/auth/refresh-token')) {
-        console.error("Refresh token invalid or expired, logging out");
-        useAuthStore.getState().logout();
+        const { user, isAuthenticated } = useAuthStore.getState();
+
+        // During app initialization it's normal to probe refresh-token without an authenticated user.
+        // Only force-logout if we actually have an authenticated session.
+        if (user || isAuthenticated) {
+          console.error("Refresh token invalid or expired, logging out");
+          useAuthStore.getState().logout();
+        }
       }
     }
 

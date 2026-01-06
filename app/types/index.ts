@@ -252,3 +252,7 @@ export interface SeriesSearchRequest {
   sortBy?: string;
   sortDirection?: 'ASC' | 'DESC';
 }
+
+
+
+

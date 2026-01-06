@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '~/store/authStore';
-import { authApi } from '~/api/auth';
 
 /**
  * Initializes authentication state on app startup.
@@ -9,7 +8,7 @@ import { authApi } from '~/api/auth';
  * 3. Clears user info if token refresh fails or token is expired
  */
 export const useAuthInit = () => {
-  const { setToken, logout } = useAuthStore();
+  const { setToken, logout, refreshAccessToken } = useAuthStore();
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
@@ -33,7 +32,7 @@ export const useAuthInit = () => {
         // If we have user but no token, try to refresh
         if (currentUser && !currentToken) {
           try {
-            const { accessToken } = await authApi.refreshToken();
+            const accessToken = await refreshAccessToken();
             if (accessToken) {
               setToken(accessToken);
               if (isMounted) setIsInitialized(true);
@@ -47,22 +46,18 @@ export const useAuthInit = () => {
           }
         }
 
-        // No user found, check if refresh token exists
-        const hasRefreshTokenCookie = document.cookie.includes('refreshToken');
-        const hasRefreshTokenStorage = !!sessionStorage.getItem('refreshToken');
-
-        if (!hasRefreshTokenCookie && !hasRefreshTokenStorage) {
-          if (isMounted) setIsInitialized(true);
-          return;
-        }
-
-        // Try to refresh token
-        const { accessToken } = await authApi.refreshToken();
-
-        if (accessToken) {
-          setToken(accessToken);
-        } else {
-          logout();
+        // No user found, try to refresh token using cookie
+        // (không cần kiểm tra sessionStorage nữa vì dùng cookie)
+        try {
+          const accessToken = await refreshAccessToken();
+          if (accessToken) {
+            setToken(accessToken);
+            if (isMounted) setIsInitialized(true);
+            return;
+          }
+        } catch (err) {
+          console.log("No valid refresh token cookie found");
+          // Không log error vì đây là trường hợp bình thường khi chưa login
         }
       } catch (error) {
         console.error("Auth initialization error:", error);

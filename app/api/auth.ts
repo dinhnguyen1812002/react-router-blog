@@ -43,20 +43,16 @@ export interface UpdateProfileRequest {
 export const authApi = {
   // Login user
   async login(credentials: LoginRequest): Promise<LoginResponse> {
-    const response = await axiosInstance.post("/auth/login", credentials);
+    const response = await axiosInstance.post("/auth/login", credentials, {
+      withCredentials: true, // Để nhận refresh token cookie
+    });
 
-    const { user, token, refreshToken } = response.data;
+    const { user, token, accessToken } = response.data;
+    const finalToken = accessToken || token;
 
     // Save user + access token vào store
-    useAuthStore.getState().login(user, token);
+    useAuthStore.getState().login(user, finalToken);
 
-    // Lưu refresh token vào sessionStorage (tạm thời cho đến khi backend set cookie)
-    if (refreshToken) {
-      sessionStorage.setItem('refreshToken', refreshToken);
-      console.log("✅ Refresh token saved to sessionStorage");
-    }
-
-    // console.log(response.data)
     return response.data;
   },
 
@@ -92,11 +88,11 @@ export const authApi = {
   async logout(): Promise<void> {
     try {
       await axiosInstance.post("/auth/logout", {}, { withCredentials: true });
+      console.log("✅ Logout successful, refresh token cookie cleared by server");
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
-      // Xoá refresh token từ sessionStorage
-      sessionStorage.removeItem('refreshToken');
+      // Chỉ cần clear Zustand store, cookie sẽ được server xử lý
       useAuthStore.getState().logout();
     }
   },
@@ -131,20 +127,20 @@ export const authApi = {
   refreshToken: async () => {
     try {
     
-      // Get current token if available (some backends require it)
-      const { token } = useAuthStore.getState();
-
+      
       const response = await axiosInstance.post(
         "/auth/refresh-token",
         {},
         {
-          withCredentials: true,
-          // If backend requires access token for refresh, include it
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          withCredentials: true, // Gửi refresh token cookie
         }
       );
 
-      const { accessToken, refreshToken } = response.data || {};
+    
+      // Backend mới trả về: { accessToken, refreshToken } trong response.data
+      const responseData = response.data;
+      const accessToken = responseData.accessToken || responseData.token;
+      const refreshToken = responseData.refreshToken;
 
       if (!accessToken) {
         throw new Error("No new access token returned from server");
@@ -153,11 +149,12 @@ export const authApi = {
   
       return { accessToken, refreshToken };
     } catch (error: any) {
-      console.error("❌ Refresh token request failed:", {
+      console.error("Refresh token request failed:", {
         status: error.response?.status,
+        statusText: error.response?.statusText,
         message: error.response?.data?.message || error.message,
         url: error.config?.url,
-        headers: error.config?.headers,
+        cookies: document.cookie,
       });
       throw error;
     }

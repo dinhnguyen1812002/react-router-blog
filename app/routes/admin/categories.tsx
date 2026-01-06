@@ -167,7 +167,7 @@ export default function AdminCategories() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-black rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Tổng danh mục</p>
@@ -179,7 +179,7 @@ export default function AdminCategories() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-black rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Kết quả tìm kiếm</p>
@@ -191,7 +191,7 @@ export default function AdminCategories() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-black rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Đang tải</p>
@@ -205,7 +205,7 @@ export default function AdminCategories() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-black rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Trạng thái</p>
@@ -225,7 +225,7 @@ export default function AdminCategories() {
       </div>
 
       {/* Search and Filter */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
+      <div className="bg-white dark:bg-black rounded-lg shadow p-6">
         <div className="flex items-center space-x-4">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -246,7 +246,7 @@ export default function AdminCategories() {
       {/* Categories Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredCategories.map((category) => (
-          <div key={category.id} className="bg-white dark:bg-slate-800 rounded-lg shadow-md hover:shadow-lg transition-shadow p-6">
+          <div key={category.id} className="bg-white dark:bg-black rounded-lg shadow-md hover:shadow-lg transition-shadow p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-3">
                 <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-full">

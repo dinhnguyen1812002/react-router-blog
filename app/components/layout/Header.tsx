@@ -9,11 +9,26 @@ import { Button } from "~/components/ui/button"
 import { Link } from "react-router"
 import { ThemeSwitch } from "../ui/ThemeToggle"
 import { useAuthStore } from "~/store/authStore"
+import { useAuth } from "~/hooks/useAuth"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/Avatar"
 import { NotificationCenter } from "../notification/NotificationCenter"
 
 
 import BoringAvatar from "boring-avatars";
+
+// Create a wrapper component for BoringAvatar to ensure proper hook usage
+const UserAvatar = ({ username }: { username: string }) => {
+  return (
+    <div className="w-8 h-8 rounded-full overflow-hidden">
+      <BoringAvatar 
+        name={username}
+        variant="beam"
+        size={32}
+        colors={['#FF5733', '#FFC300', '#DAF7A6']}
+      />
+    </div>
+  );
+};
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)
@@ -24,6 +39,12 @@ export function Header() {
 
 
   const { user } = useAuthStore()
+  const { logout } = useAuth()
+
+  const handleLogout = async () => {
+    await logout()
+    setIsUserDropdownOpen(false)
+  }
 
   useEffect(() => {
     const handleScroll = () => {
@@ -104,8 +125,11 @@ export function Header() {
               <Search className="w-5 h-5" />
             </Button>
 
-
-            <NotificationCenter />
+            {
+              user ? (
+                <NotificationCenter />
+              ) : null
+            }
 
             <ThemeSwitch />
 
@@ -136,11 +160,7 @@ export function Header() {
                         <AvatarFallback>{user.username?.[0]?.toUpperCase() || 'U'}</AvatarFallback>
                       </Avatar>
                     ) : (
-                      <BoringAvatar name={user.username}
-                        variant="beam"
-                        size={100}
-                        colors={['#FF5733', '#FFC300', '#DAF7A6']}
-                      />
+                      <UserAvatar username={user.username} />
                     )}
                   </Button>
 
@@ -165,10 +185,14 @@ export function Header() {
                             </Link>
                           )
                         })}
-                        <Link to="/logout" className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors">
+                        <button
+                          type="button"
+                          onClick={handleLogout}
+                          className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors w-full text-left"
+                        >
                           <LogOut className="w-4 h-4" />
                           Đăng xuất
-                        </Link>
+                        </button>
                       </div>
                     </div>
                   )}
