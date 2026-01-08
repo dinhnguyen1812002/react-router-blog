@@ -27,16 +27,8 @@ import {
 import { formatDateSimple, formatNumber } from "~/lib/utils";
 import { useAuthStore } from "~/store/authStore";
 
-// Import newsletter API functions
-import {
-  useGetNewsletterAnalytics,
-  useGetNewsletterCampaigns,
-  useCreateNewsletterCampaign,
-  useGetNewsletterTemplates,
-  useGetActiveSubscribersCount,
-  type NewsletterCampaign,
-  type CreateNewsletterCampaignRequest
-} from "~/api/newsletter";
+  // Import newsletter API functions
+
 
 export default function DashboardNewsletterPage() {
   const { user } = useAuthStore();
@@ -45,13 +37,10 @@ export default function DashboardNewsletterPage() {
   const queryClient = useQueryClient();
 
   // Fetch data
-  const { data: analyticsData, isLoading: analyticsLoading } = useGetNewsletterAnalytics();
-  const { data: campaignsData, isLoading: campaignsLoading } = useGetNewsletterCampaigns(0, 10);
-  const { data: templatesData, isLoading: templatesLoading } = useGetNewsletterTemplates(0, 10);
-  const { data: subscribersCount } = useGetActiveSubscribersCount();
+
 
   // Mutations
-  const createCampaignMutation = useCreateNewsletterCampaign();
+
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: BarChart3 },
@@ -93,7 +82,7 @@ export default function DashboardNewsletterPage() {
         </div>
 
         <div className="bg-white dark:bg-black rounded-lg p-6 shadow-sm">
-          <div className="flex items-center">
+          {/* <div className="flex items-center">
             <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
               <Send className="h-6 w-6 text-green-600 dark:text-green-400" />
             </div>
@@ -103,11 +92,11 @@ export default function DashboardNewsletterPage() {
                 {formatNumber(campaignsData?.content?.filter(c => c.status === 'sent').length || 0)}
               </p>
             </div>
-          </div>
+          </div> */}
         </div>
 
         <div className="bg-white dark:bg-black rounded-lg p-6 shadow-sm">
-          <div className="flex items-center">
+          {/* <div className="flex items-center">
             <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
               <Eye className="h-6 w-6 text-purple-600 dark:text-purple-400" />
             </div>
@@ -117,11 +106,11 @@ export default function DashboardNewsletterPage() {
                 {(analyticsData?.data?.averageOpenRate || 0).toFixed(1)}%
               </p>
             </div>
-          </div>
+          </div> */}
         </div>
 
         <div className="bg-white dark:bg-black rounded-lg p-6 shadow-sm">
-          <div className="flex items-center">
+          {/* <div className="flex items-center">
             <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
               <Target className="h-6 w-6 text-orange-600 dark:text-orange-400" />
             </div>
@@ -131,7 +120,7 @@ export default function DashboardNewsletterPage() {
                 {(analyticsData?.data?.averageClickRate || 0).toFixed(1)}%
               </p>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -144,7 +133,7 @@ export default function DashboardNewsletterPage() {
           </Button>
         </div>
         
-        {campaignsLoading ? (
+        {/* {campaignsLoading ? (
           <div className="flex items-center justify-center py-8">
             <Loader2 className="h-6 w-6 animate-spin" />
           </div>
@@ -187,7 +176,7 @@ export default function DashboardNewsletterPage() {
               </div>
             )}
           </div>
-        )}
+        )} */}
       </div>
 
       {/* Quick Tips */}

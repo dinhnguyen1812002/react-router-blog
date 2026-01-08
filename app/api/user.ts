@@ -39,7 +39,7 @@ export interface TopUser {
 
 export const userApi = {
   getProfile: async (username: string): Promise<UserProfileResponse> => {
-    const response = await apiClient.get(`/profile/${username}`);
+    const response = await apiClient.get(`/users/profile/${username}`);
     return response.data;
   },
 

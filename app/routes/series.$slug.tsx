@@ -42,7 +42,7 @@ export default function SeriesDetailPage() {
   }
 
   const series = seriesData.data;
-  const isOwner = user?.id === series.author.id;
+  const isOwner = user?.id === series.author;
 
   return (
     <div className="container mx-auto px-4 py-8">

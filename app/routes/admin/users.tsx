@@ -7,6 +7,7 @@ import type { PaginatedResponse } from "~/types";
 import UserAvatar from "~/components/ui/boring-avatar";
 import { Meta } from "react-router";
 import type { Route } from "./+types";
+import { resolveAvatarUrl } from "~/utils/image";
 
 
 const roleColors = {
@@ -81,6 +82,8 @@ export default function AdminUsers() {
     // Handle add user logic here
     setShowAddModal(false);
   };
+
+
 
   return (
     <div className="space-y-6">
@@ -184,7 +187,7 @@ export default function AdminUsers() {
                       <div className="flex-shrink-0 h-10 w-10">
                         <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
                           <UserAvatar 
-                          src={user.avatar }
+                          src={resolveAvatarUrl(user.avatar)}
                           name={user.username}
                           size={40}
                           variant="marble"

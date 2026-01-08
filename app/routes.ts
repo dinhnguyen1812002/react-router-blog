@@ -49,6 +49,7 @@ export default [
   // Admin routes
   route("admin", "routes/admin/_layout.tsx", [
     route("", "routes/admin/index.tsx"),
+    route("posts", "routes/admin/posts.tsx"),
     route("analytics", "routes/admin/analytics.tsx"),
     route("users", "routes/admin/users.tsx"),
     route("roles", "routes/admin/roles.tsx"),

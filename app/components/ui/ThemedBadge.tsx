@@ -136,7 +136,6 @@ export const StatusBadge = ({
       variant={config.variant}
       size="xs"
       dot
-      className={className}
-    />
+      className={className} children={undefined}    />
   );
 };

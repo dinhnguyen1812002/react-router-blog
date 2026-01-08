@@ -83,6 +83,10 @@ const data = {
       icon: Bot,
       items: [
         {
+          title: "Posts",
+          url: "/admin/posts",
+        },
+        {
           title: "Category",
           url: "/admin/categories",
         },

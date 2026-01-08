@@ -52,11 +52,10 @@ export default function ProfileSettingsPage() {
   } = useForm<ProfileForm>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      displayName: profileData?.data?.displayName || '',
-      bio: profileData?.data?.bio || '',
-      location: profileData?.data?.location || '',
-      websiteUrl: profileData?.data?.websiteUrl || '',
-      githubUrl: profileData?.data?.githubUrl || '',
+      displayName: profileData?.username || '',
+      bio: profileData?.bio || '',
+      websiteUrl: profileData?.website|| '',
+      githubUrl: profileData?.socialMediaLinks?.GITHUB || '',
     },
   });
 
@@ -158,9 +157,8 @@ export default function ProfileSettingsPage() {
               <form onSubmit={handleSubmitProfile(onSubmitProfile)} className="space-y-6">
                 {/* Avatar Upload Section */}
                 <AvatarUpload
-                  currentAvatarUrl={profileData?.data?.avatarUrl}
-                  fallbackText={user.username.charAt(0).toUpperCase()}
-                  onSuccess={(avatarUrl) => {
+                  currentAvatar={profileData?.avatar || null}
+                  onAvatarChange={(avatarUrl) => {
                     // Update the form data with new avatar URL
                     queryClient.invalidateQueries({ queryKey: ['user', 'profile'] });
                   }}

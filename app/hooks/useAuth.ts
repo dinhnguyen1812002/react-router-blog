@@ -148,6 +148,58 @@ export const useAuth = () => {
     }
   }, [clearAuthState, navigate]);
 
+  const forgotPassword = useCallback(
+    async (email: string) => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const response = await authApi.forgotPassword({ email });
+        
+        return { 
+          success: true, 
+          message: response.message || "Email đặt lại mật khẩu đã được gửi" 
+        };
+      } catch (error: any) {
+        const errorMessage =
+          error.response?.data?.message || 
+          error.message || 
+          "Có lỗi xảy ra khi gửi email đặt lại mật khẩu";
+        setError(errorMessage);
+        return { success: false, error: errorMessage };
+      } finally {
+        setLoading(false);
+      }
+    },
+    [setLoading, setError]
+  );
+
+  const resetPassword = useCallback(
+    async (token: string, newPassword: string) => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const response = await authApi.resetPassword({ token, newPassword });
+        
+        return { 
+          success: true, 
+          message: response.message || "Mật khẩu đã được đặt lại thành công" 
+        };
+      } catch (error: any) {
+        const errorMessage =
+          error.response?.data?.message || 
+          error.message || 
+          "Có lỗi xảy ra khi đặt lại mật khẩu";
+        setError(errorMessage);
+        return { success: false, error: errorMessage };
+      } finally {
+        setLoading(false);
+      }
+    },
+    [setLoading, setError]
+  );
+
   return {
     user,
     token,
@@ -157,6 +209,8 @@ export const useAuth = () => {
     login,
     register,
     logout,
+    forgotPassword,
+    resetPassword,
     clearError,
   };
 };
