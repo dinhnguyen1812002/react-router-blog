@@ -20,10 +20,9 @@ import {
   TooltipTrigger,
 } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
-import { ThemeToggle } from "../tiptap-templates/simple/theme-toggle";
-import { ThemeSwitch } from "../ui/ThemeToggle";
 
-import UserAvatar from "../ui/boring-avatar";
+import { AnimatedThemeToggler } from "../ui/animated-theme-toggler";
+
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/Avatar";
 
 
@@ -196,7 +195,7 @@ export function Sidebar({
           </div>
 
           <div className="flex items-center gap-2">
-            <ThemeSwitch />
+            <AnimatedThemeToggler />
             <span className="text-sm text-muted-foreground dark:text-white  ">
               {user?.username}
             </span>

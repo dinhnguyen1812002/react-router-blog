@@ -19,6 +19,7 @@ import theme from "./styles/theme.css?url";
 
 import LoadingSpinner from "./components/Loading";
 import NotFound from "./components/error/NotFound";
+import { ScrollProgress } from "./components/ui/scroll-progress";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -71,13 +72,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="bg-dark dark:bg-gray-900">
+        <ScrollProgress />
         <QueryClientProvider client={queryClient}>
           <WebSocketProvider>
             <Toaster
               position="top-right"
               theme={theme as any}
             />
-            <ThemeInitializer />
+        
+          
             {children}
           </WebSocketProvider>
         </QueryClientProvider>

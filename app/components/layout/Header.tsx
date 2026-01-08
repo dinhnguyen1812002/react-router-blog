@@ -7,7 +7,7 @@ import {
 } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { Link } from "react-router"
-import { ThemeSwitch } from "../ui/ThemeToggle"
+
 import { useAuthStore } from "~/store/authStore"
 import { useAuth } from "~/hooks/useAuth"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/Avatar"
@@ -15,6 +15,8 @@ import { NotificationCenter } from "../notification/NotificationCenter"
 
 
 import BoringAvatar from "boring-avatars";
+import { AnimatedThemeToggler } from "../ui/animated-theme-toggler"
+import { ScrollProgress } from "../ui/scroll-progress"
 
 // Create a wrapper component for BoringAvatar to ensure proper hook usage
 const UserAvatar = ({ username }: { username: string }) => {
@@ -35,7 +37,7 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false)
   const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] = useState(false)
-  const [isDarkMode, setIsDarkMode] = useState(false)
+
 
 
   const { user } = useAuthStore()
@@ -53,11 +55,6 @@ export function Header() {
 
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
-
-  useEffect(() => {
-    const isDark = document.documentElement.classList.contains("dark")
-    setIsDarkMode(isDark)
   }, [])
 
 
@@ -79,11 +76,13 @@ export function Header() {
 
 
   return (
-    <header
-      className={`sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300 ${isScrolled ? "shadow-md" : ""
-        }`}
-    >
-      <nav className="mx-auto container px-4 sm:px-6 lg:px-8">
+    <>
+      <header
+        className={`sticky top-0 z-50 w-full border-b border-border
+           bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 
+           transition-all duration-300`}
+      >
+        <nav className="mx-auto container px-4 sm:px-6 lg:px-8">
         <div
           className={`flex items-center justify-between transition-all duration-300 ${isScrolled ? "h-14" : "h-16"}`}
         >
@@ -131,7 +130,7 @@ export function Header() {
               ) : null
             }
 
-            <ThemeSwitch />
+            <AnimatedThemeToggler />
 
             {user ? (
               <>
@@ -259,5 +258,7 @@ export function Header() {
         )}
       </nav>
     </header>
+    <ScrollProgress className={isScrolled ? "top-[57px]" : "top-[65px]"} />
+    </>
   )
 }

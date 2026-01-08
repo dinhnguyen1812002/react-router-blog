@@ -9,11 +9,10 @@ import {  formatDateSimple, formatNumber } from "~/lib/utils";
 import { CommentSection } from "~/components/comment/CommentSection";
 import { PostActions } from "~/components/post/PostActions";
 import ReadingProgressBar, { calculateReadingTime } from "~/components/post/ReadingProgressBar";
-import TableOfContents from "~/components/post/TableOfContents";
-import EnhancedPostCard from "~/components/post/EnhancedPostCard";
+
 import { LikeButton } from "~/components/post/LikeButton";
 import { BookmarkButton } from "~/components/post/BookmarkButton";
-import { RatingComponent } from "~/components/post/RatingComponent";
+
 import { useAuthStore } from "~/store/authStore";
 import { PostSEO } from "~/components/post/PostSEO";
 import { PostDetailSkeleton } from "~/components/skeleton/PostDetailSkeleton";
@@ -185,14 +184,14 @@ export default function PostDetailPage() {
       <PostSEO post={post} baseUrl={typeof window !== "undefined" ? window.location.origin : "http://localhost:5173"} />
 
       {/* Reading Progress Bar */}
-      <ReadingProgressBar
-        // targetRef={contentRef}
+      {/* <ReadingProgressBar
+     
         showBackToTop={true}
         showReadingTime={true}
         showScrollPercentage={true}
         estimatedReadingTime={readingTime}
         position="top"
-      />
+      /> */}
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="max-w-4xl">
