@@ -1,8 +1,8 @@
 import { FileText, Bookmark, MessageCircle } from 'lucide-react';
-import type { ProfileUser } from '~/types';
+import type { ProfileUser, UserProfileResponse } from '~/types';
 
 interface ProfileStatsProps {
-  user: ProfileUser;
+  user: UserProfileResponse;
   className?: string;
 }
 

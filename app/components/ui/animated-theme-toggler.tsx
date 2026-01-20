@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef } from "react"
 import { Moon, Sun } from "lucide-react"
 import { flushSync } from "react-dom"
 
 import { cn } from "~/lib/utils"
+import { useThemeStore } from "~/store/themeStore"
 
 interface AnimatedThemeTogglerProps extends React.ComponentPropsWithoutRef<"button"> {
   duration?: number
@@ -13,34 +14,41 @@ export const AnimatedThemeToggler = ({
   duration = 400,
   ...props
 }: AnimatedThemeTogglerProps) => {
-  const [isDark, setIsDark] = useState(false)
+  const { theme, setTheme } = useThemeStore()
+  const isDark = theme === "dark"
   const buttonRef = useRef<HTMLButtonElement>(null)
 
+  // Sync theme with DOM on mount and when store changes
   useEffect(() => {
-    const updateTheme = () => {
-      setIsDark(document.documentElement.classList.contains("dark"))
+    if (isDark) {
+      document.documentElement.classList.add("dark")
+    } else {
+      document.documentElement.classList.remove("dark")
     }
-
-    updateTheme()
-
-    const observer = new MutationObserver(updateTheme)
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    })
-
-    return () => observer.disconnect()
-  }, [])
+    localStorage.setItem("theme", theme)
+  }, [theme, isDark])
 
   const toggleTheme = useCallback(async () => {
     if (!buttonRef.current) return
 
+    const newTheme = isDark ? "light" : "dark"
+
+    // Check if View Transition API is supported
+    if (!document.startViewTransition) {
+      // Fallback for browsers without View Transition API
+      flushSync(() => {
+        setTheme(newTheme)
+        document.documentElement.classList.toggle("dark")
+        localStorage.setItem("theme", newTheme)
+      })
+      return
+    }
+
     await document.startViewTransition(() => {
       flushSync(() => {
-        const newTheme = !isDark
-        setIsDark(newTheme)
+        setTheme(newTheme)
         document.documentElement.classList.toggle("dark")
-        localStorage.setItem("theme", newTheme ? "dark" : "light")
+        localStorage.setItem("theme", newTheme)
       })
     }).ready
 
@@ -66,16 +74,17 @@ export const AnimatedThemeToggler = ({
         pseudoElement: "::view-transition-new(root)",
       }
     )
-  }, [isDark, duration])
+  }, [isDark, duration, setTheme])
 
   return (
     <button
       ref={buttonRef}
       onClick={toggleTheme}
       className={cn(className)}
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       {...props}
     >
-      {isDark ? <Sun /> : <Moon />}
+      {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
       <span className="sr-only">Toggle theme</span>
     </button>
   )

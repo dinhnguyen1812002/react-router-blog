@@ -7,10 +7,12 @@ import type {
   ProfileUser,
   UserProfileResponse,
 } from "~/types";
+import type { UserProfile } from "~/types/profile";
 
-interface UserProfile {
+interface UpDateUserProfile {
   id: string;
   username: string;
+  slug: string;
   email: string;
   displayName?: string;
   bio?: string;
@@ -38,14 +40,14 @@ export interface TopUser {
 }
 
 export const userApi = {
-  getProfile: async (username: string): Promise<UserProfileResponse> => {
-    const response = await apiClient.get(`/users/profile/${username}`);
+  getProfile: async (slug: string): Promise<UserProfile> => {
+    const response = await apiClient.get(`/users/profile/${slug}`);
     return response.data;
   },
 
   updateProfile: async (
-    profileData: Partial<UserProfile>,
-  ): Promise<ApiResponse<UserProfile>> => {
+    profileData: Partial<UpDateUserProfile>,
+  ): Promise<ApiResponse<UpDateUserProfile>> => {
     const response = await apiClient.put("/user/profile", profileData);
     return response.data;
   },

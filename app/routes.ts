@@ -44,8 +44,8 @@ export default [
   route("memes/:slug", "routes/memes.$slug.tsx"),
 
   // Public profile route
-  route("profile/:username", "routes/profile.$username.tsx"),
-
+  // route("profile/:username", "routes/profile.$username.tsx"),
+  route("profile/:slug", "routes/profile/UserProfile.tsx"),
   // Admin routes
   route("admin", "routes/admin/_layout.tsx", [
     route("", "routes/admin/index.tsx"),

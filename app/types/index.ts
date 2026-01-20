@@ -8,6 +8,7 @@ export interface User {
   id: string;
   username: string;
   email: string;
+  slug: string;
   roles: string[];
   avatar?: string;
   socialMediaLinks: socialMediaLinks[];
@@ -17,6 +18,7 @@ export interface LoginResponse {
   id: string;
   username: string;
   email: string;
+  slug: string;
   avatar?: string;
   roles: string[];
   accessToken: string;
@@ -118,6 +120,7 @@ export interface ProfileUser {
   id: string;
   username: string;
   email: string;
+  slug: string;
   avatar: string;
   roles: string[];
   bio?: string;
@@ -166,7 +169,9 @@ export interface UserProfileResponse {
   id: string;
   username: string;
   email: string;
+  slug: string;
   avatar?: string;
+  website?: string;
   roles: string[];
   socialMediaLinks?: SocialMediaLinks;
   postsCount: number;
@@ -174,7 +179,7 @@ export interface UserProfileResponse {
   commentsCount: number;
   customProfileMarkdown?: string;
   bio?: string;
-  website?: string;
+
   customInformation?: string;
 }
 

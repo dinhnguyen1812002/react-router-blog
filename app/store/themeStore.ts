@@ -44,7 +44,7 @@ export const useThemeStore = create<ThemeState>()(
       },
     }),
     {
-      name: 'theme-storage',
+      name: 'theme-store',
       onRehydrateStorage: () => (state) => {
         if (state) {
           const actualTheme = resolveTheme(state.theme);

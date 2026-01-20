@@ -1,5 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useEffect, useState, useCallback, useMemo } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { toast, useSonner } from "sonner";
 import { profileApi } from "~/api/profile";
 import { AvatarUpload } from "~/components/profile/AvatarUpload";
@@ -10,6 +13,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/com
 import { Input } from "~/components/ui/Input";
 import { Label } from "~/components/ui/label";
 import { Textarea } from "~/components/ui/textarea";
+import type { UpdateProfileRequest, AvatarUploadResponse } from "~/types";
+import { resolveAvatarUrl } from "~/utils/image";
 
 
 interface ProfileData {
@@ -28,6 +33,7 @@ interface ProfileData {
 const EditProfile = () => {
   const { toasts } = useSonner();
   const [isSaving, setIsSaving] = useState(false);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
   const [formData, setFormData] = useState<ProfileData>({
     username: "",
     email: "",
@@ -43,26 +49,26 @@ const EditProfile = () => {
 
   const [errors, setErrors] = useState<Partial<Record<keyof ProfileData, string>>>({});
 
-  const validateUsername = (username: string): string | null => {
+  // Memoize validation functions
+  const validateUsername = useCallback((username: string): string | null => {
     if (!username) return "Username is required";
     if (username.length > 30) return "Username must be 30 characters or less";
-    if (!/^[a-zA-Z0-9_]+$/.test(username)) return "Username can only contain letters, numbers, and underscores";
     return null;
-  };
+  }, []);
 
-  const validateEmail = (email: string): string | null => {
+  const validateEmail = useCallback((email: string): string | null => {
     if (!email) return "Email is required";
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Please enter a valid email";
     return null;
-  };
+  }, []);
 
-  const validateBio = (bio: string): string | null => {
+  const validateBio = useCallback((bio: string): string | null => {
     if (!bio) return "Bio is required";
     if (bio.length > 160) return "Bio must be 160 characters or less";
     return null;
-  };
+  }, []);
 
-  const validateUrl = (url: string): string | null => {
+  const validateUrl = useCallback((url: string): string | null => {
     if (!url) return null; // Optional field
     try {
       new URL(url.startsWith("http") ? url : `https://${url}`);
@@ -70,9 +76,9 @@ const EditProfile = () => {
     } catch {
       return "Please enter a valid URL";
     }
-  };
+  }, []);
 
-  const handleInputChange = (field: keyof ProfileData, value: string) => {
+  const handleInputChange = useCallback((field: keyof ProfileData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     
     // Clear error when user starts typing
@@ -90,72 +96,104 @@ const EditProfile = () => {
     if (error) {
       setErrors(prev => ({ ...prev, [field]: error }));
     }
-  };
+  }, [errors, validateUsername, validateEmail, validateBio, validateUrl]);
 
-  const handleSave = async () => {
-    // Validate all required fields
-    const newErrors: Partial<Record<keyof ProfileData, string>> = {};
-    
-    const usernameError = validateUsername(formData.username);
-    if (usernameError) newErrors.username = usernameError;
-    
-    const emailError = validateEmail(formData.email);
-    if (emailError) newErrors.email = emailError;
-    
-    const bioError = validateBio(formData.bio);
-    if (bioError) newErrors.bio = bioError;
+  const handleAvatarChange = useCallback((avatar: string | null) => {
+    setFormData(prev => ({ ...prev, avatar }));
+  }, []);
 
-    const websiteError = validateUrl(formData.website);
-    if (websiteError) newErrors.website = websiteError;
+  const handleSocialChange = useCallback((field: string, value: string) => {
+    handleInputChange(field as keyof ProfileData, value);
+  }, [handleInputChange]);
 
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      toast("Please fill in all required fields", {
-        description: "Please fill in all required fields.",
-      });
-      return;
-    }
+const handleSave = useCallback(async () => {
+  // Validate all required fields
+  const newErrors: Partial<Record<keyof ProfileData, string>> = {};
+  
+  const usernameError = validateUsername(formData.username);
+  if (usernameError) newErrors.username = usernameError;
+  
+  const emailError = validateEmail(formData.email);
+  if (emailError) newErrors.email = emailError;
+  
+  const bioError = validateBio(formData.bio);
+  if (bioError) newErrors.bio = bioError;
 
-    setIsSaving(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsSaving(false);
-      toast("Changes saved successfully", {
-        description: "Your changes have been saved successfully.",
-      });
-    }, 1500);
-  };
+  const websiteError = validateUrl(formData.website);
+  if (websiteError) newErrors.website = websiteError;
 
-  const handleCancel = () => {
-    // Reset form or navigate away
+  if (Object.keys(newErrors).length > 0) {
+    setErrors(newErrors);
+    toast("Please fill in all required fields", {
+      description: "Please fill in all required fields.",
+    });
+    return;
+  }
+
+  setIsSaving(true);
+  
+  try {
+    await profileApi.patchProfile({
+      username: formData.username,
+      email: formData.email,
+      bio: formData.bio,
+      avatar: formData.avatar || undefined,
+      website: formData.website,
+      customInformation: formData.customBio, 
+      socialMediaLinks: {
+        GITHUB: formData.github,      
+        FACEBOOK: formData.facebook,
+        INSTAGRAM: formData.instagram, 
+        LINKEDIN: formData.linkedin, 
+      },
+    });
+
+    toast("Profile updated successfully", {
+      description: "Your profile has been updated.",
+    });
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    toast("Error updating profile", {
+      description: "There was an error updating your profile. Please try again.",
+    });
+  } finally {
+    setIsSaving(false);
+  }
+}, [formData, validateUsername, validateEmail, validateBio, validateUrl]);
+
+  const handleCancel = useCallback(() => {
     toast("Changes cancelled", {
       description: "Your changes have been cancelled.",
     });
-  };
+  }, []);
 
-  const {data: profileData} = useQuery({
+  const { data: profileData, isLoading } = useQuery({
     queryKey: ['profile'],
     queryFn: () => profileApi.getCurrentProfile(),
+    staleTime: 10 * 60 * 1000, // 10 minutes
+    gcTime: 15 * 60 * 1000, // 15 minutes (formerly cacheTime)
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
+
 useEffect(() => {
-  if (profileData) {
+  if (profileData && !isDataLoaded) {
     setFormData({
       username: profileData.username || '',
       email: profileData.email || '',
       bio: profileData.bio || '',
       avatar: profileData.avatar || null,
-      website: profileData.socialMediaLinks?.website || '',
-      github: profileData.socialMediaLinks?.github || '',
-      facebook: profileData.socialMediaLinks?.facebook || '',
-      instagram: profileData.socialMediaLinks?.instagram || '',
-      linkedin: profileData.socialMediaLinks?.linkedin || '',
+      website: profileData.website || '',
+      github: profileData.socialMediaLinks?.GITHUB || '',
+      facebook: profileData.socialMediaLinks?.FACEBOOK || '',
+      instagram: profileData.socialMediaLinks?.INSTAGRAM || '',
+      linkedin: profileData.socialMediaLinks?.LINKEDIN || '',
       customBio: profileData.customProfileMarkdown || '',
     });
+    setIsDataLoaded(true);
   }
-}, [profileData]);
-
+}, [profileData, isDataLoaded]);
 
 
   return (
@@ -166,6 +204,11 @@ useEffect(() => {
           <p className="text-muted-foreground">Update your profile information and settings</p>
         </div>
 
+        {isLoading ? (
+          <div className="flex items-center justify-center min-h-[400px]">
+            <p className="text-muted-foreground">Loading profile...</p>
+          </div>
+        ) : (
         <div className="space-y-6">
           {/* Avatar Section */}
           <Card className="shadow-[var(--shadow-medium)] transition-shadow hover:shadow-[var(--shadow-strong)]">
@@ -175,8 +218,8 @@ useEffect(() => {
             </CardHeader>
             <CardContent>
               <AvatarUpload
-                currentAvatar={formData.avatar}
-                onAvatarChange={(avatar) => setFormData(prev => ({ ...prev, avatar }))}
+                currentAvatar={formData.avatar || undefined}
+                onAvatarChange={handleAvatarChange}
               />
             </CardContent>
           </Card>
@@ -275,7 +318,7 @@ useEffect(() => {
                 facebook={formData.facebook}
                 instagram={formData.instagram}
                 linkedin={formData.linkedin}
-                onChange={(field, value) => handleInputChange(field as keyof ProfileData, value)}
+                onChange={handleSocialChange}
               />
             </CardContent>
           </Card>
@@ -306,12 +349,13 @@ useEffect(() => {
             <Button
               onClick={handleSave}
               disabled={isSaving}
-              className="sm:order-2 bg-gradient-to-r from-primary to-primary-hover"
+              variant={'default'}
             >
               {isSaving ? "Saving..." : "Save Changes"}
             </Button>
           </div>
         </div>
+        )}
       </div>
     </div>
   );

@@ -63,7 +63,8 @@ export const Footer = () => {
                 <li><a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">Cookies</a></li>
               </ul>
             </div>
-          </div>
+          </div>            
+
           
           <div className="pt-10 border-t border-slate-200 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 dark:text-slate-400 text-sm">
             <p>© {year} Inkwell Inc. All rights reserved.</p>

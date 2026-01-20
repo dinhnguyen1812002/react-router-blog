@@ -8,4 +8,11 @@ export default defineConfig({
   define: {
     global: 'globalThis',
   },
+
+  optimizeDeps: {
+    include: ['@uiw/react-markdown-preview'],
+  },
+  ssr: {
+    noExternal: ['@uiw/react-markdown-preview'],
+  },
 });

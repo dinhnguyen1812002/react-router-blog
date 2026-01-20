@@ -68,10 +68,9 @@ export function Header() {
 
 
   const userMenuItems = [
-    { label: "Profile", icon: User, href: `/profile/${user?.username}` },
+    { label: "Profile", icon: User, href: `/profile/${user?.slug}` },
     { label: "Dashboard", icon: PanelsLeftBottom, href: "/dashboard" },
-    { label: "Admin", icon: Settings, href: "/admin" },
-
+    ...(user?.roles?.includes('ROLE_ADMIN') ? [{ label: "Admin", icon: Settings, href: "/admin" }] : []),
   ]
 
 
@@ -180,7 +179,9 @@ export function Header() {
                               onClick={() => setIsUserDropdownOpen(false)}
                             >
                               <Icon className="w-4 h-4" />
+                            
                               {item.label}
+
                             </Link>
                           )
                         })}

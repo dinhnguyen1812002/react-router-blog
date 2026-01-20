@@ -1,10 +1,12 @@
 import { Edit3, Settings, Share2 } from 'lucide-react';
 import Avatar from "boring-avatars";
 import { Link } from "react-router";
-import type { ProfileUser } from '~/types';
+import type { ProfileUser, UserProfileResponse } from '~/types';
+import { resolveAvatarUrl, resolveImageUrl } from '~/utils/image';
+import UserAvatar from '../ui/boring-avatar';
 
 interface ProfileHeaderProps {
-  user: ProfileUser;
+  user: UserProfileResponse;
   isOwnProfile?: boolean;
   onEditClick?: () => void;
   showEditButton?: boolean;
@@ -38,12 +40,13 @@ export function ProfileHeader({
           {/* Avatar */}
           <div className="relative">
             <div className="w-32 h-32 rounded-full border-4 border-white dark:border-gray-800 shadow-lg flex items-center justify-center">
-              <Avatar 
-                name={user.username} 
-                variant="geometric" 
-                size={128} 
-                colors={['#FF5733', '#FFC300', '#DAF7A6']} 
-              />
+            <UserAvatar 
+            src={resolveAvatarUrl(user.avatar)}
+            alt={user.username}
+            size={128}
+            
+            
+            /> 
             </div>
             {isOwnProfile && showEditButton && (
               <button 
@@ -84,9 +87,9 @@ export function ProfileHeader({
                   Edit Profile
                 </Link>
                 <Link 
-                  to={`/profile/${user.id}`}
+                  to={`/profile/${user.slug}`}
                   className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-6 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                >
+                > 
                   View Public Profile
                 </Link>
               </>

@@ -50,6 +50,7 @@ export const authApi = {
     const { user, token, accessToken } = response.data;
     const finalToken = accessToken || token;
 
+   
     // Save user + access token vào store
     useAuthStore.getState().login(user, finalToken);
 
@@ -88,7 +89,7 @@ export const authApi = {
   async logout(): Promise<void> {
     try {
       await axiosInstance.post("/auth/logout", {}, { withCredentials: true });
-      console.log("✅ Logout successful, refresh token cookie cleared by server");
+      console.log(" Logout successful, refresh token cookie cleared by server");
     } catch (error) {
       console.error("Logout error:", error);
     } finally {

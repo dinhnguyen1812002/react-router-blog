@@ -76,20 +76,11 @@ export const useAuthStore = create<AuthStore, [["zustand/persist", { user: User 
       },
 
       checkTokenValidity: () => {
-        const { token, user } = get();
-
-        // When no token is available (e.g., after refresh or on initial load),
-        // defer to user state and let the initialization hook decide what to do.
-        if (!token) {
-          return !!user;
-        }
-
-        if (isTokenExpired(token)) {
-          console.log("Token expired");
-          return false;
-        }
-        return true;
+        const { token } = get();
+        if (!token) return false;
+        return !isTokenExpired(token);
       },
+
 
       refreshAccessToken: async (): Promise<string | null> => {
         if (refreshInFlight) return refreshInFlight;
@@ -128,7 +119,7 @@ export const useAuthStore = create<AuthStore, [["zustand/persist", { user: User 
     {
       name: "auth-store",
       partialize: (state) => ({
-        user: state.user,
+        user: state.user,  // user object already contains slug
         isAuthenticated: state.isAuthenticated,
       }),
       version: 1,

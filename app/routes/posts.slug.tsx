@@ -437,9 +437,7 @@ export default function PostDetailPage() {
                 className="prose prose-lg max-w-none dark:prose-invert prose-headings:scroll-mt-20 dark:text-white"
                 enableLazyImages={true}
                 enableProgressiveText={false}
-                onLoadComplete={() => {
-                  console.log("Post content loaded successfully");
-                }}
+                
               />
             </article>
             <div className="bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-lg p-6 mb-8">

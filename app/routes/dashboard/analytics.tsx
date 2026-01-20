@@ -227,13 +227,13 @@ export default function AnalyticsPage() {
                     <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                       {stat.name}
                     </p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 group-hover:scale-105 transition-transform duration-200">
+                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100 group-hover:scale-105 transition-transform duration-200">
                       {isLoading ? (
                         <div className="h-8 w-20 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
                       ) : (
                         stat.value
                       )}
-                    </p>
+                    </div>
                     <p
                       className={`text-sm flex items-center mt-1 ${
                         stat.changeType === "increase"

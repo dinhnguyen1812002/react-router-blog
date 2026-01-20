@@ -241,8 +241,9 @@ export default function Profile() {
                 Edit Profile
               </Link>
               <button className="bg-gray-100 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-200 transition-colors">
-                View Public Profile
+                View Public Profile 
               </button>
+              <Link to='/pro'></Link>
             </div>
           </div>
         </div>

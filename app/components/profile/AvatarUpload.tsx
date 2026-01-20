@@ -4,15 +4,16 @@ import { Upload, X, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { profileApi } from "~/api/profile";
+import { resolveAvatarUrl } from "~/utils/image";
 
 interface AvatarUploadProps {
-  currentAvatar: string | null;
+  currentAvatar: string |  undefined;
   onAvatarChange: (avatar: string | null) => void;
 }
 
 export const AvatarUpload = ({ currentAvatar, onAvatarChange }: AvatarUploadProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [preview, setPreview] = useState<string | null>(currentAvatar);
+  const [preview, setPreview] = useState<string | undefined>(currentAvatar);
   const [uploading, setUploading] = useState(false);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,7 +63,7 @@ export const AvatarUpload = ({ currentAvatar, onAvatarChange }: AvatarUploadProp
   };
 
   const handleRemove = () => {
-    setPreview(null);
+    setPreview(undefined);
     onAvatarChange(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -73,11 +74,17 @@ export const AvatarUpload = ({ currentAvatar, onAvatarChange }: AvatarUploadProp
     <div className="flex flex-col sm:flex-row items-center gap-6">
       <div className="relative">
         <Avatar className="h-32 w-32 border-4 border-border shadow-[var(--shadow-medium)]">
-          <AvatarImage src={preview || undefined} alt="Profile" className="object-cover" />
+          <AvatarImage src={resolveAvatarUrl(preview || undefined|| currentAvatar)} alt="Profile" className="object-cover" />
           <AvatarFallback className="bg-muted text-4xl">
             {preview ? "" : "U"}
           </AvatarFallback>
         </Avatar>
+        
+        {/* <img
+          src={preview }
+          alt="Profile"
+          className="h-32 w-32 rounded-full border-4 border-border object-cover shadow-[var(--shadow-medium)]"
+        /> */}
 
         {uploading && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full">
@@ -95,7 +102,7 @@ export const AvatarUpload = ({ currentAvatar, onAvatarChange }: AvatarUploadProp
           className="hidden"
           disabled={uploading}
         />
-
+       
         <Button
           variant="outline"
           onClick={() => fileInputRef.current?.click()}

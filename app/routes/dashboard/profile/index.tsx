@@ -8,22 +8,10 @@ import { ProfileStats } from '~/components/profile/ProfileStats';
 import { SocialLinks } from '~/components/profile/SocialLinks';
 import { MarkdownRenderer } from '~/components/profile/MarkdownRenderer';
 import type { ProfileUser } from '~/types';
+import { profileApi } from '~/api/profile';
 
-interface ApiResponse<T> {
-  data: T;
-  message?: string;
-  success: boolean;
-}
 
-// API service for profile data
-const apiService = {
-  profile: async (): Promise<ApiResponse<ProfileUser>> => {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    const response = await authApi.profile();
-    return response;
-  }
-};
+
 
 // Error component
 const ErrorMessage = ({ error, onRetry }: { error: Error; onRetry: () => void }) => (
@@ -49,18 +37,19 @@ export default function ProfileDisplayPage() {
     refetch
   } = useQuery({
     queryKey: ['profile'],
-    queryFn: apiService.profile,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    queryFn: profileApi.getCurrentProfile,
+
   });
 
   if (isLoading) return <ProfileSkeleton />;
   
   if (error) return <ErrorMessage error={error as Error} onRetry={refetch} />;
   
-  if (!response?.data) return <div>No profile data found</div>;
+  if (!response) return <div>No profile data found</div>;
 
-  const user = response.data;
+  const user = response;
 
+  console.log('Profile data:', response);
   return (
     <div className="space-y-6">
       {/* Header Section */}

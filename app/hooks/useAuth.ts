@@ -58,16 +58,18 @@ export const useAuth = () => {
         setError(null);
 
         const response = await authApi.login(credentials);
-        const { id, username, email, roles, avatar, token } = response;
+        const { id, username, email, slug, roles, avatar, token } = response;
 
         // Create user object from response data
         const usr = {
           id,
           username,
           email,
+          slug,
           roles,
           avatar,
           socialMediaLinks: [],
+          
         };
 
         // Update store - token stored in memory only
@@ -103,11 +105,12 @@ export const useAuth = () => {
         setError(null);
 
         const response: LoginResponse = await authApi.register(userData);
-        const { id, username, email, roles, avatar, token } = response;
+        const { id, username, email, slug, roles, avatar, token } = response;
         const user = {
           id,
           username,
           email,
+          slug,
           roles,
           avatar,
           socialMediaLinks: [],
