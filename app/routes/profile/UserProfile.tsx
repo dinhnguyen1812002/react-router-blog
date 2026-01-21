@@ -3,7 +3,7 @@ import { ProfileHeader } from "~/components/public/ProfileHeader";
 import { BlogPostCard } from "~/components/public/BlogPostCard";
 import { TabNavigation } from "~/components/public/TabNavigation";
 import { MainLayout } from "~/components/layout/MainLayout";
-import HeroSection from "~/components/layout/Hero";
+
 import { useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { userApi } from "~/api/user";

@@ -6,7 +6,7 @@ import { Input } from "~/components/ui/Input";
 import { SeriesList, SeriesModal, AddPostToSeriesModal } from "~/components/series";
 import { seriesApi } from "~/api/series";
 import { useAuthStore } from "~/store/authStore";
-import { Search, Plus } from "lucide-react";
+import { Search } from "lucide-react";
 import { toast } from "sonner";
 
 export default function DashboardSeriesPage() {

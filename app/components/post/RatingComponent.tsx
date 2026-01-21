@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { usePostActions } from '~/hooks/usePostActions';
 import { useAuthStore } from '~/store/authStore';
 import { Button } from '~/components/ui/button';
-import { Star, StarOff } from 'lucide-react';
+import { Star} from 'lucide-react';
 
 interface RatingComponentProps {
   postId: string;

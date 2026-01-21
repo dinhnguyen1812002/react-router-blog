@@ -22,27 +22,7 @@ export const checkBackendConnection = async () => {
   }
 };
 
-export const debugApiCall = async (method: string, url: string, data?: any) => {
-  console.log(`API Call: ${method} ${url}`, data ? { data } : '');
-  
-  try {
-    const response = await axiosInstance.request({
-      method,
-      url,
-      data,
-    });
-    console.log(`API Success: ${method} ${url}`, response.data);
-    return response;
-  } catch (error: any) {
-    console.error(`API Error: ${method} ${url}`, {
-      message: error.message,
-      status: error.response?.status,
-      statusText: error.response?.statusText,
-      data: error.response?.data,
-    });
-    throw error;
-  }
-};
+
 
 // Utility to normalize API responses
 export const normalizeApiResponse = <T>(response: any): { data: T; message: string; success: boolean } => {

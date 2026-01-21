@@ -10,11 +10,9 @@ import {
   User,
   Mail,
   Lock,
-  UserPlus,
   Eye,
   EyeOff,
   CheckCircle2,
-  ChevronsRight,
 } from "lucide-react";
 
 export function meta({}: Route.MetaArgs) {

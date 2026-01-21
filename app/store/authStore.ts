@@ -87,8 +87,9 @@ export const useAuthStore = create<AuthStore, [["zustand/persist", { user: User 
 
         refreshInFlight = (async () => {
           try {
-            const { accessToken } = await authApi.refreshToken();
-            if (!accessToken) throw new Error("No new access token returned");
+            const response = await authApi.refreshToken();
+            if (!response?.accessToken) throw new Error("No new access token returned");
+            const { accessToken } = response;
 
             set({
               token: accessToken,
@@ -97,7 +98,7 @@ export const useAuthStore = create<AuthStore, [["zustand/persist", { user: User 
 
             return accessToken;
           } catch (err) {
-            console.error("Refresh token failed:", err);
+           
             get().logout();
             return null;
           } finally {

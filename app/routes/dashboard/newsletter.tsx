@@ -1,45 +1,24 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {  useQueryClient } from "@tanstack/react-query";
 import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import { Badge } from "~/components/ui/badge";
-import { Alert, AlertDescription } from "~/components/ui/alert";
-import { Label } from "~/components/ui/label";
+
 import { 
   Mail, 
   Users, 
   Send, 
-  Calendar,
-  CheckCircle,
-  XCircle,
-  Loader2,
-  AlertCircle,
-  Star,
-  TrendingUp,
-  Eye,
-  Target,
+
   BarChart3,
-  Settings,
-  Plus,
-  Edit,
-  Trash2
+  Plus
 } from "lucide-react";
-import { formatDateSimple, formatNumber } from "~/lib/utils";
 import { useAuthStore } from "~/store/authStore";
 
-  // Import newsletter API functions
+
 
 
 export default function DashboardNewsletterPage() {
-  const { user } = useAuthStore();
+
   const [activeTab, setActiveTab] = useState<'overview' | 'campaigns' | 'templates'>('overview');
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const queryClient = useQueryClient();
-
-  // Fetch data
-
-
-  // Mutations
 
 
   const tabs = [

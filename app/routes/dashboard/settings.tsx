@@ -7,26 +7,18 @@ import { useAuthStore } from '~/store/authStore';
 import { authApi } from '~/api/auth';
 
 import {
-  Settings,
   Bell,
   Shield,
   Palette,
-  Globe,
   Download,
   Trash2,
   AlertTriangle,
   User,
-  Mail,
-  Camera,
   Save,
   Eye,
   EyeOff,
   Check,
-  X,
-  Moon,
-  Sun,
-  Monitor,
-  LogOut
+  X
 } from 'lucide-react';
 
 export default function SettingsPage() {

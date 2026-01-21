@@ -150,14 +150,7 @@ export const authApi = {
   
       return { accessToken, refreshToken };
     } catch (error: any) {
-      console.error("Refresh token request failed:", {
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        message: error.response?.data?.message || error.message,
-        url: error.config?.url,
-        cookies: document.cookie,
-      });
-      throw error;
+      return ;
     }
   },
 

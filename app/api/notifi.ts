@@ -1,3 +1,4 @@
+import type { AxiosError } from "axios";
 import { markIcons } from "~/components/tiptap-ui/mark-button";
 import axiosInstance from "~/config/axios";
 
@@ -15,10 +16,22 @@ export const notify = {
    * Get all notifications for the authenticated user
    * Backend endpoint: GET /api/v1/notifications
    */
-  getNotify: async (): Promise<Notification[]> => {
+getNotify: async (): Promise<Notification[]> => {
+  try {
     const response = await axiosInstance.get<Notification[]>("/notifications");
     return response.data;
-  },
+  } catch (error) {
+    const err = error as AxiosError;
+
+    if (err.response?.status === 403) {
+   
+      return []; // hoặc null nếu bạn muốn
+    }
+
+    // các lỗi khác vẫn throw
+    throw error;
+  }
+},
 
   /**
    * Mark a notification as read

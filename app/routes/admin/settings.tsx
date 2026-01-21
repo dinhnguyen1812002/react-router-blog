@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Save, Globe, Mail, Shield, Database, Palette, Bell, Users } from "lucide-react";
+import { Save, Globe, Mail, Shield, Database, Palette, Bell } from "lucide-react";
 
 export default function AdminSettings() {
   const [settings, setSettings] = useState({

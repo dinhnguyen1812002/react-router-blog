@@ -1,4 +1,4 @@
-import { Eye, MessageSquare, Heart, ThumbsUp, Share2 } from 'lucide-react';
+import { Eye, MessageSquare,  Share2 } from 'lucide-react';
 import { LikeButton } from './LikeButton';
 import { RatingComponent } from './RatingComponent';
 import type { Post } from '~/types';

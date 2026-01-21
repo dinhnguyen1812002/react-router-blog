@@ -1,4 +1,4 @@
-import { BarChart3, TrendingUp, Users, FileText, Eye, Heart } from "lucide-react";
+import { TrendingUp, Users, FileText, Eye, Heart, BarChart3 } from "lucide-react";
 
 const chartData = [
   { month: "Jan", users: 400, posts: 240, views: 2400 },

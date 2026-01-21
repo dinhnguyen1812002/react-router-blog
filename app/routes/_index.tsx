@@ -7,7 +7,7 @@ import { tagsApi } from "~/api/tags";
 import { Link } from "react-router";
 import { useAuthStore } from "~/store/authStore";
 import { Button } from "~/components/ui/button";
-import { Badge } from "~/components/ui/badge";
+
 import HeroSection from "~/components/layout/Hero";
 import NewLetter from "~/components/NewLetters";
 // import GlobalSearch from "~/components/search/GlobalSearch";
@@ -16,31 +16,19 @@ import {
   TrendingUp,
   Users,
   BookOpen,
-  Star,
   ArrowRight,
-  Calendar,
   Eye,
   Heart,
-  MessageCircle,
   Hash,
   Folder,
-  Award,
-  Zap,
-  Target,
-  Globe,
-  PenTool,
-  Coffee,
-  Lightbulb,
-  Rocket,
+
 } from "lucide-react";
 import type { Category, Tag } from "~/types";
 
 import { userApi } from "~/api/user";
-import Avatar from "boring-avatars";
-import UserAvatar from "~/components/ui/boring-avatar";
+
 import type { Route } from "../+types/root";
 import { formatNumber } from "~/lib/utils";
-import { resolveImageUrl } from "~/utils/image";
 
 export function meta({ }: Route.MetaArgs) {
   return [

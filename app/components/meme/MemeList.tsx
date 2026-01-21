@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { ur } from "zod/v4/locales";
 import { getMemes, type Meme, type MemeResponse } from "~/api/memes";
 import { MemeCard } from "./MemeCard";
 import { MemeCardClassic } from "./MemeCardClassic";

@@ -9,10 +9,10 @@ export interface CreateCommentRequest {
 export const commentsApi = {
   createComment: async (postId: string, data: CreateCommentRequest): Promise<CommentType> => {
     try {
-      console.log('🚀 Creating comment:', { postId, data });
+      console.log(' Creating comment:', { postId, data });
       const response = await apiClient.post(`/comments/posts/${postId}`, data);
 
-      console.log('📥 Raw API response:', {
+      console.log(' Raw API response:', {
         status: response.status,
         statusText: response.statusText,
         data: response.data
@@ -28,14 +28,14 @@ export const commentsApi = {
 
       // Validate that we have a proper comment object
       if (!commentData || !commentData.id) {
-        console.warn('⚠️ Invalid comment response format:', response.data);
+        console.warn('Invalid comment response format:', response.data);
         throw new Error('Invalid response format from server');
       }
 
-      console.log('✅ Processed comment data:', commentData);
+      console.log('Processed comment data:', commentData);
       return commentData;
     } catch (error) {
-      console.error('❌ Create comment API error:', {
+      console.error('Create comment API error:', {
         // message: error.message,
         // status: error.response?.status,
         // data: error.response?.data
