@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/Input";
+import { Input } from "~/components/ui/input";
 import {
   Dialog,
   DialogContent,
@@ -21,12 +21,12 @@ interface AddPostToSeriesModalProps {
   loading?: boolean;
 }
 
-export const AddPostToSeriesModal = ({ 
-  isOpen, 
-  onClose, 
-  series, 
+export const AddPostToSeriesModal = ({
+  isOpen,
+  onClose,
+  series,
   onAddPost,
-  loading = false 
+  loading = false
 }: AddPostToSeriesModalProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPosts, setSelectedPosts] = useState<string[]>([]);
@@ -35,7 +35,7 @@ export const AddPostToSeriesModal = ({
   // Get user's posts for selection
   const { data: userPosts, isLoading: isLoadingPosts } = useQuery({
     queryKey: ["user-posts", searchTerm],
-    queryFn: () => postsApi.getPosts(0, 50, { search: searchTerm }),
+    queryFn: () => postsApi.getPosts({ page: 0, size: 50, search: searchTerm }),
     enabled: isOpen,
   });
 
@@ -45,8 +45,8 @@ export const AddPostToSeriesModal = ({
   ) || [];
 
   const handlePostSelect = (postId: string) => {
-    setSelectedPosts(prev => 
-      prev.includes(postId) 
+    setSelectedPosts(prev =>
+      prev.includes(postId)
         ? prev.filter(id => id !== postId)
         : [...prev, postId]
     );
@@ -146,25 +146,23 @@ export const AddPostToSeriesModal = ({
             <div className="space-y-3">
               {availablePosts.map((post, index) => {
                 const isSelected = selectedPosts.includes(post.id);
-                
+
                 return (
                   <button
                     key={post.id}
                     onClick={() => handlePostSelect(post.id)}
-                    className={`group w-full text-left p-5 rounded-xl border-2 transition-all duration-200 ${
-                      isSelected
+                    className={`group w-full text-left p-5 rounded-xl border-2 transition-all duration-200 ${isSelected
                         ? "border-gray-900 dark:border-white bg-gray-50 dark:bg-black shadow-sm"
                         : "border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900/50"
-                    }`}
+                      }`}
                     style={{ animationDelay: `${index * 30}ms` }}
                   >
                     <div className="flex items-start gap-4">
                       {/* Custom Checkbox */}
-                      <div className={`relative w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all duration-200 ${
-                        isSelected 
-                          ? "border-gray-900 dark:border-white bg-gray-900 dark:bg-white scale-110" 
+                      <div className={`relative w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all duration-200 ${isSelected
+                          ? "border-gray-900 dark:border-white bg-gray-900 dark:bg-white scale-110"
                           : "border-gray-300 dark:border-gray-700 group-hover:border-gray-400 dark:group-hover:border-gray-600"
-                      }`}>
+                        }`}>
                         {isSelected && (
                           <Check className="w-3.5 h-3.5 text-white dark:text-black" strokeWidth={3} />
                         )}

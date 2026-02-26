@@ -10,13 +10,14 @@ import { Link } from "react-router"
 
 import { useAuthStore } from "~/store/authStore"
 import { useAuth } from "~/hooks/useAuth"
-import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/Avatar"
+import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 import { NotificationCenter } from "../notification/NotificationCenter"
 
 
 import BoringAvatar from "boring-avatars";
 import { AnimatedThemeToggler } from "../ui/animated-theme-toggler"
 import { ScrollProgress } from "../ui/scroll-progress"
+import { resolveAvatarUrl } from "~/utils/image"
 
 // Create a wrapper component for BoringAvatar to ensure proper hook usage
 const UserAvatar = ({ username }: { username: string }) => {
@@ -86,11 +87,14 @@ export function Header() {
           className={`flex items-center justify-between transition-all duration-300 ${isScrolled ? "h-14" : "h-16"}`}
         >
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 font-bold text-xl text-primary flex-shrink-0">
-           <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-xl">I</span>
-                </div>
-            <span className="hidden sm:inline">Inkwell</span>
+          <Link to="/" className="flex items-center gap-2 font-bold text-xl text-primary 
+          flex-shrink-0">
+           <div className="flex items-center space-x-2 cursor-pointer">
+            <div className="w-8 h-8 bg-black flex items-center justify-center">
+                <span className="text-white font-bold text-lg">I</span>
+            </div>
+            <span className="text-xl font-bold tracking-tight">InkWell</span>
+        </div>
           </Link>
 
           {/* Desktop Navigation */}
@@ -154,7 +158,7 @@ export function Header() {
                   >
                     {user.avatar ? (
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src={user.avatar} alt={user.username} />
+                        <AvatarImage src={ resolveAvatarUrl(user.avatar) } alt={user.username} />
                         <AvatarFallback>{user.username?.[0]?.toUpperCase() || 'U'}</AvatarFallback>
                       </Avatar>
                     ) : (

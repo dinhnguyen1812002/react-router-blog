@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Save, Globe, Mail, Shield, Database, Palette, Bell } from "lucide-react";
+import { Save, Globe, Mail, Shield, Database, Palette, Bell, Users } from "lucide-react";
 
 export default function AdminSettings() {
   const [settings, setSettings] = useState({
@@ -10,33 +10,33 @@ export default function AdminSettings() {
     adminEmail: "admin@myblog.com",
     timezone: "Asia/Ho_Chi_Minh",
     language: "vi",
-    
+
     // Content Settings
     postsPerPage: 10,
     allowComments: true,
     moderateComments: true,
     allowRegistration: true,
     defaultUserRole: "USER",
-    
+
     // Email Settings
     emailProvider: "smtp",
     smtpHost: "smtp.gmail.com",
     smtpPort: 587,
     smtpUsername: "",
     smtpPassword: "",
-    
+
     // Security Settings
     enableTwoFactor: false,
     sessionTimeout: 24,
     maxLoginAttempts: 5,
     passwordMinLength: 8,
-    
+
     // Appearance Settings
     theme: "light",
     primaryColor: "#3B82F6",
     logoUrl: "",
     faviconUrl: "",
-    
+
     // Notification Settings
     emailNotifications: true,
     newPostNotifications: true,
@@ -74,7 +74,7 @@ export default function AdminSettings() {
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Cài đặt hệ thống</h1>
           <p className="text-gray-600 dark:text-gray-400">Quản lý cấu hình và tùy chỉnh hệ thống</p>
         </div>
-        <button 
+        <button
           onClick={handleSave}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
         >

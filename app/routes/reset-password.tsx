@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { MainLayout } from '~/components/layout/MainLayout';
 import { useAuth } from '~/hooks/useAuth';
 
-import { Input } from '~/components/ui/Input';
+import { Input } from '~/components/ui/input';
 import { Card, CardContent, CardHeader } from '~/components/ui/Card';
 import { Button } from '~/components/ui/button';
 

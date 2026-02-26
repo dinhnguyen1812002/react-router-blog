@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/Input";
+import { Input } from "~/components/ui/input";
 import { SeriesList } from "~/components/series";
 import { seriesApi } from "~/api/series";
 import { Search, Plus } from "lucide-react";

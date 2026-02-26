@@ -10,19 +10,13 @@ import {
   Search,
   Plus,
   BookOpen,
-  Edit,
-  Trash2,
-  Calendar,
-  Eye,
-  MessageCircle,
-  Tag,
   ChevronRight,
-  Grid3x3,
+
   List,
 } from "lucide-react"
-import { formatDateSimple } from "~/lib/utils"
+
 import { authorApi } from "~/api/author"
-import { PostList } from "~/components/post/PostList"
+
 import { ListView } from "~/components/post/ListView"
 
 function useDebounce<T>(value: T, delay: number): T {
@@ -125,7 +119,7 @@ export default function MyPostsPage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 md:px-0 pb-12">
+      <div className="container mx-auto px-4 md:px-0 pb-12">
         <div className="mb-8">
           <div className="flex flex-col md:flex-row gap-4 md:items-center justify-between">
             <div className="relative max-w-2xl flex-1">
@@ -142,7 +136,7 @@ export default function MyPostsPage() {
               />
             </div>
             <div className="flex gap-2 bg-muted/50 p-1 rounded-lg w-fit">
-              <Button
+              {/* <Button
                 variant={viewMode === "grid" ? "default" : "ghost"}
                 size="sm"
                 onClick={() => setViewMode("grid")}
@@ -150,7 +144,7 @@ export default function MyPostsPage() {
               >
                 <Grid3x3 className="w-4 h-4" />
                 <span className="hidden sm:inline">Grid</span>
-              </Button>
+              </Button> */}
               <Button
                 variant={viewMode === "list" ? "default" : "ghost"}
                 size="sm"
@@ -185,12 +179,13 @@ export default function MyPostsPage() {
           </div>
         ) : posts.length > 0 ? (
           <>
-            {viewMode === "grid" ? (
+            {/* {viewMode === "grid" ? (
               <PostList posts={posts} />
+             
             ) : (
-              <ListView posts={posts} />
-            )}
-
+             
+            )} */}
+            <ListView posts={posts} />
             {!isLoading && posts.length > 0 && (
               <div className="flex justify-center items-center gap-2 mt-12 pt-8 border-t border-border">
                 <Button variant="outline" disabled={page === 0} onClick={() => setPage(page - 1)}>

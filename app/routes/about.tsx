@@ -1,8 +1,4 @@
-import { Button } from "~/components/ui/button";
-
-import { BookOpen, Users, Sparkles, TrendingUp, Heart, Shield, ArrowRight, Star, CheckCircle2, Twitter } from "lucide-react";
-import { Card, CardContent } from "~/components/ui/Card";
-import { Link } from "react-router";
+import { BookOpen, Users, Sparkles, TrendingUp, Heart, Shield, ArrowRight, Star, CheckCircle2, X } from "lucide-react";
 import { MainLayout } from "~/components/layout/MainLayout";
 import type { Route } from "../+types/root";
 import Section from "~/components/layout/Section";
@@ -18,88 +14,75 @@ import {
 export function meta({ }: Route.MetaArgs) {
   return [
     // Basic SEO Metadata
-    { title: "Blog App - Discover Inspiring Stories & Insights" },
+    { title: "Về chúng tôi - Inkwell | Nền tảng viết lách dành cho những tâm hồn sáng tạo" },
     {
       name: "description",
       content:
-        "Explore a vibrant community of writers sharing knowledge, tutorials, and insights. Discover trending articles, popular categories, and connect with creators on our blog platform.",
+        "Khám phá câu chuyện đằng sau Inkwell - nền tảng blog cao cấp được thiết kế cho những nhà văn nghiêm túc. Tham gia cộng đồng 500k+ tác giả đam mê chia sẻ kiến thức và sáng tạo nội dung chất lượng.",
     },
     {
       name: "keywords",
       content:
-        "blog, articles, tutorials, writing community, trending topics, categories, insights, knowledge sharing",
+        "về inkwell, nền tảng blog, viết lách, cộng đồng tác giả, xuất bản, chia sẻ kiến thức, blog cao cấp, trình soạn thảo, AI hỗ trợ viết, phân tích nội dung, tác giả việt nam",
     },
 
-    // Open Graph (OG) Metadata for Social Media (e.g., Facebook, LinkedIn)
-    { property: "og:title", content: "Blog App - Your Source for Inspiring Content" },
+    // Open Graph (OG) Metadata for Social Media
+    { property: "og:title", content: "Về chúng tôi - Inkwell | Crafting spaces for deep thought" },
     {
       property: "og:description",
       content:
-        "Join our blog platform to read, write, and connect with a global community of writers and readers. Explore trending articles and diverse topics.",
+        "Inkwell không chỉ là một nền tảng blog. Đây là hệ sinh thái cao cấp được thiết kế cho những nhà văn nghiêm túc, những người coi trọng sự tập trung, thẩm mỹ và quyền sở hữu thực sự nội dung của họ.",
     },
     { property: "og:type", content: "website" },
-    { property: "og:url", content: "https://your-blog-app.com" }, // Replace with your actual domain
-    { property: "og:image", content: "https://your-blog-app.com/og-image.jpg" }, // Replace with a relevant image URL
-    { property: "og:site_name", content: "Blog App" },
+    { property: "og:url", content: "https://inkwell.vn/about" },
+    { property: "og:image", content: "https://inkwell.vn/images/about-og-image.jpg" },
+    { property: "og:site_name", content: "Inkwell" },
+    { property: "og:locale", content: "vi_VN" },
 
     // Twitter Card Metadata
     { name: "twitter:card", content: "summary_large_image" },
-    { name: "twitter:title", content: "Blog App - Discover Inspiring Stories" },
+    { name: "twitter:title", content: "Về Inkwell - Nền tảng viết lách cho những tâm hồn sáng tạo" },
     {
       name: "twitter:description",
       content:
-        "Read and share inspiring articles on our blog platform. Join a community of writers and explore trending topics today!",
+        "Tìm hiểu về sứ mệnh và tầm nhìn của Inkwell - nơi dân chủ hóa việc xuất bản chất lượng cao và thúc đẩy kết nối con người thông qua những câu chuyện dài.",
     },
-    { name: "twitter:image", content: "https://your-blog-app.com/twitter-image.jpg" }, // Replace with a relevant image URL
-    { name: "twitter:site", content: "@YourBlogHandle" }, // Replace with your Twitter handle
+    { name: "twitter:image", content: "https://inkwell.vn/images/about-twitter-card.jpg" },
+    { name: "twitter:site", content: "@InkwellVN" },
+    { name: "twitter:creator", content: "@InkwellVN" },
 
-    // Additional Metadata
-    { name: "robots", content: "index, follow" },
-    { name: "viewport", content: "width=device-width, initial-scale=1.0" },
-    { charset: "UTF-8" },
+    // Additional SEO Metadata
+    { name: "robots", content: "index, follow, max-image-preview:large" },
+    { name: "googlebot", content: "index, follow" },
+    { name: "author", content: "Inkwell Team" },
+    { name: "publisher", content: "Inkwell" },
+    
+    // Language and Region
+    { name: "language", content: "Vietnamese" },
+    { name: "geo.region", content: "VN" },
+    { name: "geo.country", content: "Vietnam" },
+    
+    // Schema.org structured data for better search understanding
+    { name: "application-name", content: "Inkwell" },
+    { name: "theme-color", content: "#4f46e5" },
+    { name: "msapplication-TileColor", content: "#4f46e5" },
+    
+    // Canonical URL
+    { rel: "canonical", href: "https://inkwell.vn/about" },
+    
+    // Additional meta tags for better SEO
+    { name: "format-detection", content: "telephone=no" },
+    { name: "mobile-web-app-capable", content: "yes" },
+    { name: "apple-mobile-web-app-capable", content: "yes" },
+    { name: "apple-mobile-web-app-status-bar-style", content: "default" },
   ];
 }
 const About = () => {
-  const features = [
-    {
-      icon: BookOpen,
-      title: "Viết & Xuất bản dễ dàng",
-      description: "Trình soạn thảo thông minh giúp bạn tập trung vào nội dung, chúng tôi lo phần còn lại."
-    },
-    {
-      icon: Users,
-      title: "Cộng đồng sôi động",
-      description: "Kết nối với hàng nghìn tác giả và độc giả đam mê chia sẻ kiến thức."
-    },
-    {
-      icon: Sparkles,
-      title: "Tính năng AI thông minh",
-      description: "Công cụ AI hỗ trợ viết lách, tối ưu nội dung và gợi ý chủ đề hấp dẫn."
-    },
-    {
-      icon: TrendingUp,
-      title: "Phân tích chi tiết",
-      description: "Theo dõi lượt xem, tương tác và phát triển độc giả của bạn."
-    }
-  ];
-
-  const values = [
-    {
-      icon: Heart,
-      title: "Đam mê sáng tạo",
-      description: "Chúng tôi tin rằng mỗi người đều có câu chuyện đáng kể. Sứ mệnh của chúng tôi là tạo không gian để những câu chuyện đó được lắng nghe."
-    },
-    {
-      icon: Shield,
-      title: "Minh bạch & An toàn",
-      description: "Bảo vệ quyền tác giả và dữ liệu của bạn là ưu tiên hàng đầu. Nền tảng của chúng tôi được xây dựng với các tiêu chuẩn bảo mật cao nhất."
-    }
-  ];
 
   return (
     <MainLayout >
      {/* NEW REDESIGNED HERO SECTION */}
-      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden bg-white dark:bg-slate-950">
+      <section className="relative pt-28 pb-20 md:pt-40 md:pb-32 overflow-hidden bg-white dark:bg-slate-950">
         {/* Background Decorative Elements */}
         <div className="absolute top-0 right-0 w-1/3 h-full bg-slate-50 dark:bg-slate-900/30 z-0 hidden lg:block"></div>
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-indigo-100 dark:bg-indigo-500/20 rounded-full blur-3xl opacity-40"></div>
@@ -163,7 +146,7 @@ const About = () => {
                 {/* Main Image */}
                 <div className="rounded-[3rem] overflow-hidden shadow-2xl rotate-2 transition-transform hover:rotate-0 duration-700">
                   <img 
-                    src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=1000&auto=format&fit=crop" 
+                    src="https://i.pinimg.com/736x/8f/f4/60/8ff460e39376f968f72ec929ae410c7b.jpg" 
                     alt="Creative workspace" 
                     className="w-full h-[500px] object-cover"
                   />
@@ -173,7 +156,7 @@ const About = () => {
                 <div className="absolute -left-12 top-1/4 bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 animate-bounce transition-all hover:scale-105 duration-300 hidden sm:block" style={{ animationDuration: '4s' }}>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-500/20 rounded-lg flex items-center justify-center text-indigo-600 dark:text-indigo-300">
-                      <Twitter size={20} />
+                      <X size={20} />
                     </div>
                     <div>
                       <div className="text-xs font-bold text-slate-400 dark:text-slate-400 uppercase">Status</div>
@@ -209,7 +192,7 @@ const About = () => {
           <div className="relative group">
             <div className="absolute inset-0 bg-indigo-600 rounded-2xl rotate-3 scale-105 opacity-10 group-hover:rotate-1 transition-transform duration-500"></div>
             <img 
-              src="https://picsum.photos/seed/writing/800/600" 
+              src="https://i.pinimg.com/736x/64/6a/4a/646a4afe201703f2c02fb24d4adcae88.jpg" 
               alt="Cozy writing space" 
               className="rounded-2xl shadow-2xl relative z-10 w-full object-cover aspect-[4/3]"
             />

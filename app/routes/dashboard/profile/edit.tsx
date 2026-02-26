@@ -10,7 +10,7 @@ import { MarkdownEditor } from "~/components/profile/MarkdownEditor";
 import { SocialLinks } from "~/components/profile/SocialLinks";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/Card";
-import { Input } from "~/components/ui/Input";
+import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Textarea } from "~/components/ui/textarea";
 import type { UpdateProfileRequest, AvatarUploadResponse } from "~/types";

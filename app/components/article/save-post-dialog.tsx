@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "~/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover"
 import { cn } from "~/lib/utils"
-import { Input } from "../ui/Input"
+import { Input } from "../ui/input"
 import { Textarea } from "~/components/ui/textarea"
 import ThumbnailUpload from "~/components/ui/ThumbnailUpload"
 import type { Post, Category, Tag as TagType } from "~/types"

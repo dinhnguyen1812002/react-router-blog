@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/Avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Upload, X, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "../ui/button";

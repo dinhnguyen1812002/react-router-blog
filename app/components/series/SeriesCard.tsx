@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import { Card, CardContent, CardHeader } from "~/components/ui/Card";
 import { formatDateSimple } from "~/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/Avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import {
   BookOpen,
   User,
@@ -126,7 +126,7 @@ export const SeriesCard = ({
               {series.posts.slice(0, 3).map((post, index) => (
                 <Link
                   key={post.id}
-                  to={`/posts/${post.slug}`}
+                  to={`/articles/${post.slug}`}
                   className="group/post flex items-start gap-2 text-sm hover:text-primary transition-colors"
                 >
                   <span className="text-muted-foreground shrink-0">{index + 1}.</span>

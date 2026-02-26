@@ -19,10 +19,13 @@ import {
 import UserAvatar from "../ui/boring-avatar";
 import { resolveImageUrl } from "~/utils/image";
 
+
 interface CommentItemProps {
   comment: CommentType;
   postId: string;
   level?: number;
+  isLast?: boolean;
+  hasSibling?: boolean;
   onCommentUpdated?: (comment: CommentType) => void;
   onCommentDeleted?: (commentId: string) => void;
   onReplyAdded?: (comment: CommentType) => void;
@@ -32,6 +35,8 @@ export const CommentItem = ({
   comment,
   postId,
   level = 0,
+  isLast = false,
+  hasSibling = false,
   onCommentUpdated,
   onCommentDeleted,
   onReplyAdded
@@ -88,14 +93,19 @@ export const CommentItem = ({
     24 * 60 * 60 * 1000;
 
   return (
-    <div
-      className={`group relative ${currentDepth > 0 ? "ml-3 md:ml-6 border-l border-gray-200 dark:border-gray-700 pl-3" : ""
-        }`}
-    >
-      <div className="flex gap-3 md:gap-4 py-3">
-        {/* Avatar */}
-        <div className="mt-0.5 flex-shrink-0">
-          <UserAvatar src={resolveImageUrl(comment.user.avatar) || ""} />
+    <div className="relative">
+
+
+      {/* Comment content */}
+      <div
+        className="relative flex gap-3 md:gap-4 py-3 group"
+        style={{ marginLeft: level > 0 ? `${level }px` : '0' }}
+      >
+        {/* Avatar with proper positioning for tree view */}
+        <div className="relative flex-shrink-0">
+          <div className="mt-0.5">
+            <UserAvatar src={resolveImageUrl(comment.user.avatar) || ""} />
+          </div>
         </div>
 
         <div className="flex-1 min-w-0">
@@ -150,7 +160,10 @@ export const CommentItem = ({
                 <textarea
                   value={editContent}
                   onChange={(e) => setEditContent(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-white resize-vertical"
+                  className="w-full px-3 py-2 border border-gray-300 
+                  dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 
+                  focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-sm 
+                  text-gray-900 dark:text-white resize-vertical"
                   rows={3}
                   placeholder="Chỉnh sửa bình luận..."
                 />
@@ -227,15 +240,17 @@ export const CommentItem = ({
             </div>
           )}
 
-          {/* Replies */}
+          {/* Replies with proper tree structure */}
           {hasReplies && showReplies && (
-            <div className="mt-3 space-y-2">
-              {comment.replies!.map((reply) => (
+            <div className="relative">
+              {comment.replies!.map((reply, index) => (
                 <CommentItem
                   key={reply.id}
                   comment={reply}
                   postId={postId}
                   level={currentDepth + 1}
+                  isLast={index === comment.replies!.length - 1}
+                  hasSibling={comment.replies!.length > 1 && index < comment.replies!.length - 1}
                   onCommentUpdated={onCommentUpdated}
                   onCommentDeleted={onCommentDeleted}
                   onReplyAdded={onReplyAdded}

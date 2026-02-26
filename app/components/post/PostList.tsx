@@ -3,6 +3,7 @@ import { Spinner } from '~/components/ui/Spinner';
 import type { Post } from '~/types';
 import { Skeleton } from '../ui/skeleton';
 import PostSkeleton from '../skeleton/PostSkeleton';
+import { BlogPostCard } from '../public/BlogPostCard';
 
 interface PostListProps {
   posts: Post[];
@@ -28,11 +29,22 @@ export const PostList = ({ posts, loading, title }: PostListProps) => {
       {title && (
         <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6 sm:mb-8">{title}</h2>
       )}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
         {posts.map((post) => (
           <PostCard key={post.id} post={post} />
+          // <BlogPostCard 
+          // key={post.id}
+          // id={post.id} 
+          // title={post.title} 
+          // excerpt={post.excerpt} 
+          // thumbnail={post.thumbnail} 
+          // createdAt={post.createdAt} 
+          // slug={post.slug} 
+          // views={post.viewCount} 
+          // likes={post.likeCount} />
+          
         ))}
       </div>
     </div>
   );
-};
+};// <PostCard key={post.id} post={post} />

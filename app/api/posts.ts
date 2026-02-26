@@ -8,6 +8,8 @@ export interface GetPostsParams {
   sortBy?: 'newest' | 'views';
   categorySlug?: string;
   tagSlug?: string;
+  query?: string;
+  search?: string;
 }
 
 export interface RatePostRequest {
@@ -38,13 +40,15 @@ export const postsApi = {
       size = 10,
       sortBy = 'newest',
       categorySlug,
-      tagSlug
+      tagSlug,
+      query,
     } = params;
 
     const queryParams: Record<string, string | number> = { page, size, sortBy };
 
     if (categorySlug) queryParams.categorySlug = categorySlug;
     if (tagSlug) queryParams.tagSlug = tagSlug;
+    if (query) queryParams.query = query;
 
     const response = await axiosInstance.get<PaginatedResponse<Post>>('/post', {
       params: queryParams

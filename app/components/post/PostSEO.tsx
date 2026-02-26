@@ -10,7 +10,7 @@ const domain = "http://localhost:5173";
 const getEnv = import.meta.env.VITE_ENV;
 
 export function PostSEO({ post, baseUrl = domain }: PostSEOProps) {
-  const postUrl = `${baseUrl}/posts/${post.slug}`;
+  const postUrl = `${baseUrl}/articles/${post.slug}`;
   const imageUrl = post.thumbnail || post.thumbnailUrl || `${baseUrl}/default-post-image.jpg`;
 
   // Update meta tags using useEffect

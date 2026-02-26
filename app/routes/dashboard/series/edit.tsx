@@ -5,7 +5,7 @@ import { z } from "zod";
 import { useNavigate, useParams } from "react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/Input";
+import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
 import { Card, CardContent, CardHeader } from "~/components/ui/Card";
 import { seriesApi } from "~/api/series";

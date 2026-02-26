@@ -39,7 +39,7 @@ export interface Post {
   content: string;
   contentType?: "RICHTEXT" | "MARKDOWN";
   summary?: string;
-  thumbnail?: string;
+  thumbnail: string;
   thumbnailUrl?: string;
   featured: boolean;
   published?: boolean;

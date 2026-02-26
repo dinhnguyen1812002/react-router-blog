@@ -4,7 +4,7 @@ import { useParams, Link, useNavigate } from "react-router";
 import { MainLayout } from "~/components/layout/MainLayout";
 
 import { Button } from "~/components/ui/button";
-import { postsApi } from "~/api/posts";
+
 import {  formatDateSimple, formatNumber } from "~/lib/utils";
 import { CommentSection } from "~/components/comment/CommentSection";
 import { PostActions } from "~/components/post/PostActions";
@@ -14,7 +14,7 @@ import { LikeButton } from "~/components/post/LikeButton";
 import { BookmarkButton } from "~/components/post/BookmarkButton";
 
 import { useAuthStore } from "~/store/authStore";
-import { PostSEO } from "~/components/post/PostSEO";
+
 import { PostDetailSkeleton } from "~/components/skeleton/PostDetailSkeleton";
 import { ProgressiveContentLoader } from "~/components/post/ProgressiveContentLoader";
 import { useLoadingPerformance } from "~/components/post/LoadingPerformanceIndicator";
@@ -41,6 +41,8 @@ import {
 } from "lucide-react";
 import UserAvatar from "~/components/ui/boring-avatar";
 import { resolveAvatarUrl } from "~/utils/image";
+import { postsApi } from "~/api/posts";
+import { PostSEO } from "~/components/post/PostSEO";
 
 
 export default function PostDetailPage() {
@@ -77,7 +79,7 @@ export default function PostDetailPage() {
 
   const post = postResponse?.data;
   const relatedPosts =
-    relatedPostsData?.content?.filter((p) => p.id !== post?.id)?.slice(0, 3) ||
+    relatedPostsData?.content?.filter((p: any) => p.id !== post?.id)?.slice(0, 3) ||
     [];
 
   // Calculate reading time
@@ -85,7 +87,7 @@ export default function PostDetailPage() {
 
   // Handle share functionality
   const handleShare = async (platform?: string) => {
-    const url = `${window.location.origin}/posts/${slug}`;
+    const url = `${window.location.origin}/articles/${slug}`;
     const title = post?.title || "";
     const text = post?.summary || title;
 
@@ -120,7 +122,7 @@ export default function PostDetailPage() {
 
   // Handle post actions
   const handleEdit = () => {
-    navigate(`/dashboard/posts/edit/${post?.id}`);
+    navigate(`/dashboard/article/${post?.id}/edit`);
   };
 
   const handleDelete = () => {
@@ -165,7 +167,7 @@ export default function PostDetailPage() {
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Go Back
               </Button>
-              <Link to="/posts">
+              <Link to="/articles">
                 <Button>Browse All Posts</Button>
               </Link>
             </div>
@@ -211,10 +213,10 @@ export default function PostDetailPage() {
                 <ChevronRight className="w-4 h-4" />
                 <li>
                   <Link
-                    to="/posts"
+                    to="/articles"
                     className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                   >
-                    Posts
+                    articles
                   </Link>
                 </li>
                 <ChevronRight className="w-4 h-4" />
@@ -243,7 +245,7 @@ export default function PostDetailPage() {
                     {post.categories.slice(0, 3).map((category) => (
                       <Link
                         key={category.id}
-                        to={`/posts?category=${category.slug}`}
+                        to={`/articles?category=${category.slug}`}
                         className=""
 
                       >
@@ -261,9 +263,8 @@ export default function PostDetailPage() {
                   </>
                 )}
                 {post.featured && (
-                  <span className="bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center space-x-1">
-                    <Star className="h-3 w-3" />
-                    <span>Featured</span>
+                  <span className=" text-yellow-200 px-3 py-1 rounded-full text-sm font-medium flex items-center space-x-1">
+                    <Star className="h-5 w-5" />
                   </span>
                 )}
               </div>
@@ -297,10 +298,10 @@ export default function PostDetailPage() {
                       <Eye className="w-4 h-4" />
                       <span>{formatNumber(post.viewCount || 0)} views</span>
                     </div>
-                    <div className="flex items-center space-x-2">
+                    {/* <div className="flex items-center space-x-2">
                       <Heart className="w-4 h-4" />
                       <span>{formatNumber(post.likeCount || 0)} likes</span>
-                    </div>
+                    </div> */}
                     <div className="flex items-center space-x-2">
                       <MessageCircle className="w-4 h-4" />
                       <span>
@@ -316,20 +317,21 @@ export default function PostDetailPage() {
                       postId={post.id}
                       initialLiked={post.isLikedByCurrentUser}
                       initialLikeCount={post.likeCount}
+                      variant="minimal"
                     />
 
                     {/* Bookmark Button */}
                     <BookmarkButton
                       postId={post.id}
                       initialBookmarked={post.isSavedByCurrentUser}
-                      className="bg-white/90 dark:bg-black/90 backdrop-blur-sm"
+                      className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors border border-gray-200 dark:border-gray-600"
                     />
 
                     {/* Share Button */}
                     <div className="relative">
                       <button
                         onClick={() => setShowShareMenu(!showShareMenu)}
-                        className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors border border-gray-200 dark:border-gray-600"
+                        className="flex items-center space-x-1 px-4 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors border border-gray-200 dark:border-gray-600"
                       >
                         <Share2 className="h-4 w-4" />
                         <span className="text-sm font-medium">Share</span>
@@ -495,7 +497,7 @@ export default function PostDetailPage() {
                   {post.tags.map((tag) => (
                     <Link
                       key={tag.uuid}
-                      to={`/posts?tag=${tag.slug}`}
+                      to={`/articles?tag=${tag.slug}`}
                       className="px-3 py-1 rounded-full text-sm font-medium border transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
                       style={{
                         borderColor: tag.color,
@@ -542,7 +544,7 @@ export default function PostDetailPage() {
                     ))}
                   </div>
                   <div className="mt-4">
-                    <Link to="/posts">
+                    <Link to="/articles">
                       <Button variant="outline" size="sm" className="w-full">
                         View All Posts
                       </Button>

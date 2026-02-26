@@ -1,7 +1,7 @@
 
 import { Label } from "~/components/ui/label";
 import { Github, Facebook, Instagram, Linkedin } from "lucide-react";
-import { Input } from "../ui/Input";
+import { Input } from "../ui/input";
 
 interface SocialLinksProps {
   github: string;

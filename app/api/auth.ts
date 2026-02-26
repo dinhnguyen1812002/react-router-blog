@@ -40,6 +40,19 @@ export interface UpdateProfileRequest {
   avatar: string;
 }
 
+export interface OAuthLoginRequest {
+  provider: 'google' | 'github' | 'discord';
+  code?: string;
+  token?: string;
+}
+
+export interface OAuthLoginResponse {
+  success: boolean;
+  user?: User;
+  accessToken?: string;
+  message?: string;
+}
+
 export const authApi = {
   // Login user
   async login(credentials: LoginRequest): Promise<LoginResponse> {
@@ -151,6 +164,47 @@ export const authApi = {
       return { accessToken, refreshToken };
     } catch (error: any) {
       return ;
+    }
+  },
+
+  // OAuth Login
+  async oauthLogin(provider: 'google' | 'github' | 'discord', codeOrToken: string): Promise<OAuthLoginResponse> {
+    try {
+      console.log(`🔐 Sending OAuth login request for ${provider}`);
+      
+      const response = await axiosInstance.post("/auth/oauth/login", {
+        provider,
+        code: codeOrToken, // Can be either authorization code or access token
+        token: codeOrToken // Some providers might use token instead
+      }, {
+        withCredentials: true, // To receive refresh token cookie
+      });
+
+      const { user, accessToken, token } = response.data;
+      const finalToken = accessToken || token;
+
+      if (user && finalToken) {
+        // Save user + access token to store
+        useAuthStore.getState().login(user, finalToken);
+        
+        return {
+          success: true,
+          user,
+          accessToken: finalToken
+        };
+      } else {
+        return {
+          success: false,
+          message: response.data.message || 'OAuth login failed'
+        };
+      }
+    } catch (error: any) {
+      console.error(`❌ OAuth login error for ${provider}:`, error);
+      
+      return {
+        success: false,
+        message: error.response?.data?.message || error.message || 'OAuth login failed'
+      };
     }
   },
 

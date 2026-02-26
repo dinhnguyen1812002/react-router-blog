@@ -1,7 +1,7 @@
 import { Link } from 'react-router';
 import { Card, CardContent } from '~/components/ui/Card';
 import { formatDateSimple } from '~/lib/utils';
-import { Avatar } from '~/components/ui/Avatar';
+import { Avatar } from '~/components/ui/avatar';
 import { Heart, Eye, MessageCircle, Star } from 'lucide-react';
 import { LikeButton } from './LikeButton';
 import { BookmarkButton } from './BookmarkButton';
@@ -35,7 +35,7 @@ export const PostCardCompact = ({ post, variant = 'horizontal' }: PostCardCompac
 
             {/* Content */}
             <div className="flex-1 min-w-0">
-              <Link to={`/posts/${post.slug}`} className="block group">
+              <Link to={`/articles/${post.slug}`} className="block group">
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 mb-1">
                   {post.title}
                 </h3>
@@ -115,7 +115,7 @@ export const PostCardCompact = ({ post, variant = 'horizontal' }: PostCardCompac
           {/* Content */}
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between mb-2">
-              <Link to={`/posts/${post.slug}`} className="block group flex-1">
+              <Link to={`/articles/${post.slug}`} className="block group flex-1">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 mb-1">
                   {post.title}
                 </h3>

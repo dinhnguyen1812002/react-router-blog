@@ -1,4 +1,4 @@
-import  React from "react"
+import React from "react"
 import type { ChainedCommands } from "@tiptap/react"
 import { type Editor } from "@tiptap/react"
 
@@ -106,8 +106,8 @@ export function setTextAlign(editor: Editor | null, align: TextAlign): boolean {
   if (!editor || !editor.isEditable) return false
   if (!canSetTextAlign(editor, align)) return false
 
-  const chain = editor.chain().focus()
-  if (hasSetTextAlign(chain)) {
+  const chain = editor.chain().focus() as any
+  if (chain.setTextAlign) {
     return chain.setTextAlign(align).run()
   }
 

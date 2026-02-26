@@ -3,6 +3,7 @@ import { CommentForm } from './CommentForm';
 import { CommentItem } from './CommentItem';
 import { useAuthStore } from '~/store/authStore';
 import { usePendingComment } from '~/hooks/usePendingComment';
+import { useCommentDeduplication } from '~/hooks/useCommentDeduplication';
 import type { Comment as CommentType } from '~/types';
 import {
   MessageCircle,
@@ -37,8 +38,13 @@ export const CommentSection = ({
   const [comments, setComments] = useState<CommentType[]>(initialComments);
   const [sortBy, setSortBy] = useState<SortType>('newest');
   const [showCommentForm, setShowCommentForm] = useState(false);
-
-  // ...
+  
+  // Use comment deduplication hook
+  const { 
+    isCommentDuplicate, 
+    markCommentAsProcessing, 
+    markCommentAsAdded 
+  } = useCommentDeduplication();
 
   const { isSubmittingPending, pendingError } = usePendingComment(postId, (newComment) => {
     handleCommentAdded(newComment);
@@ -50,8 +56,15 @@ export const CommentSection = ({
     if (!connected || !postId) return;
 
     const subscription = subscribe(`/topic/comments/${postId}`, (newComment: CommentType) => {
-      console.log("Real-time comment received:", newComment);
-      handleCommentAdded(newComment);
+
+      
+      // Add a flag to distinguish WebSocket comments from API responses
+      const commentWithSource = { ...newComment, source: 'websocket' };
+      
+      // Add delay to prevent race condition with API response
+      setTimeout(() => {
+        handleCommentAdded(commentWithSource);
+      }, 200);
     });
 
     return () => {
@@ -61,18 +74,21 @@ export const CommentSection = ({
 
   // Handle comment updates
   const handleCommentAdded = (newComment: CommentType) => {
-    console.log('📝 Adding new comment:', newComment);
+
 
     if (!newComment || !newComment.id) {
-      console.error('❌ Invalid comment object:', newComment);
+      
       return;
     }
 
-    const existingComment = comments.find(c => c.id === newComment.id);
-    if (existingComment) {
-      console.log('⚠️ Comment already exists, skipping add');
+    // Check for duplicates using the hook
+    if (isCommentDuplicate(newComment, comments)) {
+     
       return;
     }
+
+    // Mark as processing to prevent race conditions
+    markCommentAsProcessing(newComment.id);
 
     let updatedComments;
     if (newComment.parentCommentId) {
@@ -83,13 +99,24 @@ export const CommentSection = ({
 
     setComments(updatedComments);
     onCommentsUpdate?.(updatedComments);
-    setShowCommentForm(false); // Close form after successful comment
-    console.log('✅ Comment added successfully');
+    setShowCommentForm(false);
+    
+    // Mark as successfully added
+    markCommentAsAdded(newComment.id);
+    
+   
   };
 
   const addReplyToComments = (commentList: CommentType[], newReply: CommentType): CommentType[] => {
     return commentList.map(comment => {
       if (comment.id === newReply.parentCommentId) {
+        // Check if reply already exists
+        const replyExists = comment.replies?.some(reply => reply.id === newReply.id);
+        if (replyExists) {
+        
+          return comment;
+        }
+        
         const updatedReplies = comment.replies ? [...comment.replies, newReply] : [newReply];
         return {
           ...comment,
@@ -339,7 +366,7 @@ export const CommentSection = ({
 
       {/* Comments List */}
       {rootComments.length > 0 ? (
-        <div className="space-y-6">
+        <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
               Tất cả bình luận ({rootComments.length})
@@ -352,12 +379,12 @@ export const CommentSection = ({
             )}
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-4">
             {rootComments.map((comment, index) => (
               <div
                 key={comment.id}
                 className={`${index !== rootComments.length - 1
-                  ? 'border-b border-gray-100 dark:border-gray-700 pb-6'
+                  ? 'border-b border-gray-100 dark:border-gray-700 pb-3'
                   : ''
                   }`}
               >
@@ -374,7 +401,7 @@ export const CommentSection = ({
 
           {/* Load More Button */}
           {rootComments.length >= 10 && (
-            <div className="text-center pt-6 border-t border-gray-200 dark:border-gray-700">
+            <div className="text-center pt-4 border-t border-gray-200 dark:border-gray-700">
               <Button variant="outline" className="px-8">
                 Tải thêm bình luận
               </Button>
@@ -382,7 +409,7 @@ export const CommentSection = ({
           )}
         </div>
       ) : (
-        <div className="text-center pt-6 border-t border-gray-200 dark:border-gray-700">
+        <div className="text-center pt-4 border-t border-gray-200 dark:border-gray-700">
           <p className="text-gray-600 dark:text-gray-300">
             Chưa có bình luận nào cho bài viết này
           </p>

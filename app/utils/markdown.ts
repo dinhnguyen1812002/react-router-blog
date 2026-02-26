@@ -85,7 +85,7 @@ const processPlaceholders = (content: string, userData?: any): string => {
   if (userData.latestPosts && Array.isArray(userData.latestPosts)) {
     const postsHtml = `<ul class="list-disc list-inside space-y-1">
       ${userData.latestPosts.map((post: any) => 
-        `<li><a href="/posts/${post.slug}" class="text-blue-600 hover:text-blue-800">${post.title}</a></li>`
+        `<li><a href="/articles/${post.slug}" class="text-blue-600 hover:text-blue-800">${post.title}</a></li>`
       ).join('')}
     </ul>`;
     processedContent = processedContent.replace(/\{\{latest_posts\}\}/g, postsHtml);

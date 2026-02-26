@@ -31,7 +31,7 @@ export const CommentForm = ({
     mutationFn: (data: { content: string; parentCommentId?: string | null }) =>
       commentsApi.createComment(postId, data),
     onSuccess: (response) => {
-
+    
 
       // Handle different response formats
       let newComment: CommentType = response;
@@ -52,9 +52,12 @@ export const CommentForm = ({
 
       // Only call onCommentAdded if we have a valid comment object
       if (newComment && newComment.id) {
-        onCommentAdded?.(newComment);
+        // Add a small delay to prevent race condition with WebSocket
+        setTimeout(() => {
+          onCommentAdded?.(newComment);
+        }, 100);
       } else {
-        console.warn('⚠️ Invalid comment response format:', response);
+        console.warn('Invalid comment response format:', response);
         // Optionally refresh the page or show a success message
         window.location.reload();
       }
@@ -63,14 +66,8 @@ export const CommentForm = ({
       localStorage.removeItem('pendingComment');
     },
     onError: (error) => {
-      console.error(' Create comment error:', error);
-
+      console.error('Create comment error:', error);
       // Show user-friendly error message
-      // if (error.response?.status === 403) {
-      //   console.error(' Access denied - please check authentication');
-      // } else if (error.response?.status === 401) {
-      //   console.error('Unauthorized - please login again');
-      // }
     }
   });
 

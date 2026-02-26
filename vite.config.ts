@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import { reactRouter } from "@react-router/dev/vite";
 import tailwindcss from "@tailwindcss/vite";
 import tsconfigPaths from "vite-tsconfig-paths";
+import path from "path";
 
 export default defineConfig({
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
@@ -11,34 +12,48 @@ export default defineConfig({
   },
 
   ssr: {
-    external: [
+    noExternal: [
       "@uiw/react-markdown-preview",
       "@uiw/react-md-editor",
-      "@tiptap/react",
-      "@tiptap/starter-kit",
-      "@tiptap/extensions",
-      "@tiptap/pm",
-      "lowlight",
-      "recharts",
-      "motion",
-      "@lottiefiles/dotlottie-react",
     ],
   },
 
   build: {
+    target: 'es2020',
+    minify: 'terser',
+    sourcemap: false,
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          if (id.includes("node_modules")) {
-            if (id.includes("react-router")) return "router";
-            if (id.includes("react")) return "react";
-            if (id.includes("radix")) return "radix";
-            if (id.includes("tiptap")) return "editor";
-            if (id.includes("recharts")) return "charts";
-            return "vendor";
-          }
-        },
+        // Disable manual chunking to avoid circular dependency issues
+        manualChunks: undefined,
+        // Use a simpler naming strategy
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]'
       },
     },
   },
+
+  optimizeDeps: {
+    // Force pre-bundling of problematic dependencies
+    include: [
+      'react',
+      'react-dom',
+      'react-router',
+      'zustand',
+      '@tanstack/react-query',
+      'axios',
+      'clsx',
+      'tailwind-merge',
+      'lucide-react',
+      'boring-avatars',
+      'sonner',
+      'use-sync-external-store/shim'
+    ]
+  },
+  server: {
+    hmr: {
+      overlay: false
+    }
+  }
 });

@@ -5,8 +5,7 @@ import type { Post } from "~/types/profile";
 
 export const BlogPostCard = (post: Post) => {
   return (
-    <article className={`card-elevated rounded-xl overflow-hidden 
-    bg-card group cursor-pointer`}>
+    <article className={`card-elevated rounded-xl overflow-hidden  group cursor-pointer`}>
       {post.thumbnail && (
         <div className={`overflow-hidden `}>
           <img
@@ -21,7 +20,7 @@ export const BlogPostCard = (post: Post) => {
           {/* {post.tags.slice(0, 3).map((tag) => (
             <Badge
               key={tag}
-              variant="secondary"
+              variant="secondary"a
               className="text-xs font-medium bg-secondary/80 text-secondary-foreground hover:bg-primary/10 hover:text-primary transition-colors"
             >
               {tag}

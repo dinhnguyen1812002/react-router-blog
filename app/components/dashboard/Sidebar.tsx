@@ -23,7 +23,7 @@ import { cn } from "~/lib/utils";
 
 import { AnimatedThemeToggler } from "../ui/animated-theme-toggler";
 
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/Avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 
 interface SidebarProps {

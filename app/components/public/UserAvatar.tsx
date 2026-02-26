@@ -1,6 +1,6 @@
 
 import { cn } from "~/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/Avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 interface UserAvatarProps {
   src?:  string | null;

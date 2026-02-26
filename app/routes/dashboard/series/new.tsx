@@ -5,7 +5,7 @@ import { z } from "zod";
 import { useNavigate } from "react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/Input";
+import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
 import { Card, CardContent, CardHeader } from "~/components/ui/Card";
 import { seriesApi } from "~/api/series";
@@ -48,7 +48,7 @@ export default function NewSeriesPage() {
   const onSubmit = async (data: SeriesForm) => {
     try {
       setIsSubmitting(true);
-      await createSeriesMutation.mutateAsync(data);
+      await createSeriesMutation.mutateAsync({ ...data, slug: data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') });
     } catch (error) {
       console.error("Error creating series:", error);
     } finally {

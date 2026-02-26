@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { User } from "~/types";
 import { authApi } from "~/api/auth";
+import { initializeAxiosAuth } from "~/config/axios";
 
 // =====================
 // Helper: check token expiration
@@ -128,3 +129,6 @@ export const useAuthStore = create<AuthStore, [["zustand/persist", { user: User 
     }
   )
 );
+
+// Initialize axios with auth store after store creation
+initializeAxiosAuth(useAuthStore);

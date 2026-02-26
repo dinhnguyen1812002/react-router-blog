@@ -24,7 +24,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "~/components/ui/sidebar";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/Avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import type { User } from "~/types";
 import { Link } from "react-router";
 
@@ -87,8 +87,8 @@ export function NavUser({ user }: { user: User | null }) {
 
               <Link to={`/dashboard`} >
                 <DropdownMenuItem>
-                 <LayoutDashboard />
-                 Dashboard
+                  <LayoutDashboard />
+                  Dashboard
                 </DropdownMenuItem>
               </Link>
               <DropdownMenuItem>

@@ -62,7 +62,7 @@ export function ListView({ posts, onDelete, formatDateSimple: formatDate = forma
 
               <div className="flex-1 flex flex-col justify-between">
                 <div>
-                  <div className="flex items-start justify-between gap-2 mb-1">
+                  <div className="flex items-start gap-2 mb-1">
                     <h3 className="text-base font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">
                       {post.title}
                     </h3>

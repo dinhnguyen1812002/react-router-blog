@@ -2,18 +2,18 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/Input";
+import { Input } from "~/components/ui/input";
 import { SeriesList, SeriesModal, AddPostToSeriesModal } from "~/components/series";
 import { seriesApi } from "~/api/series";
 import { useAuthStore } from "~/store/authStore";
-import { Search } from "lucide-react";
+import { Search, Plus } from "lucide-react";
 import { toast } from "sonner";
 
 export default function DashboardSeriesPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
-  
+
   const [page, setPage] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -55,7 +55,7 @@ export default function DashboardSeriesPage() {
 
   // Update series mutation
   const updateSeriesMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) => 
+    mutationFn: ({ id, data }: { id: string; data: any }) =>
       seriesApi.updateSeries(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user-series"] });
@@ -115,9 +115,9 @@ export default function DashboardSeriesPage() {
 
   const handleAddPost = async (postId: string) => {
     if (selectedSeries) {
-      await addPostToSeriesMutation.mutateAsync({ 
-        seriesId: selectedSeries.id, 
-        postId 
+      await addPostToSeriesMutation.mutateAsync({
+        seriesId: selectedSeries.id,
+        postId
       });
     }
   };
@@ -139,7 +139,7 @@ export default function DashboardSeriesPage() {
             Tạo và quản lý các series bài viết của bạn
           </p>
         </div>
-        
+
         <Button onClick={() => setIsCreateModalOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Tạo Series Mới
@@ -161,8 +161,8 @@ export default function DashboardSeriesPage() {
       </form>
 
       {/* Series List */}
-      <SeriesList 
-        series={seriesData?.data?.content || []} 
+      <SeriesList
+        series={seriesData?.data?.content || []}
         loading={isLoading}
         showActions={true}
         onEdit={(series) => {
@@ -187,11 +187,11 @@ export default function DashboardSeriesPage() {
             >
               Trước
             </Button>
-            
+
             <span className="flex items-center px-4 text-sm text-gray-600 dark:text-gray-400">
               Trang {page + 1} / {seriesData.data.totalPages}
             </span>
-            
+
             <Button
               variant="outline"
               onClick={() => setPage(page + 1)}

@@ -32,7 +32,7 @@ export default [
   route("series", "routes/series._index.tsx"),
   route("series/:slug", "routes/series.$slug.tsx"),
   route("categories", "routes/category.index.tsx"),
-  route("search", "routes/search.tsx"),
+  // route("search", "routes/search.tsx"),
   route("about", "routes/about.tsx"),
   // route("auth-error-test", "routes/auth-error-test.tsx"),
 

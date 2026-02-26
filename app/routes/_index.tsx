@@ -1,39 +1,30 @@
 import { useQuery } from "@tanstack/react-query";
 import { MainLayout } from "~/components/layout/MainLayout";
 import { PostList } from "~/components/post/PostList";
-import { postsApi } from "~/api/posts";
+
 import { categoriesApi } from "~/api/categories";
 import { tagsApi } from "~/api/tags";
 import { Link } from "react-router";
-import { useAuthStore } from "~/store/authStore";
 import { Button } from "~/components/ui/button";
 
 import HeroSection from "~/components/layout/Hero";
 import NewLetter from "~/components/NewLetters";
-// import GlobalSearch from "~/components/search/GlobalSearch";
 
 import {
   TrendingUp,
-  Users,
-  BookOpen,
   ArrowRight,
-  Eye,
-  Heart,
   Hash,
   Folder,
-
 } from "lucide-react";
 import type { Category, Tag } from "~/types";
 
-import { userApi } from "~/api/user";
-
 import type { Route } from "../+types/root";
-import { formatNumber } from "~/lib/utils";
+import { postsApi } from "~/api/posts";
 
 export function meta({ }: Route.MetaArgs) {
   return [
     // Basic SEO Metadata
-    { title: "Blog App - Discover Inspiring Stories & Insights" },
+    { title: "Discover Inspiring Stories & Insights" },
     {
       name: "description",
       content:
@@ -82,8 +73,6 @@ export function meta({ }: Route.MetaArgs) {
 }
 
 export default function HomePage() {
-  const { user, isAuthenticated } = useAuthStore();
-
   // Fetch featured posts
   const { data: featuredPosts, isLoading: featuredLoading } = useQuery({
     queryKey: ["posts", "featured"],
@@ -114,15 +103,7 @@ export default function HomePage() {
     queryFn: () => tagsApi.getAll(),
   });
 
-  const { data: topuserData, isLoading: topuserLoading } = useQuery({
-    queryKey: ["top-user"],
-    queryFn: () => userApi.getTopUser(),
-  });
-
-  // const categories = categoriesData?.?.slice(0, 8) || [];
-  // const trendingTags = tagsData?.data?.slice(0, 12) || [];
   const categories = categoriesData;
-
   const trendingTags = tagsData;
 
   return (
@@ -152,69 +133,61 @@ export default function HomePage() {
         </div>
       </section> */}
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
-        {/* Platform Statistics */}
-        <section>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="text-center p-6 bg-white dark:bg-black rounded-lg shadow-sm">
-              <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg mb-4">
-                <BookOpen className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-              </div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-                {formatNumber(1250)}
-              </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
-                Articles Published
-              </div>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16 ">
+
+        <section id="features" className="py-32 bg-white bg-gray-50 dark:bg-black">
+          <div className="container mx-auto px-6">
+            <div className="max-w-3xl mb-20">
+              <h2 className="text-4xl font-bold mb-6 italic">Built for the modern web.</h2>
+              <p className="text-lg text-slate-600 dark:text-slate-400">We stripped away everything you don't need, leaving only the tools that make your writing stand out.</p>
             </div>
-            <div className="text-center p-6 bg-white dark:bg-black rounded-lg shadow-sm">
-              <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg mb-4">
-                <Users className="h-6 w-6 text-green-600 dark:text-green-400" />
+
+            <div className="grid md:grid-cols-3 gap-16">
+
+              <div className="group">
+                <div className="w-14 h-14 bg-slate-50 border border-slate-200 flex items-center justify-center mb-8 group-hover:bg-black group-hover:text-white transition-all duration-300  dark:bg-slate-900 dark:border-slate-700 dark:group-hover:bg-white dark:group-hover:text-black">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-bold mb-4">Minimalist Editor</h3>
+                <p className="text-slate-600 leading-relaxed dark:text-slate-400">Focus entirely on your writing with our distraction-free markdown editor and clean reader view.</p>
               </div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-                {formatNumber(5420)}
+
+              <div className="group">
+                <div className="w-14 h-14 bg-slate-50 border border-slate-200 flex items-center justify-center mb-8 group-hover:bg-black group-hover:text-white transition-all duration-300  dark:bg-slate-900 dark:border-slate-700 dark:group-hover:bg-white dark:group-hover:text-black">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-bold mb-4">Real-time Feedback</h3>
+                <p className="text-slate-600 leading-relaxed dark:text-slate-400">Stay connected with your audience through instant WebSocket-powered alerts for comments and likes.</p>
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
-                Active Writers
-              </div>
-            </div>
-            <div className="text-center p-6 bg-white dark:bg-black rounded-lg shadow-sm">
-              <div className="inline-flex items-center justify-center w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg mb-4">
-                <Eye className="h-6 w-6 text-purple-600 dark:text-purple-400" />
-              </div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-                {formatNumber(125000)}
-              </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
-                Monthly Readers
-              </div>
-            </div>
-            <div className="text-center p-6 bg-white dark:bg-black rounded-lg shadow-sm">
-              <div className="inline-flex items-center justify-center w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg mb-4">
-                <Heart className="h-6 w-6 text-orange-600 dark:text-orange-400" />
-              </div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-                {formatNumber(45000)}
-              </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
-                Likes Given
+
+              <div className="group">
+                <div className="w-14 h-14 bg-slate-50 border border-slate-200 flex items-center justify-center mb-8 group-hover:bg-black group-hover:text-white transition-all duration-300 dark:bg-slate-900 dark:border-slate-700 dark:group-hover:bg-white dark:group-hover:text-black">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-bold mb-4">Global Scale</h3>
+                <p className="text-slate-600 leading-relaxed dark:text-slate-400">Blazing fast load times and automatic SEO optimization ensure your stories reach readers across the globe.</p>
               </div>
             </div>
           </div>
         </section>
-
         {/* Featured Posts */}
         <section>
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              <h2 className="text-4xl font-bold mb-6 italic">
                 Featured Articles
               </h2>
               <p className="text-gray-600 dark:text-gray-400">
                 Hand-picked content from our community
               </p>
             </div>
-            {/* <Link to="/posts?featured=true">
+            {/* <Link to="/articles?featured=true">
               <Button variant="outline" className="flex items-center space-x-2">
                 <span className="text-gray-600 dark:text-gray-400">View All</span>
                 <ArrowRight className="h-4 w-4" />
@@ -232,7 +205,7 @@ export default function HomePage() {
         <section>
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              <h2 className="text-4xl font-bold mb-6 italic">
                 Popular Categories
               </h2>
               <p className="text-gray-600 dark:text-gray-400">
@@ -293,7 +266,7 @@ export default function HomePage() {
         <section>
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              <h2 className="text-4xl font-bold mb-6 italic">
                 Latest Articles
               </h2>
               <p className="text-gray-600 dark:text-gray-400">
@@ -320,7 +293,7 @@ export default function HomePage() {
         <section>
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              <h2 className="text-4xl font-bold mb-6 italic">
                 Trending Topics
               </h2>
               <p className="text-gray-600 dark:text-gray-400">
@@ -373,14 +346,14 @@ export default function HomePage() {
         <section>
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              <h2 className="text-4xl font-bold mb-6 italic">
                 Most Popular
               </h2>
               <p className="text-gray-600 dark:text-gray-400">
                 Reader favorites and trending content
               </p>
             </div>
-            <Link to="/posts?sort=popular">
+            <Link to="/articles?sort=popular">
               <Button variant="outline" className="flex items-center space-x-2">
                 <TrendingUp className="h-4 w-4" />
                 <span className="text-gray-600 dark:text-gray-400">

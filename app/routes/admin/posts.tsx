@@ -129,7 +129,7 @@ export default function ArticlesContent() {
         )
       },
     },
-   
+
     {
       accessorKey: "likeCount",
       header: ({ column }) => {

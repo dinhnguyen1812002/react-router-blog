@@ -207,7 +207,7 @@ export default function BookmarksPage() {
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <Link to={`/posts/${post.slug}`}>
+                      <Link to={`/articles/${post.slug}`}>
                         <h3 className="text-base font-medium text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 truncate">
                           {post.title}
                         </h3>
@@ -259,7 +259,7 @@ export default function BookmarksPage() {
                 `Không tìm thấy bài viết nào phù hợp với "${searchTerm}"` : 
                 'Bạn chưa lưu bài viết nào. Hãy khám phá các bài viết và đánh dấu những bài bạn thích!'}
             </p>
-            <Link to="/posts">
+            <Link to="/articles">
               <Button>
                 Khám phá bài viết
               </Button>

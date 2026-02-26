@@ -132,14 +132,14 @@ export default function FeaturedPostsSidebar({
         </div>
 
         {/* View all link */}
-        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+        {/* <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
           <Link
-            to="/posts?featured=true"
+            to="/articles?featured=true"
             className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
           >
             View all featured posts →
           </Link>
-        </div>
+        </div> */}
       </div>
     </div>
   );

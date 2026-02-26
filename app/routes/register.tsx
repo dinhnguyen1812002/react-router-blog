@@ -13,7 +13,9 @@ import {
   Eye,
   EyeOff,
   CheckCircle2,
+  UserPlus,
 } from "lucide-react";
+import type { Route } from "../+types/root";
 
 export function meta({}: Route.MetaArgs) {
   return [

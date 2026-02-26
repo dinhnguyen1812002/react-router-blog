@@ -164,7 +164,7 @@ export const SeriesDetail = ({
                   
                   <div className="flex-1">
                     <Link
-                      to={`/posts/${post.slug}`}
+                      to={`/articles/${post.slug}`}
                       className="block hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                     >
                       <h3 className="font-medium text-gray-900 dark:text-white">

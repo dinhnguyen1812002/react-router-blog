@@ -1,5 +1,4 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
-import { useAuthStore } from "~/store/authStore";
 import { env } from "./env";
 
 // =============================================
@@ -14,12 +13,22 @@ const axiosInstance = axios.create({
   },
 });
 
+// Store reference to avoid circular imports
+let authStore: any = null;
+
+// Initialize store reference
+export const initializeAxiosAuth = (store: any) => {
+  authStore = store;
+};
+
 // =============================================
 // Request Interceptor: Attach Access Token
 // =============================================
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const { token } = useAuthStore.getState();
+    if (!authStore) return config;
+    
+    const { token } = authStore.getState();
 
     // Don't attach Authorization header for refresh token requests
     // (backend chỉ cần refresh token cookie)
@@ -98,7 +107,9 @@ const isRefreshTokenRequest = (config: InternalAxiosRequestConfig | undefined): 
  * Refresh access token using the refresh token cookie
  */
 const refreshAccessToken = async (): Promise<string> => {
-  const { refreshAccessToken: storeRefresh } = useAuthStore.getState();
+  if (!authStore) throw new Error("Auth store not initialized");
+  
+  const { refreshAccessToken: storeRefresh } = authStore.getState();
 
   try {
     const newToken = await storeRefresh();
@@ -133,7 +144,7 @@ axiosInstance.interceptors.response.use(
 
       // Check if already retried
       if (originalRequest._retry) {
-        useAuthStore.getState().logout();
+        if (authStore) authStore.getState().logout();
         return Promise.reject(error);
       }
 
@@ -177,7 +188,7 @@ axiosInstance.interceptors.response.use(
         processQueue(refreshError, null);
 
         // Logout user
-        useAuthStore.getState().logout();
+        if (authStore) authStore.getState().logout();
 
         return Promise.reject(refreshError);
 
@@ -193,14 +204,14 @@ axiosInstance.interceptors.response.use(
       const url = error.config?.url || '';
 
       // If refresh token endpoint returns 403, logout immediately
-      if (url.includes('/auth/refresh-token')) {
-        const { user, isAuthenticated } = useAuthStore.getState();
+      if (url.includes('/auth/refresh-token') && authStore) {
+        const { user, isAuthenticated } = authStore.getState();
 
         // During app initialization it's normal to probe refresh-token without an authenticated user.
         // Only force-logout if we actually have an authenticated session.
         if (user || isAuthenticated) {
           console.error("Refresh token invalid or expired, logging out");
-          useAuthStore.getState().logout();
+          authStore.getState().logout();
         }
       }
     }

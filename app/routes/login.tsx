@@ -6,6 +6,7 @@ import { z } from "zod";
 import { MainLayout } from "~/components/layout/MainLayout";
 import { PageBackground } from "~/components/layout/PageBackground";
 import { useAuth } from "~/hooks/useAuth";
+import { OAuthButtons } from "~/components/auth/OAuthButtons";
 import { ThemedCard, ThemedCardContent } from "~/components/ui/ThemedCard";
 import { ThemedInput } from "~/components/ui/ThemedInput";
 import { ThemedButton } from "~/components/ui/ThemedButton";
@@ -20,7 +21,8 @@ import {
   ChevronsRight,
 } from "lucide-react";
 import { Button } from "~/components/ui/button";
-import type { Route } from "./+types";
+import type { Route } from "../+types/root";
+
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -102,6 +104,16 @@ export default function LoginPage() {
 
   const onSwitchToRegister = () => {
     navigate("/register");
+  };
+
+  const handleOAuthSuccess = (user: any) => {
+    console.log('✅ OAuth login successful:', user);
+    // Navigation will be handled by the auth store effect
+  };
+
+  const handleOAuthError = (error: string) => {
+    console.error('❌ OAuth login error:', error);
+    // Error will be displayed by the OAuthButtons component
   };
 
   return (
@@ -356,23 +368,44 @@ export default function LoginPage() {
             </button>
           </form>
 
+          {/* OAuth Section */}
           <div className="mt-8">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-slate-200"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-slate-50 lg:bg-white text-slate-500">
-                  Don't have an account?
+                <span className="px-4 bg-slate-50 lg:bg-white text-slate-500 dark:bg-black dark:text-slate-400">
+                  Hoặc tiếp tục với
+                </span>
+              </div>
+            </div>
+            
+            <div className="mt-6">
+              <OAuthButtons 
+                onSuccess={handleOAuthSuccess}
+                onError={handleOAuthError}
+              />
+            </div>
+          </div>
+
+          <div className="mt-8">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-200"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-4 bg-slate-50 lg:bg-white text-slate-500 dark:bg-black dark:text-slate-400">
+                  Chưa có tài khoản?
                 </span>
               </div>
             </div>
             <button
               type="button"
               onClick={onSwitchToRegister}
-              className="mt-4 w-full bg-white text-slate-700 font-semibold py-3 px-4 rounded-lg border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 transition-all duration-200"
+              className="mt-4 w-full bg-white dark:bg-gray-800 text-slate-700 dark:text-slate-300 font-semibold py-3 px-4 rounded-lg border-2 border-slate-200 dark:border-gray-600 hover:border-slate-300 dark:hover:border-gray-500 hover:bg-slate-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 transition-all duration-200"
             >
-              Create new account
+              Tạo tài khoản mới
             </button>
           </div>
         </div>
