@@ -24,6 +24,7 @@ import { cn } from "~/lib/utils";
 import { AnimatedThemeToggler } from "../ui/animated-theme-toggler";
 
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { resolveAvatarUrl } from "~/utils/image";
 
 
 interface SidebarProps {
@@ -108,7 +109,7 @@ export function Sidebar({
           <Link to="/dashboard" className="flex items-center space-x-2 w-full">
             {/* Avatar luôn hiển thị */}
             <Avatar className="h-8 w-8 rounded-lg shrink-0">
-              <AvatarImage src={user?.avatar} alt={user?.username} />
+              <AvatarImage src={ resolveAvatarUrl(user?.avatar) } alt={user?.username} />
               <AvatarFallback className="rounded-lg bg-black text-white dark:bg-white dark:text-black">
                 {user?.username?.charAt(0)?.toUpperCase() || "U"}
               </AvatarFallback>

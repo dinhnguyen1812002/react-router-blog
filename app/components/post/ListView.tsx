@@ -24,16 +24,16 @@ interface PostListProps {
 
 const formatDateSimple = (dateString: string): string => {
   const date = new Date(dateString)
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+  return date.toLocaleDateString("vi-VN", { month: "short", day: "numeric", year: "numeric" })
 }
 
 export function ListView({ posts, onDelete, formatDateSimple: formatDate = formatDateSimple }: PostListProps) {
   return (
     <div className="space-y-2 ">
       {posts.map((post) => (
-        <Link key={post.id} to={`/articles/${post.slug}`}>
-          <div className="group overflow-hidden hover:bg-muted/50 transition-all duration-300 cursor-pointer rounded-lg">
-            <div className="flex flex-col md:flex-row gap-3 p-3 border-b-2 border-gray-200 dark:border-gray-700">
+        <div key={post.id} className="group overflow-hidden hover:bg-muted/50 transition-all duration-300 cursor-pointer rounded-lg">
+          <div className="flex flex-col md:flex-row gap-3 p-3 border-b-2 border-gray-200 dark:border-gray-700">
+            <Link to={`/articles/${post.slug}`} className="flex-1 flex md:flex-row gap-3">
               <div className="flex-shrink-0 w-full md:w-40 h-32 md:h-24 rounded-lg overflow-hidden bg-muted">
                 {post.thumbnail ? (
                   <img
@@ -98,31 +98,31 @@ export function ListView({ posts, onDelete, formatDateSimple: formatDate = forma
                   </div>
                 </div>
               </div>
+            </Link>
 
-              <div className=" flex md:flex-col items-center gap-2 justify-end">
-                <Link to={`/dashboard/article/${post.id}/edit`} onClick={(e) => e.stopPropagation()}>
-                  <Button variant="outline" size="sm" className="hover:bg-primary/10 bg-transparent">
-                    <Edit3 className="w-4 h-4" />
-                    <span className="sr-only">Edit post</span>
-                  </Button>
-                </Link>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="hover:bg-destructive/10 bg-transparent"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    onDelete?.(post.id, post.title)
-                  }}
-                >
-                  <Trash2 className="w-4 h-4 text-destructive" />
-                  <span className="sr-only">Delete post</span>
+            <div className="flex md:flex-col items-center gap-2 justify-end">
+              <Link to={`/dashboard/article/${post.id}/edit`} onClick={(e) => e.stopPropagation()}>
+                <Button variant="outline" size="sm" className="hover:bg-primary/10 bg-transparent">
+                  <Edit3 className="w-4 h-4" />
+                  <span className="sr-only">Edit post</span>
                 </Button>
-              </div>
+              </Link>
+              <Button
+                variant="outline"
+                size="sm"
+                className="hover:bg-destructive/10 bg-transparent"
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  onDelete?.(post.id, post.title)
+                }}
+              >
+                <Trash2 className="w-4 h-4 text-destructive" />
+                <span className="sr-only">Delete post</span>
+              </Button>
             </div>
           </div>
-        </Link>
+        </div>
       ))}
     </div>
   )

@@ -251,13 +251,22 @@ export function SimpleEditor({
         onError: (error) => console.error("Upload failed:", error),
       }),
     ],
-    content: value,
+    content: value ?? "",
     onUpdate: ({ editor }) => {
       if (onChange) {
         onChange(editor.getHTML());
       }
     },
   });
+
+  // Sync value prop to editor when it changes (e.g. fetched content on edit page)
+  React.useEffect(() => {
+    if (!editor || value === undefined) return;
+    const current = editor.getHTML();
+    if (value !== current) {
+      editor.commands.setContent(value, false);
+    }
+  }, [editor, value]);
 
   const rect = useCursorVisibility({
     editor,

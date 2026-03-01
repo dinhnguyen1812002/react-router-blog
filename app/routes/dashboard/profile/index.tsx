@@ -9,6 +9,8 @@ import { SocialLinks } from '~/components/profile/SocialLinks';
 import { MarkdownRenderer } from '~/components/profile/MarkdownRenderer';
 import type { ProfileUser } from '~/types';
 import { profileApi } from '~/api/profile';
+import MarkdownPreview from '@uiw/react-markdown-preview';
+import { useThemeStore } from '~/store/themeStore';
 
 
 
@@ -29,6 +31,8 @@ const ErrorMessage = ({ error, onRetry }: { error: Error; onRetry: () => void })
 
 export default function ProfileDisplayPage() {
   const [activeTab, setActiveTab] = useState('about');
+  const { actualTheme: theme } = useThemeStore();
+  const [markdownKey] = useState(0);
 
   const {
     data: response,
@@ -91,23 +95,39 @@ export default function ProfileDisplayPage() {
         {/* Tab Content */}
         <div className="p-6">
           {activeTab === 'about' && (
-            <div>
-              <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">About</h2>
-              {user.customProfileMarkdown ? (
-                <MarkdownRenderer
-                  content={user.customProfileMarkdown}
-                  userData={user}
+            user.customProfileMarkdown ? (
+              <div className="bg-card rounded-xl p-6 md:p-8 shadow-soft">
+                <MarkdownPreview
+                  key={markdownKey}
+                  source={user.customProfileMarkdown}
+                  style={{ padding: 0 }}
+                  wrapperElement={{
+                    "data-color-mode": theme as "light" | "dark",
+                  }}
                 />
-              ) : (
-                <div className="text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 p-6 rounded-lg text-center">
-                  <User className="w-12 h-12 mx-auto mb-3 text-gray-400 dark:text-gray-500" />
-                  <p>No bio added yet. Tell others about yourself!</p>
-                  <button className="mt-3 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">
-                    Add Bio
-                  </button>
+              </div>
+            ) : (
+              <div className="bg-card rounded-xl p-6 md:p-8 shadow-soft">
+                <h2 className="font-display text-2xl font-semibold text-foreground mb-4">
+                  Về tôi
+                </h2>
+                <div className="prose prose-lg text-muted-foreground space-y-4">
+                  <p>
+                    Xin chào! Tôi là {user?.username || "một tác giả"}, đam mê chia sẻ 
+                    kiến thức và kinh nghiệm qua blog.
+                  </p>
+                  {user?.bio && (
+                    <p className="italic border-l-4 border-primary pl-4">
+                      "{user.bio}"
+                    </p>
+                  )}
+                  <p>
+                    Tham gia Inkwell để khám phá thêm nhiều bài viết và kết nối 
+                    với cộng đồng tác giả.
+                  </p>
                 </div>
-              )}
-            </div>
+              </div>
+            )
           )}
 
           {activeTab === 'posts' && (

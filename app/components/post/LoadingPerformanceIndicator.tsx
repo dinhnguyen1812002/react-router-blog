@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Clock, Zap, Image, FileText } from "lucide-react";
 
 interface PerformanceMetrics {
@@ -41,20 +41,20 @@ export function LoadingPerformanceIndicator({
 
       // Get performance entries
       const resourceEntries = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
-      const imageEntries = resourceEntries.filter(entry => 
-        entry.initiatorType === 'img' || 
+      const imageEntries = resourceEntries.filter(entry =>
+        entry.initiatorType === 'img' ||
         entry.name.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)
       );
 
       const totalImages = imageEntries.length;
       const imagesLoaded = imageEntries.filter(entry => entry.responseEnd > 0).length;
-      
+
       const imageLoadTimes = imageEntries
         .filter(entry => entry.responseEnd > 0)
         .map(entry => entry.responseEnd - entry.fetchStart);
-      
-      const avgImageLoadTime = imageLoadTimes.length > 0 
-        ? imageLoadTimes.reduce((sum, time) => sum + time, 0) / imageLoadTimes.length 
+
+      const avgImageLoadTime = imageLoadTimes.length > 0
+        ? imageLoadTimes.reduce((sum, time) => sum + time, 0) / imageLoadTimes.length
         : 0;
 
       // Calculate bytes loaded (approximate)
@@ -196,9 +196,20 @@ export function useLoadingPerformance() {
     setShowIndicator(isDev || showPerf);
   }, []);
 
-  const handleMetricsUpdate = (newMetrics: PerformanceMetrics) => {
+  const handleMetricsUpdate = useCallback((newMetrics: PerformanceMetrics) => {
     setMetrics(newMetrics);
-  };
+  }, []);
+
+  const IndicatorComponent = useCallback(
+    (props: Omit<LoadingPerformanceIndicatorProps, 'startTime' | 'onMetricsUpdate'>) => (
+      <LoadingPerformanceIndicator
+        {...props}
+        startTime={startTime}
+        onMetricsUpdate={handleMetricsUpdate}
+      />
+    ),
+    [startTime, handleMetricsUpdate]
+  );
 
   return {
     startTime,
@@ -206,12 +217,6 @@ export function useLoadingPerformance() {
     showIndicator,
     setShowIndicator,
     handleMetricsUpdate,
-    LoadingPerformanceIndicator: (props: Omit<LoadingPerformanceIndicatorProps, 'startTime' | 'onMetricsUpdate'>) => (
-      <LoadingPerformanceIndicator
-        {...props}
-        startTime={startTime}
-        onMetricsUpdate={handleMetricsUpdate}
-      />
-    )
+    LoadingPerformanceIndicator: IndicatorComponent
   };
 }

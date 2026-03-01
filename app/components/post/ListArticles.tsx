@@ -17,6 +17,7 @@ import { BookmarkButton } from "./BookmarkButton";
 import { RatingComponent } from "./RatingComponent";
 import { LikeButton } from "./LikeButton";
 import { formatDateSimple } from "~/lib/utils";
+import { resolveAvatarUrl } from "~/utils/image";
 
 interface PostCardProps {
   post: Post;
@@ -73,7 +74,7 @@ export const ListArticles = ({ post }: PostCardProps) => {
           <div className="flex items-center justify-between mt-5 pt-4 border-t border-border/60 gap-4 flex-wrap">
             <div className="flex items-center gap-3">
               <Avatar className="h-8 w-8">
-                <AvatarImage src={post.user.avatar} alt={post.user.username} />
+                <AvatarImage src={resolveAvatarUrl(post.user.avatar)} alt={post.user.username} />
                 <AvatarFallback>{post.user.username[0]}</AvatarFallback>
               </Avatar>
               <div className="flex flex-col">

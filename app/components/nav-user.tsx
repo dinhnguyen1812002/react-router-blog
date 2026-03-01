@@ -27,6 +27,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import type { User } from "~/types";
 import { Link } from "react-router";
+import { resolveAvatarUrl } from "~/utils/image";
 
 export function NavUser({ user }: { user: User | null }) {
   const { isMobile } = useSidebar();
@@ -41,7 +42,7 @@ export function NavUser({ user }: { user: User | null }) {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={user?.avatar} alt={user?.username} />
+                <AvatarImage src= { resolveAvatarUrl(user?.avatar)  } alt={user?.username} />
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">

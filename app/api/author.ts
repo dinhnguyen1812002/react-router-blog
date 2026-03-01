@@ -2,16 +2,33 @@ import type {ApiResponse, PaginatedResponse, Post} from '~/types';
 import { apiClient } from './client';
 import axiosInstance from '~/config/axios';
 
+/** Visibility status for posts. Defaults to DRAFT. */
+export type PostVisibility = "PUBLISHED" | "SCHEDULED" | "PRIVATE" | "DRAFT";
+
+/** API schema for create/update post - PUT /author/{postId} */
 export interface CreateAuthorPostRequest {
+  authorName?: string;
   title: string;
   excerpt?: string;
+  createdAt?: string;
   content: string;
   thumbnail?: string;
-  categories: string[];
-  tags: string[];
+  /** Category IDs (e.g. [1, 2]) */
+  categories?: number[];
+  /** Tag UUIDs (e.g. ["3fa85f64-5717-4562-b3fc-2c963f66afa6"]) */
+  tags?: string[];
   featured?: boolean;
+  /** ISO-8601 format */
   public_date?: string;
+  status?: PostVisibility;
+  visibility?: PostVisibility;
+  /** ISO-8601 format when visibility is SCHEDULED */
+  scheduledPublishAt?: string;
 }
+
+/** Same shape as create - PUT accepts full or partial payload */
+export type UpdateAuthorPostRequest = Partial<CreateAuthorPostRequest> &
+  Pick<CreateAuthorPostRequest, "title" | "content">;
 
 export interface GetMyPostsParams {
   page?: number;
@@ -52,7 +69,10 @@ export const authorApi = {
     return response.data;
   },
 
-  updatePost: async (postId: string, postData: any): Promise<ApiResponse<Post>> => {
+  updatePost: async (
+    postId: string,
+    postData: CreateAuthorPostRequest
+  ): Promise<ApiResponse<Post>> => {
     const response = await apiClient.put(`/author/${postId}`, postData);
     return response.data;
   },
@@ -63,6 +83,7 @@ export const authorApi = {
 
   getPostById: async (postId: string): Promise<Post> => {
     const response = await apiClient.get(`/author/${postId}`);
-    return response.data;
+    const data = response.data as Post | { data: Post };
+    return "data" in data && data.data ? data.data : (data as Post);
   },
 };

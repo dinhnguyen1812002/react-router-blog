@@ -18,6 +18,7 @@ import {
 import { authorApi } from "~/api/author"
 
 import { ListView } from "~/components/post/ListView"
+import { ConfirmDialog } from "~/components/ui/confirm-dialog"
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value)
@@ -42,6 +43,8 @@ export default function MyPostsPage() {
   const [page, setPage] = useState(0)
   const [searchTerm, setSearchTerm] = useState("")
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [postToDelete, setPostToDelete] = useState<{ id: string; title: string } | null>(null)
   const size = 6
 
   const debouncedSearch = useDebounce(searchTerm, 500)
@@ -70,30 +73,31 @@ export default function MyPostsPage() {
 
   const deleteMutation = useMutation({
     mutationFn: async (postId: string) => {
-      return await userPostsApi.deletePost(postId)
+      return await authorApi.deletePost(postId)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user-posts"] })
       queryClient.invalidateQueries({ queryKey: ["user-stats"] })
-      if (typeof window !== "undefined" && window.alert) {
-        window.alert("Bài viết đã được xóa thành công!")
-      }
+      setDeleteDialogOpen(false)
+      setPostToDelete(null)
     },
     onError: (error) => {
-      if (typeof window !== "undefined" && window.alert) {
-        window.alert(`Không thể xóa bài viết: ${error.message || "Lỗi không xác định"}`)
-      }
+      console.error("Delete error:", error)
     },
   })
 
-  const handleDelete = async (postId: string, title: string) => {
-    if (!window.confirm(`Bạn có chắc muốn xóa bài viết "${title}"?`)) {
-      return
-    }
-    try {
-      await deleteMutation.mutateAsync(postId)
-    } catch (error) {
-      console.error("Delete operation failed:", error)
+  const handleDelete = (postId: string, title: string) => {
+    setPostToDelete({ id: postId, title })
+    setDeleteDialogOpen(true)
+  }
+
+  const confirmDelete = async () => {
+    if (postToDelete) {
+      try {
+        await deleteMutation.mutateAsync(postToDelete.id)
+      } catch (error) {
+        console.error("Delete operation failed:", error)
+      }
     }
   }
 
@@ -185,7 +189,7 @@ export default function MyPostsPage() {
             ) : (
              
             )} */}
-            <ListView posts={posts} />
+            <ListView posts={posts} onDelete={handleDelete} />
             {!isLoading && posts.length > 0 && (
               <div className="flex justify-center items-center gap-2 mt-12 pt-8 border-t border-border">
                 <Button variant="outline" disabled={page === 0} onClick={() => setPage(page - 1)}>
@@ -214,6 +218,17 @@ export default function MyPostsPage() {
           </div>
         )}
       </div>
+      
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title="Xóa bài viết"
+        description={`Bạn có chắc muốn xóa bài viết "${postToDelete?.title}"? Hành động này không thể hoàn tác.`}
+        confirmText="Xóa"
+        cancelText="Hủy"
+        onConfirm={confirmDelete}
+        isPending={deleteMutation.isPending}
+      />
     </div>
   )
 }
