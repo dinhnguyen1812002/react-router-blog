@@ -7,15 +7,17 @@ import {
   ScrollRestoration,
 } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useAuthInit } from "~/hooks/useAuthInit";
 import { Toaster, toast } from "sonner";
 import { useThemeStore } from "~/store/themeStore";
 import { WebSocketProvider } from "~/context/WebSocketContext";
+import { AuthProvider } from "~/context/AuthContext";
 
 import type { Route } from "./+types/root";
 import stylesheet from "./app.css?url";
 import theme from "./styles/theme.css?url";
+import pagesStyles from "./styles/pages.css?url";
 
 import LoadingSpinner from "./components/Loading";
 import NotFound from "./components/error/NotFound";
@@ -39,6 +41,7 @@ export const links: Route.LinksFunction = () => [
   },
   // { rel: "stylesheet", href: theme },
   { rel: "stylesheet", href: stylesheet },
+  { rel: "stylesheet", href: pagesStyles },
   // {rel: "stylesheet", href: animations}
 
   // { rel: "stylesheet", href: animations },
@@ -116,7 +119,13 @@ export default function App() {
     );
   }
 
-  return <Outlet />;
+  return (
+    <AuthProvider isInitialized={isInitialized}>
+      <Suspense fallback={<LoadingSpinner />}>
+        <Outlet />
+      </Suspense>
+    </AuthProvider>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

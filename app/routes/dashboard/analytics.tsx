@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader } from "~/components/ui/Card";
 import { Button } from "~/components/ui/button";
 import { useAuthStore } from "~/store/authStore";
-import { DashboardWrapper } from "~/components/layout/DashboardWrapper";
 import {
   TrendingUp,
   Eye,

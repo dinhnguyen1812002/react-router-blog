@@ -1,299 +1,395 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router';
-import { Card, CardContent, CardHeader } from '~/components/ui/Card';
-import { Button } from '~/components/ui/button';
-import { PostCard } from '~/components/post/PostCard';
 import { bookmarksApi } from '~/api/bookmarks';
 import { useAuthStore } from '~/store/authStore';
-import { 
-  Bookmark, 
-  Search, 
-  Filter,
-  Grid,
+import {
+  Bookmark,
+  Search,
+  Grid2X2,
   List,
   Calendar,
   Eye,
   Heart,
   MessageCircle,
-  Star,
-  FileText
+  FileText,
+  X,
+  Compass,
+  BookMarked,
+  ArrowDownUp,
 } from 'lucide-react';
-import { formatDateSimple } from "~/lib/utils";
+import { formatDateSimple } from '~/lib/utils';
 import { toast } from 'sonner';
 
+type SortKey = 'newest' | 'oldest' | 'mostViewed' | 'mostLiked';
 
+const SORT_OPTIONS: { key: SortKey; label: string }[] = [
+  { key: 'newest',     label: 'Mới nhất'  },
+  { key: 'oldest',     label: 'Cũ nhất'   },
+  { key: 'mostViewed', label: 'Xem nhiều' },
+  { key: 'mostLiked',  label: 'Yêu thích' },
+];
 
 export default function BookmarksPage() {
   const { user } = useAuthStore();
-  const [page, setPage] = useState(0);
+  const [page, setPage]             = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [viewMode, setViewMode]     = useState<'grid' | 'list'>('grid');
+  const [sortBy, setSortBy]         = useState<SortKey>('newest');
+  const [pendingRemovals, setPendingRemovals] = useState<Record<string, ReturnType<typeof setTimeout>>>({});
 
-  // Fetch bookmarked posts
-  const { data: bookmarksData, isLoading, error } = useQuery({
-    queryKey: ['bookmarks', page, searchTerm],
+  const { data: bookmarksData, isLoading } = useQuery({
+    queryKey: ['bookmarks', page, viewMode],
     queryFn: () => bookmarksApi.getBookmarks(page, viewMode === 'grid' ? 12 : 10),
-    enabled: !!user
+    enabled: !!user,
   });
 
-  const posts = bookmarksData?.posts || [];
+  const posts      = bookmarksData?.posts || [];
   const totalPosts = bookmarksData?.total || 0;
   const totalPages = Math.ceil(totalPosts / (viewMode === 'grid' ? 12 : 10));
 
-  // Filter posts based on search term
-  const filteredPosts = posts.filter(post =>
-    post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    post.summary?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredPosts = posts.filter(p =>
+    p.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    p.summary?.toLowerCase().includes(searchTerm.toLowerCase()),
   );
- const [pendingRemovals, setPendingRemovals] = useState<Record<string, NodeJS.Timeout>>({});
 
- function handleBookmark(postId: string) {
-    // 1. Tạm thời loại bỏ bài viết khỏi giao diện
-    setPendingRemovals((prev) => {
-      // nếu đã pending rồi thì bỏ qua
+  const sortedPosts = [...filteredPosts].sort((a, b) => {
+    if (sortBy === 'oldest')     return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    if (sortBy === 'mostViewed') return (b.viewCount || 0) - (a.viewCount || 0);
+    if (sortBy === 'mostLiked')  return (b.likeCount || 0) - (a.likeCount || 0);
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+
+  function handleBookmark(postId: string) {
+    setPendingRemovals(prev => {
       if (prev[postId]) return prev;
       const timeout = setTimeout(async () => {
-        try {
-          await bookmarksApi.removeBookmark(postId);
-        } catch (err) {
-          console.error("Failed to remove bookmark:", err);
-          toast.error("Xóa bookmark thất bại");
-        } finally {
-          setPendingRemovals((prev) => {
-            const { [postId]: _, ...rest } = prev;
-            return rest;
-          });
+        try   { await bookmarksApi.removeBookmark(postId); }
+        catch  { toast.error('Xóa bookmark thất bại'); }
+        finally {
+          setPendingRemovals(p => { const { [postId]: _, ...rest } = p; return rest; });
         }
-      }, 30000);
-
+      }, 30_000);
       return { ...prev, [postId]: timeout };
     });
 
-    // 2. Hiện toast với nút Hoàn tác
-    toast("Đã gỡ bookmark", {
-      description: "Sẽ xóa sau 30 giây nếu bạn không hoàn tác.",
-      duration: 30000,
-      style: {
-        background: "rgba(255, 255, 255, 0.95)",
-        color: "black",
-        border: "1px solid #eee",
-      },
+    toast('Đã gỡ bookmark', {
+      description: 'Sẽ xóa sau 30 giây nếu bạn không hoàn tác.',
+      duration: 30_000,
       action: {
-        label: "Hoàn tác",
+        label: 'Hoàn tác',
         onClick: () => {
-          // Huỷ timeout và khôi phục post
-          if (pendingRemovals[postId]) {
-            clearTimeout(pendingRemovals[postId]);
-            setPendingRemovals((prev) => {
-              const { [postId]: _, ...rest } = prev;
-              return rest;
-            });
-          }
+          clearTimeout(pendingRemovals[postId]);
+          setPendingRemovals(p => { const { [postId]: _, ...rest } = p; return rest; });
         },
       },
     });
   }
 
-  return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-          Bài viết đã lưu
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">
-          Quản lý các bài viết bạn đã đánh dấu để đọc sau
-        </p>
-      </div>
-
-      {/* Filters and Search */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <input
-                type="text"
-                placeholder="Tìm kiếm bài viết đã lưu..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-black text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+  /* ─── Skeletons ─── */
+  const GridSkeleton = () => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div key={i} className="rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden bg-white dark:bg-zinc-900">
+          <div className="h-40 bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
+          <div className="p-4 space-y-3">
+            <div className="h-4 bg-zinc-100 dark:bg-zinc-800 rounded-full animate-pulse w-3/4" />
+            <div className="h-3 bg-zinc-100 dark:bg-zinc-800 rounded-full animate-pulse w-1/2" />
+            <div className="flex gap-3 pt-1">
+              <div className="h-3 bg-zinc-100 dark:bg-zinc-800 rounded-full animate-pulse w-14" />
+              <div className="h-3 bg-zinc-100 dark:bg-zinc-800 rounded-full animate-pulse w-14" />
             </div>
-            <div className="flex items-center space-x-1 bg-gray-100 dark:bg-black rounded-md p-1">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`p-1.5 rounded ${viewMode === 'grid' ? 'bg-white dark:bg-gray-700 shadow-sm' : 'text-gray-500 dark:text-gray-400'}`}
-              >
-                <Grid className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={`p-1.5 rounded ${viewMode === 'list' ? 'bg-white dark:bg-gray-700 shadow-sm' : 'text-gray-500 dark:text-gray-400'}`}
-              >
-                <List className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Content */}
-      {isLoading ? (
-        viewMode === 'grid' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
-              <Card key={i} className="animate-pulse">
-                <div className="h-40 bg-gray-200 dark:bg-gray-700 rounded-t-lg"></div>
-                <CardContent className="p-4 space-y-3">
-                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-                  <div className="flex justify-between">
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        ) : (
-          <Card>
-            <CardContent className="p-0">
-              <div className="divide-y divide-gray-200 dark:divide-gray-700">
-                {[...Array(5)].map((_, i) => (
-                  <div key={i} className="animate-pulse p-4 flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                    <div className="flex-1 space-y-2">
-                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-                    </div>
-                    <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )
-      ) : filteredPosts.length > 0 ? (
-        viewMode === 'grid' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredPosts.map((post) => (
-              <PostCard 
-                key={post.id} 
-                post={post} 
-                // showBookmarkButton 
-                // showAuthor 
-              />
-            ))}
-          </div>
-        ) : (
-          <div>
-            <CardContent >
-              <div className="divide-y divide-gray-200 dark:divide-gray-700">
-                {filteredPosts.map((post) => (
-                  <div key={post.id} className="p-4 flex items-start space-x-4">
-                    <div className="flex-shrink-0 w-12 h-12 rounded overflow-hidden bg-gray-100 dark:bg-black">
-                      {post.thumbnail ? (
-                        <img 
-                          src={post.thumbnail} 
-                          alt={post.title} 
-                          className="w-full h-full"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
-                          <FileText className="w-6 h-6" />
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <Link to={`/articles/${post.slug}`}>
-                        <h3 className="text-base font-medium text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 truncate">
-                          {post.title}
-                        </h3>
-                      </Link>
-                      <div className="flex items-center space-x-4 mt-1 text-xs text-gray-500 dark:text-gray-400">
-                        <div className="flex items-center">
-                          <Calendar className="w-3 h-3 mr-1" />
-                          <span>{formatDateSimple(post.createdAt)}</span>
-                        </div>
-                        <div className="flex items-center">
-                          <Eye className="w-3 h-3 mr-1" />
-                          <span>{post.viewCount}</span>
-                        </div>
-                        <div className="flex items-center">
-                          <Heart className="w-3 h-3 mr-1" />
-                          <span>{post.likeCount}</span>
-                        </div>
-                        <div className="flex items-center">
-                          <MessageCircle className="w-3 h-3 mr-1" />
-                          <span>{post.commentCount}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex-shrink-0">
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        className="text-amber-500 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300"
-                        onClick={() => handleBookmark(post.id)}
-                      >
-                        <Bookmark className="w-5 h-5 fill-current" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </div>
-        )
-      ) : (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <Bookmark className="w-16 h-16 mx-auto text-gray-400 dark:text-gray-600 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-              Không có bài viết đã lưu
-            </h3>
-            <p className="text-gray-500 dark:text-gray-400 mb-6">
-              {searchTerm ? 
-                `Không tìm thấy bài viết nào phù hợp với "${searchTerm}"` : 
-                'Bạn chưa lưu bài viết nào. Hãy khám phá các bài viết và đánh dấu những bài bạn thích!'}
-            </p>
-            <Link to="/articles">
-              <Button>
-                Khám phá bài viết
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Pagination */}
-      {!isLoading && totalPages > 1 && (
-        <div className="flex justify-center mt-6">
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page === 0}
-              onClick={() => setPage(page - 1)}
-            >
-              Trước
-            </Button>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              Trang {page + 1} / {totalPages}
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page >= totalPages - 1}
-              onClick={() => setPage(page + 1)}
-            >
-              Sau
-            </Button>
           </div>
         </div>
+      ))}
+    </div>
+  );
+
+  const ListSkeleton = () => (
+    <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden divide-y divide-zinc-100 dark:divide-zinc-800">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <div key={i} className="flex items-center gap-4 p-4 bg-white dark:bg-zinc-900">
+          <div className="w-12 h-12 rounded-xl bg-zinc-100 dark:bg-zinc-800 animate-pulse flex-shrink-0" />
+          <div className="flex-1 space-y-2">
+            <div className="h-4 bg-zinc-100 dark:bg-zinc-800 rounded-full animate-pulse w-2/3" />
+            <div className="h-3 bg-zinc-100 dark:bg-zinc-800 rounded-full animate-pulse w-1/3" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  return (
+    <div className="space-y-6 pb-10">
+
+      {/* ─── Header ─── */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+            Bài viết đã lưu
+          </h1>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+            Tìm lại và quản lý nội dung bạn quan tâm.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
+            <BookMarked size={12} />
+            {totalPosts} bài viết
+          </span>
+          {searchTerm && (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900">
+              <Search size={12} />
+              {sortedPosts.length} kết quả
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* ─── Search + View toggle ─── */}
+      <div className="flex gap-2">
+        <div className="relative flex-1">
+          <Search
+            size={15}
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 pointer-events-none"
+          />
+          <input
+            type="text"
+            placeholder="Tìm kiếm theo tiêu đề, mô tả…"
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            className="w-full h-10 pl-10 pr-9 rounded-xl text-sm bg-zinc-100 dark:bg-zinc-800 border border-transparent focus:border-zinc-900 dark:focus:border-zinc-100 focus:bg-white dark:focus:bg-zinc-900 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition-colors"
+          />
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm('')}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full bg-zinc-300 dark:bg-zinc-600 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-400 dark:hover:bg-zinc-500 transition-colors"
+            >
+              <X size={11} />
+            </button>
+          )}
+        </div>
+
+        <div className="flex items-center gap-0.5 p-1 rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700">
+          <button
+            onClick={() => setViewMode('grid')}
+            aria-label="Lưới"
+            className={`w-8 h-8 flex items-center justify-center rounded-lg transition-all ${
+              viewMode === 'grid'
+                ? 'bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-900 shadow-sm'
+                : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'
+            }`}
+          >
+            <Grid2X2 size={15} />
+          </button>
+          <button
+            onClick={() => setViewMode('list')}
+            aria-label="Danh sách"
+            className={`w-8 h-8 flex items-center justify-center rounded-lg transition-all ${
+              viewMode === 'list'
+                ? 'bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-900 shadow-sm'
+                : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'
+            }`}
+          >
+            <List size={15} />
+          </button>
+        </div>
+      </div>
+
+      {/* ─── Sort chips + count ─── */}
+      <div className="flex flex-wrap items-center gap-2">
+        <ArrowDownUp size={13} className="text-zinc-400 dark:text-zinc-500 flex-shrink-0" />
+        {SORT_OPTIONS.map(({ key, label }) => (
+          <button
+            key={key}
+            onClick={() => setSortBy(key)}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors border ${
+              sortBy === key
+                ? 'bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-900 border-zinc-900 dark:border-zinc-50'
+                : 'text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700 hover:border-zinc-500 dark:hover:border-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+        <span className="ml-auto text-xs text-zinc-400 dark:text-zinc-500">
+          <span className="font-semibold text-zinc-700 dark:text-zinc-300">{sortedPosts.length}</span>
+          <span className="mx-0.5">/</span>
+          <span className="font-semibold text-zinc-700 dark:text-zinc-300">{totalPosts}</span>
+          {' bài'}
+        </span>
+      </div>
+
+      {/* ─── Content ─── */}
+      {isLoading ? (
+        viewMode === 'grid' ? <GridSkeleton /> : <ListSkeleton />
+      ) : sortedPosts.length > 0 ? (
+        viewMode === 'grid' ? (
+
+          /* GRID */
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {sortedPosts.map(post => (
+              <div
+                key={post.id}
+                className="group relative rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden hover:border-zinc-400 dark:hover:border-zinc-600 hover:shadow-md dark:hover:shadow-black/40 transition-all duration-200"
+              >
+                {/* Remove button — visible on hover */}
+                <button
+                  onClick={() => handleBookmark(post.id)}
+                  aria-label="Gỡ bookmark"
+                  className="absolute top-2.5 right-2.5 z-10 w-7 h-7 flex items-center justify-center rounded-full bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm border border-zinc-200 dark:border-zinc-700 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 hover:border-zinc-600 dark:hover:border-zinc-400 opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-150"
+                >
+                  <Bookmark size={12} fill="currentColor" />
+                </button>
+
+                {/* Image */}
+                <div className="h-40 overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+                  {post.thumbnail ? (
+                    <img
+                      src={post.thumbnail}
+                      alt={post.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-zinc-300 dark:text-zinc-600">
+                      <FileText size={32} strokeWidth={1.5} />
+                    </div>
+                  )}
+                </div>
+
+                {/* Body */}
+                <div className="p-4">
+                  <Link
+                    to={`/articles/${post.slug}`}
+                    className="block text-sm font-semibold text-zinc-900 dark:text-zinc-50 hover:text-zinc-500 dark:hover:text-zinc-400 line-clamp-2 leading-snug mb-3 transition-colors"
+                  >
+                    {post.title}
+                  </Link>
+                  <div className="flex items-center gap-3 text-xs text-zinc-400 dark:text-zinc-500">
+                    <span className="flex items-center gap-1">
+                      <Calendar size={11} />
+                      {formatDateSimple(post.createdAt)}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Eye size={11} />
+                      {post.viewCount ?? 0}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Heart size={11} />
+                      {post.likeCount ?? 0}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <MessageCircle size={11} />
+                      {post.commentCount ?? 0}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+        ) : (
+
+          /* LIST */
+          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden divide-y divide-zinc-100 dark:divide-zinc-800/80">
+            {sortedPosts.map(post => (
+              <div
+                key={post.id}
+                className="group flex items-center gap-4 px-4 py-3.5 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
+              >
+                {/* Thumbnail */}
+                <div className="flex-shrink-0 w-12 h-12 rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+                  {post.thumbnail ? (
+                    <img src={post.thumbnail} alt={post.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-zinc-300 dark:text-zinc-600">
+                      <FileText size={18} strokeWidth={1.5} />
+                    </div>
+                  )}
+                </div>
+
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                  <Link
+                    to={`/articles/${post.slug}`}
+                    className="block text-sm font-medium text-zinc-900 dark:text-zinc-50 hover:text-zinc-500 dark:hover:text-zinc-400 truncate transition-colors"
+                  >
+                    {post.title}
+                  </Link>
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-1 text-xs text-zinc-400 dark:text-zinc-500">
+                    <span className="flex items-center gap-1"><Calendar size={10} />{formatDateSimple(post.createdAt)}</span>
+                    <span className="flex items-center gap-1"><Eye size={10} />{post.viewCount ?? 0}</span>
+                    <span className="flex items-center gap-1"><Heart size={10} />{post.likeCount ?? 0}</span>
+                    <span className="flex items-center gap-1"><MessageCircle size={10} />{post.commentCount ?? 0}</span>
+                  </div>
+                </div>
+
+                {/* Remove */}
+                <button
+                  onClick={() => handleBookmark(post.id)}
+                  aria-label="Gỡ bookmark"
+                  className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-700 text-zinc-400 dark:text-zinc-500 hover:border-zinc-900 dark:hover:border-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 opacity-0 group-hover:opacity-100 transition-all duration-150"
+                >
+                  <Bookmark size={14} fill="currentColor" />
+                </button>
+              </div>
+            ))}
+          </div>
+
+        )
+      ) : (
+
+        /* EMPTY STATE */
+        <div className="flex flex-col items-center justify-center py-20 rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/30 text-center">
+          <div className="w-14 h-14 rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center mb-5 shadow-sm">
+            <BookMarked size={24} className="text-zinc-300 dark:text-zinc-600" strokeWidth={1.5} />
+          </div>
+          <h3 className="text-base font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
+            {searchTerm ? 'Không tìm thấy kết quả' : 'Chưa có bài viết nào'}
+          </h3>
+          <p className="text-sm text-zinc-400 dark:text-zinc-500 max-w-xs leading-relaxed mb-6">
+            {searchTerm
+              ? `Không có bài viết phù hợp với "${searchTerm}". Hãy thử từ khóa khác.`
+              : 'Khám phá các bài viết và nhấn lưu để đọc lại sau.'}
+          </p>
+          {!searchTerm && (
+            <Link to="/articles">
+              <button className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-900 hover:bg-zinc-700 dark:hover:bg-zinc-200 transition-colors">
+                <Compass size={14} />
+                Khám phá bài viết
+              </button>
+            </Link>
+          )}
+        </div>
+
       )}
+
+      {/* ─── Pagination ─── */}
+      {!isLoading && totalPages > 1 && (
+        <div className="flex items-center justify-center gap-3 pt-2">
+          <button
+            disabled={page === 0}
+            onClick={() => setPage(p => p - 1)}
+            className="px-4 py-2 rounded-xl text-sm font-medium border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:border-zinc-900 dark:hover:border-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            ← Trước
+          </button>
+          <span className="text-sm text-zinc-400 dark:text-zinc-500">
+            <span className="font-semibold text-zinc-800 dark:text-zinc-200">{page + 1}</span>
+            <span className="mx-1 text-zinc-300 dark:text-zinc-600">/</span>
+            <span className="font-semibold text-zinc-800 dark:text-zinc-200">{totalPages}</span>
+          </span>
+          <button
+            disabled={page >= totalPages - 1}
+            onClick={() => setPage(p => p + 1)}
+            className="px-4 py-2 rounded-xl text-sm font-medium border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:border-zinc-900 dark:hover:border-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            Sau →
+          </button>
+        </div>
+      )}
+
     </div>
   );
 }

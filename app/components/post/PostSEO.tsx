@@ -34,14 +34,14 @@ export function PostSEO({ post, baseUrl = domain }: PostSEOProps) {
     };
 
     // Basic meta tags
-    updateMetaTag("description", post.excerpt);
-    updateMetaTag("keywords", post.tags.map(tag => tag.name).join(", "));
-    updateMetaTag("author", post.user.username);
+    updateMetaTag("description", post.excerpt || "");
+    updateMetaTag("keywords", post.tags?.map((tag: { name: string }) => tag.name).join(", ") || "");
+    updateMetaTag("author", post.user?.username || "Anonymous");
 
     // Open Graph meta tags
     updateMetaTag("og:type", "article", true);
     updateMetaTag("og:title", post.title, true);
-    updateMetaTag("og:description", post.excerpt, true);
+    updateMetaTag("og:description", post.excerpt || "", true);
     updateMetaTag("og:url", postUrl, true);
     updateMetaTag("og:image", imageUrl, true);
     updateMetaTag("og:image:width", "1200", true);
@@ -52,12 +52,12 @@ export function PostSEO({ post, baseUrl = domain }: PostSEOProps) {
     if (post.updatedAt) {
       updateMetaTag("article:modified_time", post.updatedAt, true);
     }
-    updateMetaTag("article:author", post.user.username, true);
+    updateMetaTag("article:author", post.user?.username || "Anonymous", true);
 
     // Twitter Card meta tags
     updateMetaTag("twitter:card", "summary_large_image");
     updateMetaTag("twitter:title", post.title);
-    updateMetaTag("twitter:description", post.excerpt);
+    updateMetaTag("twitter:description", post.excerpt || "");
     updateMetaTag("twitter:image", imageUrl);
     updateMetaTag("twitter:site", "@yourtwitterhandle");
     updateMetaTag("twitter:creator", "@yourtwitterhandle");
@@ -83,12 +83,12 @@ export function PostSEO({ post, baseUrl = domain }: PostSEOProps) {
       "@context": "https://schema.org",
       "@type": "BlogPosting",
       "headline": post.title,
-      "description": post.excerpt,
+      "description": post.excerpt || "",
       "image": imageUrl,
       "author": {
         "@type": "Person",
-        "name": post.user.username,
-        "image": post.user.avatar || `${baseUrl}/default-avatar.jpg`
+        "name": post.user?.username || "Anonymous",
+        "image": post.user?.avatar || `${baseUrl}/default-avatar.jpg`
       },
       "publisher": {
         "@type": "Organization",
@@ -104,9 +104,9 @@ export function PostSEO({ post, baseUrl = domain }: PostSEOProps) {
         "@type": "WebPage",
         "@id": postUrl
       },
-      "articleSection": post.categories.map(category => category.category).join(", "),
-      "keywords": post.tags.map(tag => tag.name).join(", "),
-      "wordCount": post.content.replace(/<[^>]*>/g, "").split(/\s+/).length,
+      "articleSection": post.categories?.map((category: { category: string }) => category.category).join(", ") || "",
+      "keywords": post.tags?.map((tag: { name: string }) => tag.name).join(", ") || "",
+      "wordCount": (post.content?.replace(/<[^>]*>/g, "") || "").split(/\s+/).length,
       "commentCount": post.commentCount || 0,
       "interactionStatistic": [
         {

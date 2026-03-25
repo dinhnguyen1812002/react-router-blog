@@ -18,12 +18,16 @@ import { RatingComponent } from "./RatingComponent";
 import { LikeButton } from "./LikeButton";
 import { formatDateSimple } from "~/lib/utils";
 import { resolveAvatarUrl } from "~/utils/image";
+import { getSafeAvatar, getSafeUsername, getUserInitial } from "~/utils/post-helpers";
 
 interface PostCardProps {
   post: Post;
 }
 
 export const ListArticles = ({ post }: PostCardProps) => {
+  const username = getSafeUsername(post);
+  const avatar = resolveAvatarUrl(getSafeAvatar(post));
+
   return (
     <div className="group border border-border/60 rounded-xl bg-background hover:bg-muted/20 transition-colors">
       <div className="flex flex-col md:flex-row">
@@ -74,12 +78,12 @@ export const ListArticles = ({ post }: PostCardProps) => {
           <div className="flex items-center justify-between mt-5 pt-4 border-t border-border/60 gap-4 flex-wrap">
             <div className="flex items-center gap-3">
               <Avatar className="h-8 w-8">
-                <AvatarImage src={resolveAvatarUrl(post.user.avatar)} alt={post.user.username} />
-                <AvatarFallback>{post.user.username[0]}</AvatarFallback>
+                <AvatarImage src={avatar} alt={username} />
+                <AvatarFallback>{getUserInitial(post)}</AvatarFallback>
               </Avatar>
               <div className="flex flex-col">
                 <span className="text-sm font-medium text-foreground">
-                  {post.user.username}
+                  {username}
                 </span>
                 <div className="flex items-center gap-3 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1">

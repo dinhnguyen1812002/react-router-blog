@@ -44,7 +44,15 @@ export interface Post {
   featured: boolean;
   published?: boolean;
   status?: string;
-  user: User;
+  author?: {
+    id: string;
+    username: string;
+    email?: string;
+    slug?: string;
+    roles?: string[] | null;
+    avatar?: string | null;
+  };
+  user?: User; // Make user optional to handle cases where it might be undefined
   categories: Category[];
   tags: Tag[];
   createdAt: string;
@@ -257,7 +265,6 @@ export interface SeriesSearchRequest {
   sortBy?: string;
   sortDirection?: 'ASC' | 'DESC';
 }
-
 
 
 

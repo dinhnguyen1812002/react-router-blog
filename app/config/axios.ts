@@ -86,14 +86,17 @@ const shouldRetryRequest = (config: InternalAxiosRequestConfig | undefined): boo
   if (!config?.url) return false;
 
   // Don't retry auth-related requests
-const AUTH_PATHS = [
-  '/api/v1/auth/refresh-token',
-  '/api/v1/auth/login',
-  '/api/v1/auth/logout',
-  '/api/v1/auth/register'
-];
+  const AUTH_PATHS = [
+    "/auth/refresh-token",
+    "/auth/login",
+    "/auth/logout",
+    "/auth/register",
+    "/auth/oauth/login",
+    "/auth/forgot-password",
+    "/auth/reset-password",
+  ];
 
-  return !AUTH_PATHS.some(path => config.url?.includes(path));
+  return !AUTH_PATHS.some((path) => config.url?.includes(path));
 };
 
 /**

@@ -3,7 +3,7 @@ import { Github, Linkedin, Twitter } from "lucide-react"
 export const Footer = () => {
   const year = new Date().getFullYear()
   return (
-    <footer className="bg-slate-50 dark:bg-slate-950 pt-20 pb-10 px-6 border-t border-slate-200 dark:border-slate-800">
+    <footer className="bg-white dark:bg-black pt-20 pb-10 px-6 border-t border-slate-200 dark:border-slate-800">
       <div className="container mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-12 mb-20">
           <div className="col-span-2">

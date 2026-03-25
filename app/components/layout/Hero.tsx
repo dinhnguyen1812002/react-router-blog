@@ -1,4 +1,4 @@
-import { ArrowRight, CheckCircle2, Play, Star } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Star } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Link } from 'react-router';
 import { TypingAnimation } from '../ui/typing-animation';
@@ -96,7 +96,7 @@ import { IconBrandTwitter } from '@tabler/icons-react';
 
 export default function HeroSection() {
   return (
-      <section className="relative pt-32 pb-20  md:pb-32 overflow-hidden bg-white dark:bg-slate-950">
+      <section className="relative pt-32 pb-20  md:pb-32 overflow-hidden bg-white dark:bg-black">
             {/* Background Decorative Elements */}
             <div className="absolute top-0 right-0 w-1/3 h-full bg-slate-50 dark:bg-slate-900/30 z-0 hidden lg:block"></div>
             <div className="absolute -top-24 -right-24 w-96 h-96 bg-indigo-100 dark:bg-indigo-500/20 rounded-full blur-3xl opacity-40"></div>

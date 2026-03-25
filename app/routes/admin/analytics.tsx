@@ -71,41 +71,41 @@ export default function AdminAnalytics() {
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow border border-gray-200 dark:border-slate-700 p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Tổng lượt xem</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">24,567</p>
             </div>
             <div className="p-3 bg-blue-50 dark:bg-blue-900/30 rounded-full">
-              <Eye className="h-6 w-6 text-blue-600" />
+              <Eye className="h-6 w-6 text-blue-600 dark:text-blue-400" />
             </div>
           </div>
           <div className="mt-4 flex items-center">
             <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-            <span className="text-sm font-medium text-green-600">+15.3%</span>
+            <span className="text-sm font-medium text-green-600 dark:text-green-400">+15.3%</span>
             <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">so với tháng trước</span>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow border border-gray-200 dark:border-slate-700 p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Người dùng hoạt động</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">1,234</p>
             </div>
             <div className="p-3 bg-green-50 dark:bg-green-900/30 rounded-full">
-              <Users className="h-6 w-6 text-green-600" />
+              <Users className="h-6 w-6 text-green-600 dark:text-green-400" />
             </div>
           </div>
           <div className="mt-4 flex items-center">
             <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-            <span className="text-sm font-medium text-green-600">+8.2%</span>
+            <span className="text-sm font-medium text-green-600 dark:text-green-400">+8.2%</span>
             <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">so với tháng trước</span>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow border border-gray-200 dark:border-slate-700 p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Bài viết mới</p>
@@ -117,24 +117,24 @@ export default function AdminAnalytics() {
           </div>
           <div className="mt-4 flex items-center">
             <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-            <span className="text-sm font-medium text-green-600">+12.1%</span>
+            <span className="text-sm font-medium text-green-600 dark:text-green-400">+12.1%</span>
             <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">so với tháng trước</span>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow border border-gray-200 dark:border-slate-700 p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Tổng lượt thích</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">3,456</p>
             </div>
             <div className="p-3 bg-red-50 dark:bg-red-900/30 rounded-full">
-              <Heart className="h-6 w-6 text-red-600" />
+              <Heart className="h-6 w-6 text-red-600 dark:text-red-400" />
             </div>
           </div>
           <div className="mt-4 flex items-center">
             <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-            <span className="text-sm font-medium text-green-600">+23.5%</span>
+            <span className="text-sm font-medium text-green-600 dark:text-green-400">+23.5%</span>
             <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">so với tháng trước</span>
           </div>
         </div>
@@ -143,7 +143,7 @@ export default function AdminAnalytics() {
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Simple Bar Chart Representation */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow border border-gray-200 dark:border-slate-700 p-6">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Thống kê theo tháng</h2>
           <div className="space-y-4">
             {chartData.map((data, index) => (
@@ -168,7 +168,7 @@ export default function AdminAnalytics() {
         </div>
 
         {/* Posts Growth */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow border border-gray-200 dark:border-slate-700 p-6">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Tăng trưởng bài viết</h2>
           <div className="space-y-4">
             {chartData.map((data, index) => (
@@ -196,13 +196,13 @@ export default function AdminAnalytics() {
       {/* Top Content and Users */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Top Posts */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow border border-gray-200 dark:border-slate-700 p-6">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Bài viết phổ biến nhất</h2>
           <div className="space-y-4">
             {topPosts.map((post, index) => (
               <div key={post.id} className="flex items-start space-x-4 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700">
-                <div className="flex-shrink-0 w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-                  <span className="text-sm font-medium text-blue-600">#{index + 1}</span>
+                <div className="shrink-0 w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                  <span className="text-sm font-medium text-blue-600 dark:text-blue-400">#{index + 1}</span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{post.title}</h3>
@@ -225,13 +225,13 @@ export default function AdminAnalytics() {
         </div>
 
         {/* Top Users */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow border border-gray-200 dark:border-slate-700 p-6">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Tác giả hàng đầu</h2>
           <div className="space-y-4">
             {topUsers.map((user, index) => (
               <div key={user.id} className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700">
-                <div className="flex-shrink-0 w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-                  <span className="text-sm font-medium text-green-600">#{index + 1}</span>
+                <div className="shrink-0 w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                  <span className="text-sm font-medium text-green-600 dark:text-green-400">#{index + 1}</span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">{user.name}</h3>
@@ -248,7 +248,7 @@ export default function AdminAnalytics() {
       </div>
 
       {/* Export Options */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow border border-gray-200 dark:border-slate-700 p-6">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Xuất báo cáo</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <button className="p-4 border border-gray-300 dark:border-slate-700 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">

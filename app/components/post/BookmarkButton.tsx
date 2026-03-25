@@ -6,6 +6,11 @@ import { bookmarksApi } from "~/api/bookmarks";
 import { useAuthStore } from "~/store/authStore";
 import { useNavigate } from "react-router";
 import BookmarkErrorToast from "~/components/ui/BookmarkErrorToast";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "~/components/ui/tooltip";
 
 interface BookmarkButtonProps {
   postId: string;
@@ -23,52 +28,38 @@ export const BookmarkButton = ({
   const { isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [isSavedByCurrentUser, setIsSavedByCurrentUser] = useState(initialBookmarked);
+  const [isBookmarked, setIsBookmarked] = useState(initialBookmarked);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Update local state when props change
   useEffect(() => {
-    setIsSavedByCurrentUser(initialBookmarked);
+    setIsBookmarked(initialBookmarked);
   }, [initialBookmarked]);
 
   const bookmarkMutation = useMutation({
-    mutationFn: async () => {
-      // Use explicit add/remove instead of toggle to avoid race conditions
-      // if (isSavedByCurrentUser) {
-      //   return await bookmarksApi.removeBookmark(postId);
-      // } else {
-      //   return await bookmarksApi.addBookmark(postId);
-      // }
-      return await bookmarksApi.addBookmark(postId);
-    },
+    // Luôn gọi toggle để backend quyết định lưu / bỏ lưu
+    mutationFn: () => bookmarksApi.toggleBookmark(postId),
+
     onMutate: async () => {
-      // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
       await queryClient.cancelQueries({ queryKey: ["bookmarks"] });
       await queryClient.cancelQueries({ queryKey: ["posts"] });
 
-      // Snapshot the previous value for rollback
-      const previousBookmarked = isSavedByCurrentUser;
+      const previousBookmarked = isBookmarked;
+      setIsBookmarked((prev) => !prev);
 
-      // Optimistic update
-      setIsSavedByCurrentUser(!isSavedByCurrentUser);
-
-      // Return a context object with the snapshotted value
       return { previousBookmarked };
     },
-    onSuccess: (data) => {
-      // Update state based on server response if available
-      if (data && typeof (data as any).isSavedByCurrentUser === 'boolean') {
-        setIsSavedByCurrentUser((data as any).isSavedByCurrentUser as boolean);
-      }
 
-      // Invalidate bookmarks queries
+    onSuccess: (data) => {
+      if (data && typeof data.isBookmarked === "boolean") {
+        setIsBookmarked(data.isBookmarked);
+      }
       queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
       queryClient.invalidateQueries({ queryKey: ["posts"] });
     },
-    onError: (error: any, variables, context) => {
-      // Revert optimistic update using the previous value from context
+
+    onError: (error: any, _variables, context) => {
       if (context?.previousBookmarked !== undefined) {
-        setIsSavedByCurrentUser(context.previousBookmarked);
+        setIsBookmarked(context.previousBookmarked);
       }
       console.error("Bookmark error:", error);
       setErrorMessage(error.message || "Có lỗi xảy ra khi xử lý bookmark");
@@ -77,34 +68,47 @@ export const BookmarkButton = ({
 
   const handleClick = () => {
     if (!isAuthenticated) {
-      // Redirect to login
-      navigate(
-        "/login?redirect=" + encodeURIComponent(window.location.pathname)
-      );
+      navigate("/login?redirect=" + encodeURIComponent(window.location.pathname));
       return;
     }
-
     bookmarkMutation.mutate();
   };
+
+  const bookmarkIcon = (
+    <Bookmark
+      className={`w-4 h-4 transition-all duration-200 ${
+        isBookmarked
+          ? "fill-current text-blue-600 dark:text-blue-400"
+          : "text-gray-500 dark:text-gray-400"
+      }`}
+    />
+  );
+
+  const tooltipLabel = bookmarkMutation.isPending
+    ? "Đang xử lý..."
+    : isBookmarked
+    ? "Bỏ lưu"
+    : "Lưu bài viết";
 
   if (variant === "compact") {
     return (
       <>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleClick}
-          disabled={bookmarkMutation.isPending}
-          className={`p-2 h-auto ${className}`}
-          title={isSavedByCurrentUser ? "Bỏ lưu" : "Lưu bài viết"}
-        >
-          <Bookmark
-            className={`w-4 h-4 transition-all duration-200 ${isSavedByCurrentUser
-                ? "fill-current text-blue-600 dark:text-blue-400"
-                : "text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
-              }`}
-          />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleClick}
+              disabled={bookmarkMutation.isPending}
+              className={`p-2 h-auto ${className}`}
+            >
+              {bookmarkIcon}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <span className="text-sm">{tooltipLabel}</span>
+          </TooltipContent>
+        </Tooltip>
         <BookmarkErrorToast
           error={errorMessage}
           onClose={() => setErrorMessage(null)}
@@ -115,27 +119,23 @@ export const BookmarkButton = ({
 
   return (
     <>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={handleClick}
-        disabled={bookmarkMutation.isPending}
-        className={`flex items-center space-x-2 px-3 py-1.5 rounded-full transition-all duration-200 hover:scale-105 text-dark dark:text-white ${className}`}
-      >
-        <Bookmark
-          className={`w-4 h-4 transition-all duration-200 ${isSavedByCurrentUser
-              ? "fill-current text-blue-600 dark:text-blue-400"
-              : "text-gray-500 dark:text-gray-400"
-            }`}
-        />
-        <span className="text-sm">
-          {bookmarkMutation.isPending
-            ? "Đang xử lý..."
-            : isSavedByCurrentUser
-              ? "Đã lưu"
-              : "Lưu"}
-        </span>
-      </Button>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleClick}
+            disabled={bookmarkMutation.isPending}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-all duration-200 hover:scale-105 text-dark dark:text-white ${className}`}
+          >
+            {bookmarkIcon}
+            <span className="text-sm">{isBookmarked ? "Đã lưu" : "Lưu"}</span>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <span className="text-sm">{tooltipLabel}</span>
+        </TooltipContent>
+      </Tooltip>
       <BookmarkErrorToast
         error={errorMessage}
         onClose={() => setErrorMessage(null)}

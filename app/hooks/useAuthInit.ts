@@ -15,13 +15,14 @@ export const useAuthInit = () => {
     let isMounted = true;
 
     const initAuth = async () => {
-        try {
+      try {
         // Wait a tick for Zustand persist to hydrate from localStorage
         await new Promise(resolve => setTimeout(resolve, 0));
 
         // Get current state from store
         const currentUser = useAuthStore.getState().user;
         const currentToken = useAuthStore.getState().token;
+        const currentIsAuthenticated = useAuthStore.getState().isAuthenticated;
 
         // If we have both user and token, we're good
         if (currentUser && currentToken) {
@@ -46,18 +47,11 @@ export const useAuthInit = () => {
           }
         }
 
-        // No user found, try to refresh token using cookie
-        // (không cần kiểm tra sessionStorage nữa vì dùng cookie)
-        try {
-          const accessToken = await refreshAccessToken();
-          if (accessToken) {
-            setToken(accessToken);
-            if (isMounted) setIsInitialized(true);
-            return;
-          }
-        } catch (err) {
-          console.log("No valid refresh token cookie found");
-          // Không log error vì đây là trường hợp bình thường khi chưa login
+        // If there is no local session state, skip refresh probe to avoid noisy
+        // backend errors when no refresh token exists yet.
+        if (!currentUser && !currentIsAuthenticated) {
+          if (isMounted) setIsInitialized(true);
+          return;
         }
       } catch (error) {
         console.error("Auth initialization error:", error);

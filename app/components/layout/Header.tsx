@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react"
+import { lazy, Suspense, useState, useEffect } from "react"
 
 import {
   Menu, X, Search, Bell, User,
@@ -8,16 +8,24 @@ import {
 import { Button } from "~/components/ui/button"
 import { Link } from "react-router"
 
-import { useAuthStore } from "~/store/authStore"
-import { useAuth } from "~/hooks/useAuth"
+import { useAuthContext } from "~/context/AuthContext"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
-import { NotificationCenter } from "../notification/NotificationCenter"
 
 
 import BoringAvatar from "boring-avatars";
 import { AnimatedThemeToggler } from "../ui/animated-theme-toggler"
 import { ScrollProgress } from "../ui/scroll-progress"
 import { resolveAvatarUrl } from "~/utils/image"
+const NotificationCenter = lazy(() =>
+  import("../notification/NotificationCenter").then((mod) => ({
+    default: mod.NotificationCenter,
+  }))
+);
+const GlobalSearch = lazy(() =>
+  import("~/components/search/GlobalSearch").then((mod) => ({
+    default: mod.GlobalSearch,
+  }))
+);
 
 // Create a wrapper component for BoringAvatar to ensure proper hook usage
 const UserAvatar = ({ username }: { username: string }) => {
@@ -38,11 +46,9 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false)
   const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] = useState(false)
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false)
 
-
-
-  const { user } = useAuthStore()
-  const { logout } = useAuth()
+  const { user, logout } = useAuthContext()
 
   const handleLogout = async () => {
     await logout()
@@ -57,6 +63,11 @@ export function Header() {
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
+
+  // Close mobile search when menu closes
+  useEffect(() => {
+    if (!isOpen) setIsMobileSearchOpen(false)
+  }, [isOpen])
 
 
 
@@ -79,7 +90,7 @@ export function Header() {
     <>
       <header
         className={`sticky top-0 z-50 w-full border-b border-border
-           bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 
+           bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 
            transition-all duration-300`}
       >
         <nav className="mx-auto container px-4 sm:px-6 lg:px-8">
@@ -88,7 +99,7 @@ export function Header() {
         >
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 font-bold text-xl text-primary 
-          flex-shrink-0">
+          shrink-0">
            <div className="flex items-center space-x-2 cursor-pointer">
             <div className="w-8 h-8 bg-black flex items-center justify-center">
                 <span className="text-white font-bold text-lg">I</span>
@@ -113,23 +124,28 @@ export function Header() {
           {/* Right Section */}
           <div className="flex items-center gap-2 sm:gap-4">
             {/* Search Bar - Hidden on mobile */}
-            <div className="hidden lg:flex items-center gap-2 bg-muted rounded-lg px-3 py-2">
-              <Search className="w-4 h-4 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="Search articles..."
-                className="bg-transparent text-sm outline-none placeholder:text-muted-foreground w-32"
-              />
+            <div className="hidden lg:block w-[420px] max-w-[40vw]">
+              <Suspense fallback={null}>
+                <GlobalSearch placeholder="Tìm kiếm posts, series, users…" />
+              </Suspense>
             </div>
 
             {/* Search Icon - Mobile */}
-            <Button variant="ghost" size="icon" className="hidden sm:flex lg:hidden" aria-label="Search">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hidden sm:flex lg:hidden"
+              aria-label="Search"
+              onClick={() => setIsMobileSearchOpen((v) => !v)}
+            >
               <Search className="w-5 h-5" />
             </Button>
 
             {
               user ? (
-                <NotificationCenter />
+                <Suspense fallback={null}>
+                  <NotificationCenter />
+                </Suspense>
               ) : null
             }
 
@@ -230,6 +246,15 @@ export function Header() {
           </div>
         </div>
 
+        {/* Mobile Search Bar (sm -> lg) */}
+        {isMobileSearchOpen ? (
+          <div className="hidden sm:block lg:hidden pb-3">
+            <Suspense fallback={null}>
+              <GlobalSearch placeholder="Tìm kiếm…" />
+            </Suspense>
+          </div>
+        ) : null}
+
         {/* Mobile Navigation */}
         {isOpen && (
           <div className="md:hidden border-t border-border py-4 space-y-2 animate-in fade-in slide-in-from-top-2">
@@ -244,14 +269,9 @@ export function Header() {
               </Link>
             ))}
             <div className="px-4 py-2">
-              <div className="flex items-center gap-2 bg-muted rounded-lg px-3 py-2">
-                <Search className="w-4 h-4 text-muted-foreground" />
-                <input
-                  type="text"
-                  placeholder="Search articles..."
-                  className="bg-transparent text-sm outline-none placeholder:text-muted-foreground w-full"
-                />
-              </div>
+              <Suspense fallback={null}>
+                <GlobalSearch placeholder="Tìm kiếm…" />
+              </Suspense>
             </div>
             <Link to="/write" className="block sm:hidden px-4 py-2">
               <Button className="w-full gap-2 bg-primary hover:bg-primary/90">

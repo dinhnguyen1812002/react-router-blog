@@ -1,108 +1,178 @@
-import { useState } from "react";
-import { MainLayout } from "~/components/layout/MainLayout";
-import MemeList from "~/components/meme/MemeList";
-import MemeUpload from "~/components/meme/MemeUpload";
-import RandomMemeStream from "~/components/meme/RandomMemeStream";
-import { Image, Upload, Shuffle, Sparkles } from "lucide-react";
+/**
+ * Trang hiển thị Meme - Memes Gallery Page
+ * Layout: Grid responsive với lazy loading và lightbox
+ */
 
-export default function MemesIndex() {
-  const [activeTab, setActiveTab] = useState<"list" | "upload" | "stream">("list");
+import { Link } from 'react-router';
+import { useState, useEffect, useRef } from 'react';
+import type { Route } from './+types/memes._index';
+import { getMemes, type MemeResponse, type Meme } from '~/api/memes';
+import { RefreshCw, Image as ImageIcon } from 'lucide-react';
+import { MainLayout } from '~/components/layout/MainLayout';
+import { MemeGridItem } from '~/components/meme/MemeGridItem';
+import { MemeLightbox } from '~/components/meme/MemeLightbox';
+import { MemeGridSkeleton } from '~/components/skeleton/MemeGridSkeleton';
+import { EmptyState } from '~/components/ui/EmptyState';
 
-  const tabs = [
-    {
-      id: "list",
-      label: "Khám phá Memes",
-      icon: Image,
-      description: "Duyệt bộ sưu tập memes thú vị",
-    },
-    {
-      id: "upload",
-      label: "Tạo Meme",
-      icon: Upload,
-      description: "Chia sẻ meme của bạn",
-    },
-    {
-      id: "stream",
-      label: "Meme Ngẫu Nhiên",
-      icon: Shuffle,
-      description: "Bất ngờ mỗi 5 phút",
-    },
-  ];
+// Loader để fetch memes từ server
+export async function loader({ request }: Route.LoaderArgs) {
+  const url = new URL(request.url);
+  const page = parseInt(url.searchParams.get('page') || '0');
+  
+  const memes = await getMemes(page);
+  return { memes, currentPage: page };
+}
+
+export default function MemesIndex({ loaderData }: Route.ComponentProps) {
+  const { memes: initialMemes, currentPage } = loaderData;
+  const [memes, setMemes] = useState<Meme[]>(initialMemes.content);
+  const [page, setPage] = useState(currentPage);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(!initialMemes.last);
+  const [selectedMeme, setSelectedMeme] = useState<Meme | null>(null);
+  const observerTarget = useRef<HTMLDivElement>(null);
+
+  // Infinite scroll với Intersection Observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loading) {
+          loadMoreMemes();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => observer.disconnect();
+  }, [hasMore, loading, page]);
+
+  // Load thêm memes
+  const loadMoreMemes = async () => {
+    if (loading || !hasMore) return;
+
+    setLoading(true);
+    try {
+      const nextPage = page + 1;
+      const response = await getMemes(nextPage);
+      setMemes((prev) => [...prev, ...response.content]);
+      setPage(nextPage);
+      setHasMore(!response.last);
+    } catch (error) {
+      console.error('Error loading memes:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Refresh - load lại từ đầu
+  const handleRefresh = async () => {
+    setLoading(true);
+    try {
+      const response = await getMemes(0);
+      setMemes(response.content);
+      setPage(0);
+      setHasMore(!response.last);
+    } catch (error) {
+      console.error('Error refreshing memes:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <MainLayout>
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Header */}
-        {/* <div className="text-center mb-12">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl shadow-lg">
-              <Sparkles className="w-8 h-8 text-white" />
+    <div className="min-h-screen bg-linear-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
+      {/* Header Section */}
+      <div className="border-b border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl sm:text-4xl font-light text-gray-900 dark:text-gray-100 mb-2">
+                Meme Gallery
+              </h1>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">
+                Bộ sưu tập meme vui nhộn và sáng tạo
+              </p>
             </div>
-            <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">
-              Meme Hub
-            </h1>
-          </div>
-          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Nơi chia sẻ và khám phá những meme thú vị nhất. Tham gia cộng đồng sáng tạo và giải trí!
-          </p>
-        </div> */}
 
-        {/* Tab Navigation */}
-        {/* <div className="flex justify-center mb-12">
-          <div className="bg-white dark:bg-black rounded-full shadow-md border border-gray-200 dark:border-gray-700 p-2 flex gap-2 overflow-x-auto">
-            {tabs.map((tab) => {
-              const IconComponent = tab.icon;
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
-                  className={`group px-6 py-3 rounded-full font-medium transition-all duration-300 flex items-center gap-3 whitespace-nowrap min-w-[180px]
-                    ${isActive
-                      ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg scale-105"
-                      : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    }`}
-                >
-                  <IconComponent className={`w-5 h-5 ${isActive ? "scale-110" : "group-hover:scale-105"} transition-transform`} />
-                  <div className="text-left">
-                    <div className="font-semibold">{tab.label}</div>
-                    <div className={`text-xs ${isActive ? "text-blue-100" : "text-gray-500 dark:text-gray-500"}`}>
-                      {tab.description}
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div> */}
-
-        {/* Tab Content */}
-        <div className="relative min-h-[400px]">
-          {activeTab === "list" && (
-            <div className="animate-fadeIn">
-              <MemeList />
-            </div>
-          )}
-          {activeTab === "upload" && (
-            <div className="animate-fadeIn">
-              <MemeUpload />
-            </div>
-          )}
-          {activeTab === "stream" && (
-            <div className="animate-fadeIn">
-              <RandomMemeStream />
-            </div>
-          )}
-        </div>
-
-        {/* Footer Info */}
-        <div className="mt-16 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-black rounded-full text-sm text-gray-600 dark:text-gray-400">
-            <Sparkles className="w-4 h-4" />
-            <span>Được tạo với ❤️ bởi cộng đồng</span>
+            {/* Refresh Button */}
+            <button
+              onClick={handleRefresh}
+              disabled={loading}
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200 disabled:opacity-50 transition-all"
+            >
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+              <span className="hidden sm:inline">Làm mới</span>
+            </button>
           </div>
         </div>
       </div>
+
+      {/* Memes Grid */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {loading && memes.length === 0 ? (
+          <MemeGridSkeleton />
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {memes.map((meme) => (
+              <MemeGridItem
+                key={meme.id}
+                meme={meme}
+                onClick={() => setSelectedMeme(meme)}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Loading Indicator */}
+        {loading && (
+          <div className="flex justify-center items-center py-12">
+            <div className="flex items-center gap-3 text-gray-600 dark:text-gray-400">
+              <RefreshCw className="w-5 h-5 animate-spin" />
+              <span>Đang tải...</span>
+            </div>
+          </div>
+        )}
+
+        {/* Infinite Scroll Trigger */}
+        {hasMore && <div ref={observerTarget} className="h-10" />}
+
+        {/* End Message */}
+        {!hasMore && memes.length > 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-500 dark:text-gray-400">
+              Bạn đã xem hết tất cả meme
+            </p>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {memes.length === 0 && !loading && (
+          <EmptyState
+            icon={ImageIcon}
+            title="Chưa có meme nào"
+            description="Hệ thống chưa có meme nào được upload."
+            action={
+              <button
+                onClick={handleRefresh}
+                className="px-4 py-2 rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200 transition-all"
+              >
+                Thử lại
+              </button>
+            }
+          />
+        )}
+      </div>
+
+      {/* Lightbox Modal */}
+      {selectedMeme && (
+        <MemeLightbox meme={selectedMeme} onClose={() => setSelectedMeme(null)} />
+      )}
+    </div>
     </MainLayout>
   );
 }

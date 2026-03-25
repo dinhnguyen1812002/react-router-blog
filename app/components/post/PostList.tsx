@@ -1,9 +1,6 @@
 import { PostCard } from './PostCard';
-import { Spinner } from '~/components/ui/Spinner';
 import type { Post } from '~/types';
-import { Skeleton } from '../ui/skeleton';
 import PostSkeleton from '../skeleton/PostSkeleton';
-import { BlogPostCard } from '../public/BlogPostCard';
 
 interface PostListProps {
   posts: Post[];
@@ -12,11 +9,9 @@ interface PostListProps {
 }
 
 export const PostList = ({ posts, loading, title }: PostListProps) => {
-  // if (loading) {
-  //   return (
-    
-  //   );
-  // }
+  if (loading) {
+    return <PostSkeleton />;
+  }
 
   if (posts.length === 0) {
     return (
@@ -47,4 +42,4 @@ export const PostList = ({ posts, loading, title }: PostListProps) => {
       </div>
     </div>
   );
-};// <PostCard key={post.id} post={post} />
+};

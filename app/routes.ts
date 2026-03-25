@@ -3,6 +3,7 @@ import { type RouteConfig, index, route } from "@react-router/dev/routes";
 export default [
   index("routes/_index.tsx"),
   route("login", "routes/login.tsx"),
+  route("auth/callback/:provider", "routes/auth.callback.$provider.tsx"),
   route("register", "routes/register.tsx"),
   route("forgot-password", "routes/forgot-password.tsx"),
   route("reset-password", "routes/reset-password.tsx"),
@@ -27,13 +28,14 @@ export default [
     route("series/:id/edit", "routes/dashboard/series/edit.tsx"),
   ]),
 
-  route("articles", "routes/posts._index.tsx"),
+  route("articles", "routes/articles._index.tsx"),
   route("articles/:slug", "routes/posts.slug.tsx"),
   route("series", "routes/series._index.tsx"),
   route("series/:slug", "routes/series.$slug.tsx"),
   route("categories", "routes/category.index.tsx"),
   // route("search", "routes/search.tsx"),
   route("about", "routes/about.tsx"),
+
   // route("auth-error-test", "routes/auth-error-test.tsx"),
 
   // Dashboard routes

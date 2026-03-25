@@ -112,7 +112,7 @@ const StatCard = ({
   };
 
   return (
-    <div className="bg-white dark:bg-black rounded-lg shadow dark:shadow-gray-700/20 p-6">
+    <div className="bg-white dark:bg-black rounded-lg shadow dark:shadow-gray-700/20 p-6 border border-gray-200 dark:border-gray-700">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
@@ -314,7 +314,7 @@ export default function AdminDashboard() {
           {Array.from({ length: 6 }).map((_, index) => (
             <div
               key={index}
-              className="bg-white dark:bg-black rounded-lg shadow dark:shadow-gray-700/20 p-6"
+              className="bg-white dark:bg-black rounded-lg shadow dark:shadow-gray-700/20 p-6 border dark:border-amber-500/20"
             >
               <div className="flex items-center justify-between">
                 <div className="space-y-2">

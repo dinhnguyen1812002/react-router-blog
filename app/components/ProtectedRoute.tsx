@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import { useAuthStore } from "~/store/authStore";
+import { useAuthContext } from "~/context/AuthContext";
 import { toast } from "sonner";
 
 interface ProtectedRouteProps {
@@ -17,9 +17,13 @@ export function ProtectedRoute({
   redirectTo = "/login",
 }: ProtectedRouteProps) {
   const navigate = useNavigate();
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated, user, isInitialized } = useAuthContext();
 
   useEffect(() => {
+    if (!isInitialized) {
+      return;
+    }
+
     if (requireAuth && !isAuthenticated) {
       toast.error("Bạn cần đăng nhập để truy cập trang này");
       navigate(redirectTo, { replace: true });
@@ -33,9 +37,21 @@ export function ProtectedRoute({
       // Redirect authenticated users away from auth pages
       navigate("/", { replace: true });
     }
-  }, [isAuthenticated, user, requireAuth, requiredRoles, redirectTo, navigate]);
+  }, [
+    isInitialized,
+    isAuthenticated,
+    user,
+    requireAuth,
+    requiredRoles,
+    redirectTo,
+    navigate,
+  ]);
 
   // Show loading or nothing while redirecting
+  if (!isInitialized) {
+    return null;
+  }
+
   if (requireAuth && !isAuthenticated) {
     return null;
   }

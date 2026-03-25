@@ -3,11 +3,11 @@ import { Shield, Plus, Edit, Trash2, Users, Check, X } from "lucide-react";
 import AddRoleModal from "~/components/admin/AddRoleModal";
 
 const colorClasses = {
-  red: "bg-red-100 text-red-800 border-red-200",
-  blue: "bg-blue-100 text-blue-800 border-blue-200",
-  gray: "bg-gray-100 text-gray-800 border-gray-200",
-  green: "bg-green-100 text-green-800 border-green-200",
-  purple: "bg-purple-100 text-purple-800 border-purple-200",
+  red: "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-700",
+  blue: "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700",
+  gray: "bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700",
+  green: "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-700",
+  purple: "bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-700",
 } as const;
 
 type Role = {
@@ -120,8 +120,8 @@ export default function AdminRoles() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Quản lý vai trò</h1>
-          <p className="text-gray-600">Quản lý vai trò và quyền hạn trong hệ thống</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Quản lý vai trò</h1>
+          <p className="text-gray-600 dark:text-gray-400">Quản lý vai trò và quyền hạn trong hệ thống</p>
         </div>
         <button 
           onClick={handleAddRole}
@@ -135,50 +135,50 @@ export default function AdminRoles() {
       {/* Roles Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {roles.map((role) => (
-          <div key={role.id} className={`bg-white rounded-lg shadow-md border-l-4 ${colorClasses[role.color]} p-6`}>
+          <div key={role.id} className={`bg-white dark:bg-gray-900 rounded-lg shadow-md border-l-4 ${colorClasses[role.color]} p-6`}>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-3">
                 <div className={`p-2 rounded-full ${colorClasses[role.color]}`}>
                   <Shield className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">{role.displayName}</h3>
-                  <p className="text-sm text-gray-500">{role.name}</p>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{role.displayName}</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{role.name}</p>
                 </div>
               </div>
               <div className="flex items-center space-x-2">
                 <button 
                   onClick={() => handleEditRole(role)}
-                  className="text-gray-400 hover:text-blue-600"
+                  className="text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400"
                 >
                   <Edit className="h-4 w-4" />
                 </button>
-                <button className="text-gray-400 hover:text-red-600">
+                <button className="text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400">
                   <Trash2 className="h-4 w-4" />
                 </button>
               </div>
             </div>
 
-            <p className="text-gray-600 text-sm mb-4">{role.description}</p>
+            <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">{role.description}</p>
 
             <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center space-x-2 text-sm text-gray-500">
+              <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
                 <Users className="h-4 w-4" />
                 <span>{role.userCount} người dùng</span>
               </div>
             </div>
 
             <div className="space-y-2">
-              <h4 className="text-sm font-medium text-gray-700">Quyền hạn:</h4>
+              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">Quyền hạn:</h4>
               <div className="space-y-1">
                 {role.permissions.slice(0, 3).map((permission, index) => (
-                  <div key={index} className="flex items-center space-x-2 text-sm text-gray-600">
+                  <div key={index} className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
                     <Check className="h-3 w-3 text-green-500" />
                     <span>{permission}</span>
                   </div>
                 ))}
                 {role.permissions.length > 3 && (
-                  <div className="text-sm text-gray-500">
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
                     +{role.permissions.length - 3} quyền khác
                   </div>
                 )}
@@ -189,15 +189,15 @@ export default function AdminRoles() {
       </div>
 
       {/* Permissions Overview */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Tổng quan quyền hạn</h2>
+      <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-6">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Tổng quan quyền hạn</h2>
         <div className="overflow-x-auto">
           <table className="min-w-full">
             <thead>
-              <tr className="border-b">
-                <th className="text-left py-3 px-4 font-medium text-gray-700">Quyền hạn</th>
+              <tr className="border-b border-gray-200 dark:border-gray-700">
+                <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">Quyền hạn</th>
                 {roles.map(role => (
-                  <th key={role.id} className="text-center py-3 px-4 font-medium text-gray-700">
+                  <th key={role.id} className="text-center py-3 px-4 font-medium text-gray-700 dark:text-gray-300">
                     {role.displayName}
                   </th>
                 ))}
@@ -206,20 +206,20 @@ export default function AdminRoles() {
             <tbody>
               {Object.entries(groupedPermissions).map(([category, permissions]) => (
                 <Fragment key={category}>
-                  <tr className="bg-gray-50">
-                    <td colSpan={roles.length + 1} className="py-2 px-4 font-medium text-gray-800 text-sm">
+                  <tr className="bg-gray-50 dark:bg-gray-800">
+                    <td colSpan={roles.length + 1} className="py-2 px-4 font-medium text-gray-800 dark:text-gray-200 text-sm">
                       {category}
                     </td>
                   </tr>
                   {permissions.map(permission => (
-                    <tr key={permission.id} className="border-b border-gray-100">
-                      <td className="py-3 px-4 text-sm text-gray-700">{permission.name}</td>
+                    <tr key={permission.id} className="border-b border-gray-100 dark:border-gray-800">
+                      <td className="py-3 px-4 text-sm text-gray-700 dark:text-gray-300">{permission.name}</td>
                       {roles.map(role => (
                         <td key={role.id} className="text-center py-3 px-4">
                           {role.permissions.includes(permission.name) ? (
                             <Check className="h-4 w-4 text-green-500 mx-auto" />
                           ) : (
-                            <X className="h-4 w-4 text-gray-300 mx-auto" />
+                            <X className="h-4 w-4 text-gray-300 dark:text-gray-600 mx-auto" />
                           )}
                         </td>
                       ))}
