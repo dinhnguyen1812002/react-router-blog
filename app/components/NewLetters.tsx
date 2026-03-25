@@ -6,24 +6,58 @@ import { newsletterApi } from "~/api/newsletter";
 
 export default function NewLetter() {
   const [email, setEmail] = useState("");
-  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [sourceUrl, setSourceUrl] = useState(() => (typeof window !== "undefined" ? window.location.href : ""));
+  const [gdprConsent, setGdprConsent] = useState(false);
 
-  const [frequency, setFrequency] = useState<"DAILY" | "WEEKLY">("WEEKLY");
+  const [subscribeResponse, setSubscribeResponse] = useState<{
+    success: boolean;
+    message: string;
+    requiresConfirmation: boolean;
+  } | null>(null);
 
   const subscribeMutation = useMutation({
-    mutationFn: (payload: { email: string; frequency: "DAILY" | "WEEKLY" }) =>
-      newsletterApi.subscribe(payload),
+    mutationFn: (payload: {
+      email: string;
+      firstName?: string;
+      lastName?: string;
+      sourceUrl?: string;
+      gdprConsent?: boolean;
+    }) => newsletterApi.subscribe(payload),
 
     onSuccess: () => {
-      setIsSubscribed(true);
+      // UI sẽ render dựa vào subscribeResponse được set bên dưới
       setEmail("");
-      toast.success("Vui lòng kiểm tra email để xác nhận đăng ký!");
     },
 
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Có lỗi xảy ra");
     },
   });
+
+  const handleSubscribe = () => {
+    const trimmedEmail = email.trim()
+    if (!trimmedEmail) return
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) return
+
+    const payload = {
+      email: trimmedEmail,
+      ...(firstName.trim() ? { firstName: firstName.trim() } : {}),
+      ...(lastName.trim() ? { lastName: lastName.trim() } : {}),
+      ...(sourceUrl.trim() ? { sourceUrl: sourceUrl.trim() } : {}),
+      ...(gdprConsent ? { gdprConsent: true } : {}),
+    }
+
+    subscribeMutation.mutate(payload, {
+      onSuccess: (data) => {
+        setSubscribeResponse(data)
+        toast[data.success ? "success" : "error"](data.message)
+        setFirstName("")
+        setLastName("")
+      },
+    })
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,11 +71,7 @@ export default function NewLetter() {
       toast.error("Email không hợp lệ");
       return;
     }
-
-    subscribeMutation.mutate({
-      email,
-      frequency,
-    });
+    handleSubscribe()
   };
 
   return (
@@ -56,77 +86,120 @@ export default function NewLetter() {
               Nostrud amet eu ullamco nisi aute in ad minim nostrud adipisicing
               velit quis. Duis tempor incididunt dolore.
             </p>
-            {isSubscribed ? (
-              <p className="mt-6 text-sm text-green-300">
-                Cảm ơn bạn! Hãy kiểm tra email để xác nhận đăng ký.
-              </p>
-            ) : (
-              <form onSubmit={handleSubmit} className="mt-6 max-w-md space-y-3">
-                {/* Email + Button */}
-                <div className="flex gap-x-4">
-                  <label htmlFor="email-address" className="sr-only">
-                    Email address
-                  </label>
+            <form onSubmit={handleSubmit} className="mt-6 max-w-md space-y-3">
+              <div className="flex gap-x-4">
+                <label htmlFor="email-address" className="sr-only">
+                  Email address
+                </label>
 
-                  <input
-                    id="email-address"
-                    name="email"
-                    type="email"
-                    required
-                    placeholder="Enter your email"
-                    autoComplete="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    disabled={subscribeMutation.isPending}
-                    className="min-w-0 flex-auto rounded-md bg-white/5 px-3.5 py-2 
+                <input
+                  id="email-address"
+                  name="email"
+                  type="email"
+                  required
+                  placeholder="Enter your email"
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={subscribeMutation.isPending}
+                  className="min-w-0 flex-auto rounded-md bg-white/5 px-3.5 py-2 
       text-base text-white outline-1 -outline-offset-1 outline-white/10 
       placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 
       focus:outline-indigo-500 sm:text-sm/6"
-                  />
+                />
 
-                  <button
-                    type="submit"
-                    disabled={subscribeMutation.isPending}
-                    className="flex-none rounded-md bg-indigo-500 px-3.5 py-2.5 
+                <button
+                  type="submit"
+                  disabled={subscribeMutation.isPending}
+                  className="flex-none rounded-md bg-indigo-500 px-3.5 py-2.5 
       text-sm font-semibold text-white shadow-xs hover:bg-indigo-400 
       focus-visible:outline-2 focus-visible:outline-offset-2 
       focus-visible:outline-indigo-500 disabled:opacity-50 
       disabled:cursor-not-allowed"
-                  >
-                    {subscribeMutation.isPending
-                      ? "Submitting..."
-                      : "Subscribe"}
-                  </button>
-                </div>
+                >
+                  {subscribeMutation.isPending ? "Submitting..." : "Subscribe"}
+                </button>
+              </div>
 
-                {/* Frequency */}
-                <div className="flex items-center gap-6 text-sm text-white">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="frequency"
-                      value="WEEKLY"
-                      checked={frequency === "WEEKLY"}
-                      onChange={() => setFrequency("WEEKLY")}
-                      className="accent-indigo-500"
-                    />
-                    Hàng tuần
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label htmlFor="first-name" className="sr-only">
+                    First name
                   </label>
-
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="frequency"
-                      value="DAILY"
-                      checked={frequency === "DAILY"}
-                      onChange={() => setFrequency("DAILY")}
-                      className="accent-indigo-500"
-                    />
-                    Hàng ngày
-                  </label>
+                  <input
+                    id="first-name"
+                    name="firstName"
+                    type="text"
+                    placeholder="First name (optional)"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    disabled={subscribeMutation.isPending}
+                    className="w-full rounded-md bg-white/5 px-3.5 py-2 
+      text-sm text-white outline-1 -outline-offset-1 outline-white/10 
+      placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 
+      focus:outline-indigo-500"
+                  />
                 </div>
-              </form>
-            )}
+                <div>
+                  <label htmlFor="last-name" className="sr-only">
+                    Last name
+                  </label>
+                  <input
+                    id="last-name"
+                    name="lastName"
+                    type="text"
+                    placeholder="Last name (optional)"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    disabled={subscribeMutation.isPending}
+                    className="w-full rounded-md bg-white/5 px-3.5 py-2 
+      text-sm text-white outline-1 -outline-offset-1 outline-white/10 
+      placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 
+      focus:outline-indigo-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="source-url" className="sr-only">
+                  Source URL
+                </label>
+                <input
+                  id="source-url"
+                  name="sourceUrl"
+                  type="url"
+                  placeholder="Source URL (optional)"
+                  value={sourceUrl}
+                  onChange={(e) => setSourceUrl(e.target.value)}
+                  disabled={subscribeMutation.isPending}
+                  className="w-full rounded-md bg-white/5 px-3.5 py-2 
+      text-sm text-white outline-1 -outline-offset-1 outline-white/10 
+      placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 
+      focus:outline-indigo-500"
+                />
+              </div>
+
+              <label className="flex items-center gap-3 text-sm text-white/90 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={gdprConsent}
+                  onChange={(e) => setGdprConsent(e.target.checked)}
+                  disabled={subscribeMutation.isPending}
+                  className="accent-indigo-500"
+                />
+                I agree to receive emails and understand I can unsubscribe anytime.
+              </label>
+
+              {subscribeResponse && (
+                <p
+                  className={`mt-3 text-sm ${
+                    subscribeResponse.success ? "text-green-300" : "text-red-300"
+                  }`}
+                >
+                  {subscribeResponse.message}
+                </p>
+              )}
+            </form>
           </div>
           <dl className="grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:pt-2">
             <div className="flex flex-col items-start">

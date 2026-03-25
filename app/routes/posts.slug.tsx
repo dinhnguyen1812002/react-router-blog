@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams, Link } from "react-router";
 import { MainLayout } from "~/components/layout/MainLayout";
-import { formatDateSimple, formatNumber } from "~/lib/utils";
+import { cn, formatDateSimple, formatNumber } from "~/lib/utils";
 import { CommentSection } from "~/components/comment/CommentSection";
 import ReadingProgressBar, { calculateReadingTime } from "~/components/post/ReadingProgressBar";
 import { PostDetailSkeleton } from "~/components/skeleton/PostDetailSkeleton";
@@ -86,12 +86,12 @@ export default function PostDetailPage() {
   return (
     <MainLayout>
       <PostSEO post={post} />
-      <ReadingProgressBar
+      {/* <ReadingProgressBar
         targetRef={articleRef}
         estimatedReadingTime={readingTime}
         color={typeof document !== "undefined" && document.documentElement.classList.contains('dark') ? '#FFFFFF' : '#000000'}
         className="h-1"
-      />
+      /> */}
 
       <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white">
         {/* Top Nav */}
@@ -196,7 +196,11 @@ export default function PostDetailPage() {
                     <Link
                       key={tag.uuid}
                       to={`/articles?tag=${tag.slug}`}
-                      className="text-sm font-mono text-gray-500 hover:text-black dark:hover:text-white transition-colors"
+                      // className="text-sm font-mono text-gray-500 hover:text-black dark:hover:text-white transition-colors "
+
+                      className={cn('text-sm font-mono dark:hover:text-white transition-colors', {
+                      })}
+                      style={{ color: tag.color || 'inherit' }}
                     >
                       #{tag.name}
                     </Link>

@@ -2,6 +2,7 @@ import { Eye, MessageSquare,  Share2 } from 'lucide-react';
 import { LikeButton } from './LikeButton';
 import { RatingComponent } from './RatingComponent';
 import type { Post } from '~/types';
+import { BookmarkButton } from './BookmarkButton';
 
 interface PostActionsProps {
   post: Post;
@@ -26,6 +27,7 @@ export const PostActions = ({
           postId={post.id}
           initialLiked={post.isLikedByCurrentUser}
           initialLikeCount={post.likeCount}
+          variant="minimal"
         />
 
         <RatingComponent
@@ -34,6 +36,11 @@ export const PostActions = ({
           initialAverageRating={post.averageRating}
           showAverage={true}
           compact={true}
+        />
+        <BookmarkButton
+          postId={post.id}
+          initialBookmarked={post.isSavedByCurrentUser}
+          variant="compact"
         />
       </div>
      

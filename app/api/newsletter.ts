@@ -1,78 +1,192 @@
-import { apiClient } from './client';
-import type { PaginatedResponse } from '~/types';
+import { apiClient } from "./client"
 
-export type NewsletterFrequency = 'DAILY' | 'WEEKLY';
+export type ENewsletterStatus =
+  | "PENDING"
+  | "ACTIVE"
+  | "UNSUBSCRIBED"
+  | "BOUNCED"
+  | "COMPLAINED"
+  | "SUSPENDED"
+
+export type ECampaignStatus =
+  | "DRAFT"
+  | "SCHEDULED"
+  | "SENDING"
+  | "SENT"
+  | "PAUSED"
+  | "CANCELLED"
+  | "FAILED"
 
 export interface SubscribeRequest {
-  email: string;
-  name?: string;
-  frequency?: NewsletterFrequency;
+  email: string
+  firstName?: string
+  lastName?: string
+  sourceUrl?: string
+  gdprConsent?: boolean
+}
+
+export interface NewsletterSubscribeResponse {
+  success: boolean
+  message: string
+  requiresConfirmation: boolean
+}
+
+export interface NewsletterMessageResponse {
+  message: string
 }
 
 export interface Subscriber {
-  id: string;
-  email: string;
-  name?: string | null;
-  isActive: boolean;
-  isConfirmed: boolean;
-  subscribedAt: string;
-  confirmedAt?: string | null;
-  unsubscribedAt?: string | null;
+  id: string
+  email: string
+  firstName?: string
+  lastName?: string
+  status: ENewsletterStatus
+  createdAt: string
+  confirmedAt?: string | null
+  unsubscribedAt?: string | null
+  lastSentAt?: string | null
+  tags?: string[] | null
 }
 
-// A relaxed page type to align với response mẫu trong tài liệu
-export type SubscriberPage = PaginatedResponse<Subscriber> & Record<string, any>;
+export interface Page<T> {
+  content: T[]
+  totalElements: number
+  totalPages: number
+  size?: number
+  number?: number
+}
+
+export type SubscriberPage = Page<Subscriber>
+
+export interface ImportSubscriberRow {
+  email: string
+  firstName?: string
+  lastName?: string
+  tags?: string
+  gdprConsent?: boolean
+}
+
+export interface ImportSubscribersRequest {
+  subscribers: ImportSubscriberRow[]
+  requireConfirmation?: boolean
+  sendWelcomeEmail?: boolean
+}
+
+export interface ImportSubscribersResponse {
+  imported: number
+  skipped: number
+  failed: number
+  errors: Array<{ row?: any; message?: string }>
+}
+
+export interface Campaign {
+  id: string
+  name: string
+  subject: string
+  status: ECampaignStatus
+  scheduledAt?: string | null
+  sentAt?: string | null
+  recipientCount?: number | null
+  sentCount?: number
+  openedCount?: number
+  clickedCount?: number
+  bouncedCount?: number
+  unsubscribedCount?: number
+  createdAt: string
+}
+
+export interface CreateCampaignRequest {
+  name: string
+  subject: string
+  htmlContent: string
+  textContent?: string
+  fromName?: string
+  fromEmail?: string
+  replyTo?: string
+  scheduledAt?: string
+  targetSegment?: string
+  targetTags?: string
+  batchSize?: number
+  sendIntervalSeconds?: number
+  utmSource?: string
+  utmMedium?: string
+  utmCampaign?: string
+}
 
 export const newsletterApi = {
-  /**
-   * Đăng ký nhận newsletter, trả về thông báo yêu cầu kiểm tra email.
-   */
-  subscribe: async (payload: SubscribeRequest): Promise<{ message: string }> => {
-    const response = await apiClient.post('/newsletter/subscribe', payload);
-    return response.data;
+  subscribe: async (payload: SubscribeRequest): Promise<NewsletterSubscribeResponse> => {
+    const response = await apiClient.post("/newsletter/subscribe", payload)
+    return response.data
   },
 
-  /**
-   * Xác nhận đăng ký từ link trong email.
-   */
-  confirm: async (token: string): Promise<{ message: string }> => {
-    const response = await apiClient.get('/newsletter/confirm', { params: { token } });
-    return response.data;
+  confirm: async (token: string): Promise<NewsletterMessageResponse> => {
+    const response = await apiClient.get(`/newsletter/confirm/${encodeURIComponent(token)}`)
+    return response.data
   },
 
-  /**
-   * Hủy đăng ký bằng token có trong email.
-   */
-  unsubscribe: async (token: string): Promise<{ message: string }> => {
-    const response = await apiClient.get('/newsletter/unsubscribe', { params: { token } });
-    return response.data;
+  unsubscribe: async (token: string): Promise<NewsletterMessageResponse> => {
+    const response = await apiClient.get(`/newsletter/unsubscribe/${encodeURIComponent(token)}`)
+    return response.data
   },
 
-  /**
-   * Danh sách tất cả subscriber (bao gồm chưa xác nhận), có phân trang.
-   */
-  getSubscribers: async (page: number = 0, size: number = 10): Promise<SubscriberPage> => {
-    const response = await apiClient.get<SubscriberPage>('/newsletter/subscribers', {
-      params: { page, size },
-    });
-    return response.data;
+  unsubscribeByEmail: async (email: string): Promise<NewsletterMessageResponse> => {
+    const response = await apiClient.post("/newsletter/unsubscribe", { email })
+    return response.data
   },
 
-  /**
-   * Danh sách subscriber đã kích hoạt, có phân trang.
-   */
+  getSubscribers: async (
+    page: number = 0,
+    size: number = 10,
+    options?: { search?: string; status?: ENewsletterStatus },
+  ): Promise<SubscriberPage> => {
+    const response = await apiClient.get<SubscriberPage>("/newsletter/subscribers", {
+      params: {
+        page,
+        size,
+        ...(options?.search ? { search: options.search } : {}),
+        ...(options?.status ? { status: options.status } : {}),
+      },
+    })
+    return response.data
+  },
+
   getActiveSubscribers: async (page: number = 0, size: number = 10): Promise<SubscriberPage> => {
-    const response = await apiClient.get<SubscriberPage>('/newsletter/subscribers/active', {
+    const response = await apiClient.get<SubscriberPage>("/newsletter/subscribers?status=ACTIVE", {
       params: { page, size },
-    });
-    return response.data;
+    })
+    return response.data
   },
 
-  /**
-   * Tổng số subscriber đang hoạt động.
-   */
   getActiveCount: async (): Promise<number> => {
-    const response = await apiClient.get<number>('/newsletter/subscribers/count');
-    return response.data;
+    const response = await apiClient.get<number>("/newsletter/subscribers/count")
+    return response.data
   },
-};
+
+  importSubscribers: async (
+    payload: ImportSubscribersRequest,
+  ): Promise<ImportSubscribersResponse> => {
+    const response = await apiClient.post("/newsletter/import", payload)
+    return response.data
+  },
+
+  createCampaign: async (payload: CreateCampaignRequest): Promise<Campaign> => {
+    const response = await apiClient.post("/newsletter/campaigns", payload)
+    return response.data
+  },
+
+  sendCampaign: async (campaignId: string): Promise<NewsletterMessageResponse> => {
+    const response = await apiClient.post(`/newsletter/campaigns/${campaignId}/send`)
+    return response.data
+  },
+
+  getCampaigns: async (page: number = 0, size: number = 10): Promise<{
+    content: Campaign[]
+    totalElements: number
+    totalPages: number
+    number?: number
+    size?: number
+  }> => {
+    const response = await apiClient.get("/newsletter/campaigns", { params: { page, size } })
+    return response.data
+  },
+}

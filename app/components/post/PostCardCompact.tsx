@@ -49,7 +49,7 @@ export const PostCardCompact = ({ post, variant = 'horizontal' }: PostCardCompac
                   size="sm"
                   className="w-5 h-5"
                 /> */}
-                <span className="truncate">{post.user.username}</span>
+                <span className="truncate">{post.author?.username}</span>
                 <span>•</span>
                 <span>{formatDateSimple(post.createdAt)}</span>
               </div>
@@ -165,7 +165,7 @@ export const PostCardCompact = ({ post, variant = 'horizontal' }: PostCardCompac
                   alt={post.user.username}
                   size="sm"
                 /> */}
-                <span className="font-medium">{post.user.username}</span>
+                <span className="font-medium">{post.author?.username}</span>
                 <span>•</span>
                 <span>{formatDateSimple(post.createdAt)}</span>
               </div>

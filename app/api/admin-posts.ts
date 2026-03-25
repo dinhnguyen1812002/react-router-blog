@@ -15,22 +15,36 @@ export interface AdminPostListItem {
   id: string;
   title: string;
   slug: string;
+  excerpt?: string;
+  thumbnail?: string;
+  createdAt: string;
+  publishedAt?: string | null;
   categories: Array<{
     id: number;
     category: string;
-    slug: string;
+    backgroundColor?: string;
   }>;
   likeCount: number;
   viewCount: number;
   featured: boolean;
-  is_publish: boolean;
-  user: {
+  visibility: string;
+  averageRating?: number;
+  author: {
     id: string;
     username: string;
     avatar?: string;
+    email?: string;
+    roles?: string[] | null;
+    slug?: string;
   };
-  createdAt: string;
-  updatedAt?: string;
+  commentCount?: number;
+  tags?: Array<{
+    name: string;
+    slug: string;
+    description?: string;
+    color?: string;
+    uuid?: string;
+  }>;
 }
 
 
@@ -60,12 +74,23 @@ export const adminPostsApi = {
     if (categoryId) queryParams.categoryId = categoryId;
     if (featured !== null && featured !== undefined) queryParams.featured = featured;
 
-    // Sử dụng endpoint posts thông thường với admin token
-    const response = await axiosInstance.get<PaginatedResponse<AdminPostListItem>>('/post', {
-      params: queryParams
-    });
+    // Endpoint thường trả về dạng:
+    // { content: [...], page: { number, size, totalElements, totalPages } }
+    // Trong khi type frontend đang dùng PaginatedResponse<T>.
+    const response = await axiosInstance.get<any>('/post', { params: queryParams })
+    const data = response.data
 
-    return response.data;
+    if (data?.page && Array.isArray(data?.content)) {
+      return {
+        content: data.content,
+        totalElements: data.page.totalElements ?? 0,
+        totalPages: data.page.totalPages ?? 0,
+        size: data.page.size ?? size,
+        number: data.page.number ?? page,
+      }
+    }
+
+    return data as PaginatedResponse<AdminPostListItem>
   },
 
   /**

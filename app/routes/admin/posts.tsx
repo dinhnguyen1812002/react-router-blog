@@ -22,7 +22,6 @@ import { FeaturedToggle } from "~/components/admin/FeaturedToggle"
 import { toast } from "sonner"
 
 import { adminPostsApi, type AdminPostListItem } from "~/api/admin-posts"
-import { resolveAvatarUrl } from "~/utils/image"
 
 export default function ArticlesContent() {
   const [page, setPage] = useState(0)
@@ -63,21 +62,24 @@ export default function ArticlesContent() {
 
   const totalViews = postsData?.content?.reduce((sum, post) => sum + (post.viewCount || 0), 0) || 0
   const totalLikes = postsData?.content?.reduce((sum, post) => sum + (post.likeCount || 0), 0) || 0
-  const publishedCount = postsData?.content?.filter((post) => post.is_publish).length || 0
+  const publishedCount = postsData?.content?.filter((post) => post.visibility === "PUBLISHED").length || 0
 
   const columns: ColumnDef<AdminPostListItem>[] = [
     {
-      accessorKey: "user",
+      accessorKey: "author",
       header: "Tác giả",
       cell: ({ row }) => {
-        const user = row.original.user
+        const author = row.original.author
+        const username = author?.username ?? "Unknown"
+        const avatarSrc = author?.avatar ?? "/placeholder.svg"
+
         return (
           <div className="flex items-center gap-2">
             <Avatar className="h-8 w-8">
-              <AvatarImage src={resolveAvatarUrl(user.avatar) || "/placeholder.svg"} alt={user.username} />
-              <AvatarFallback>{user.username.charAt(0).toUpperCase()}</AvatarFallback>
+              <AvatarImage src={avatarSrc} alt={username} />
+              <AvatarFallback>{username.charAt(0).toUpperCase()}</AvatarFallback>
             </Avatar>
-            <span className="text-sm font-medium">{user.username}</span>
+            <span className="text-sm font-medium">{username}</span>
           </div>
         )
       },
@@ -167,12 +169,14 @@ export default function ArticlesContent() {
       },
     },
     {
-      accessorKey: "is_publish",
+      accessorKey: "visibility",
       header: "Trạng thái",
       cell: ({ row }) => {
+        const isPublished = row.original.visibility === "PUBLISHED"
+
         return (
-          <Badge variant={row.original.is_publish ? "outline" : "secondary"} className="text-xs">
-            {row.original.is_publish ? "Published" : "Draft"}
+          <Badge variant={isPublished ? "outline" : "secondary"} className="text-xs">
+            {isPublished ? "Published" : "Draft"}
           </Badge>
         )
       },
