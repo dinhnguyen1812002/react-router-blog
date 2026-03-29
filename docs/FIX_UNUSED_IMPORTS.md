@@ -5,6 +5,7 @@
 ### 1. Unused `useLoaderData` imports
 
 **Files đã fix:**
+
 - `app/routes/articles._index.tsx`
 - `app/routes/category.index.tsx`
 - `app/routes/memes._index.tsx`
@@ -15,10 +16,10 @@
 
 ```typescript
 // Trước
-import { useLoaderData, Link } from 'react-router';
+import { useLoaderData, Link } from "react-router";
 
 // Sau
-import { Link } from 'react-router';
+import { Link } from "react-router";
 ```
 
 ---
@@ -26,6 +27,7 @@ import { Link } from 'react-router';
 ### 2. Unused `Play` icon import
 
 **File đã fix:**
+
 - `app/components/layout/Hero.tsx`
 
 **Vấn đề:** Import `Play` icon nhưng code sử dụng nó đã bị comment out
@@ -34,10 +36,10 @@ import { Link } from 'react-router';
 
 ```typescript
 // Trước
-import { ArrowRight, CheckCircle2, Play, Star } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Play, Star } from "lucide-react";
 
 // Sau
-import { ArrowRight, CheckCircle2, Star } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Star } from "lucide-react";
 ```
 
 ---
@@ -45,6 +47,7 @@ import { ArrowRight, CheckCircle2, Star } from 'lucide-react';
 ### 3. Type-only import cho `LucideIcon`
 
 **File đã fix:**
+
 - `app/components/ui/EmptyState.tsx`
 
 **Vấn đề:** Import `LucideIcon` như value nhưng chỉ dùng như type
@@ -53,10 +56,10 @@ import { ArrowRight, CheckCircle2, Star } from 'lucide-react';
 
 ```typescript
 // Trước
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon } from "lucide-react";
 
 // Sau
-import type { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from "lucide-react";
 ```
 
 ---
@@ -64,6 +67,7 @@ import type { LucideIcon } from 'lucide-react';
 ### 4. Export mismatch trong index files
 
 **Files đã fix:**
+
 - `app/components/article/index.ts`
 - `app/components/meme/index.ts`
 - `app/components/skeleton/index.ts`
@@ -74,10 +78,10 @@ import type { LucideIcon } from 'lucide-react';
 
 ```typescript
 // Trước
-export { default as DataTime } from './data-time';
+export { default as DataTime } from "./data-time";
 
 // Sau
-export { Calendar24 as DataTime } from './data-time';
+export { Calendar24 as DataTime } from "./data-time";
 ```
 
 ---
@@ -85,6 +89,7 @@ export { Calendar24 as DataTime } from './data-time';
 ### 5. SetContentOptions type error
 
 **File đã fix:**
+
 - `app/components/tiptap-templates/simple/simple-editor.tsx`
 
 **Vấn đề:** Truyền `false` thay vì object cho `setContent`
@@ -104,11 +109,13 @@ editor.commands.setContent(value, { emitUpdate: false });
 ## 📊 Kết quả
 
 ### Trước khi fix:
+
 - ❌ Nhiều unused imports warnings
 - ❌ TypeScript errors về export mismatch
 - ❌ Type errors trong tiptap editor
 
 ### Sau khi fix:
+
 - ✅ Không còn unused imports
 - ✅ Tất cả TypeScript errors đã được fix
 - ✅ Code clean và type-safe
@@ -118,11 +125,13 @@ editor.commands.setContent(value, { emitUpdate: false });
 ## 🔍 Cách kiểm tra
 
 ### Chạy TypeScript check:
+
 ```bash
 npm run typecheck
 ```
 
 ### Kết quả mong đợi:
+
 ```
 ✓ No TypeScript errors
 ✓ All imports are used
@@ -134,25 +143,28 @@ npm run typecheck
 ## 📝 Best Practices
 
 ### 1. Import chỉ những gì cần dùng
+
 ```typescript
 // ❌ Bad
-import { A, B, C, D } from 'library';
+import { A, B, C, D } from "library";
 // Chỉ dùng A và B
 
 // ✅ Good
-import { A, B } from 'library';
+import { A, B } from "library";
 ```
 
 ### 2. Sử dụng type-only imports
+
 ```typescript
 // ❌ Bad
-import { MyType } from './types';
+import { MyType } from "./types";
 
 // ✅ Good
-import type { MyType } from './types';
+import type { MyType } from "./types";
 ```
 
 ### 3. Named exports > Default exports
+
 ```typescript
 // ✅ Good - Dễ refactor và tree-shake
 export function MyComponent() {}
@@ -162,10 +174,11 @@ export default function MyComponent() {}
 ```
 
 ### 4. Consistent export patterns
+
 ```typescript
 // index.ts
-export { ComponentA } from './ComponentA';
-export { ComponentB } from './ComponentB';
+export { ComponentA } from "./ComponentA";
+export { ComponentB } from "./ComponentB";
 // Không mix default và named exports
 ```
 
@@ -174,6 +187,7 @@ export { ComponentB } from './ComponentB';
 ## 🛠️ Tools để tránh unused imports
 
 ### 1. ESLint
+
 ```json
 {
   "rules": {
@@ -184,6 +198,7 @@ export { ComponentB } from './ComponentB';
 ```
 
 ### 2. VS Code Settings
+
 ```json
 {
   "editor.codeActionsOnSave": {
@@ -193,6 +208,7 @@ export { ComponentB } from './ComponentB';
 ```
 
 ### 3. TypeScript Compiler
+
 ```json
 {
   "compilerOptions": {

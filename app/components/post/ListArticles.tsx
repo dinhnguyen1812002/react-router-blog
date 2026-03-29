@@ -1,138 +1,140 @@
 import {
-  Calendar,
-  Clock,
-  ArrowRight,
-  Eye,
-  Star,
-  MessageSquare,
+	ArrowRight,
+	Calendar,
+	Clock,
+	Eye,
+	MessageSquare,
+	Star,
 } from "lucide-react";
-
-import { Badge } from "~/components/ui/badge";
-
-import { Card } from "../ui/Card";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import type { Post } from "~/types";
 import { Link } from "react-router";
-import { BookmarkButton } from "./BookmarkButton";
-import { RatingComponent } from "./RatingComponent";
-import { LikeButton } from "./LikeButton";
+import { Badge } from "~/components/ui/badge";
 import { formatDateSimple } from "~/lib/utils";
+import type { Post } from "~/types";
 import { resolveAvatarUrl } from "~/utils/image";
-import { getSafeAvatar, getSafeUsername, getUserInitial } from "~/utils/post-helpers";
+import {
+	getSafeAvatar,
+	getSafeUsername,
+	getUserInitial,
+} from "~/utils/post-helpers";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Card } from "../ui/Card";
+import { BookmarkButton } from "./BookmarkButton";
+import { LikeButton } from "./LikeButton";
+import { RatingComponent } from "./RatingComponent";
 
 interface PostCardProps {
-  post: Post;
+	post: Post;
 }
 
 export const ListArticles = ({ post }: PostCardProps) => {
-  const username = getSafeUsername(post);
-  const avatar = resolveAvatarUrl(getSafeAvatar(post));
+	const username = getSafeUsername(post);
+	const avatar = resolveAvatarUrl(getSafeAvatar(post));
 
-  return (
-    <div className="group border border-border/60 rounded-xl bg-background hover:bg-muted/20 transition-colors">
-      <div className="flex flex-col md:flex-row">
-        <div className="relative overflow-hidden md:w-80 shrink-0 aspect-[16/9] w-full">
-          <img
-            src={post.thumbnail || post.thumbnailUrl}
-            alt={post.title}
-            className="h-48 md:h-full w-full object-cover"
-          />
+	return (
+		<div className="group border border-border/60 rounded-xl bg-background hover:bg-muted/20 transition-colors">
+			<div className="flex flex-col md:flex-row">
+				<div className="relative overflow-hidden md:w-80 shrink-0 aspect-[16/9] w-full">
+					<img
+						src={post.thumbnail || post.thumbnailUrl}
+						alt={post.title}
+						className="h-48 md:h-full w-full object-cover"
+					/>
 
-          <div className="absolute top-2 left-2 flex items-center gap-2">
-            {post.categories?.length > 0 && (
-              <span
-                className="px-2 py-1 rounded-full text-xs font-medium bg-background/90 border border-border/60"
-                style={{
-                  border: `1px solid ${post.categories[0].backgroundColor || "#3B82F6"}`,
-                  color: post.categories[0].backgroundColor || "#3B82F6",
-                }}
-              >
-                {post.categories[0].category}
-              </span>
-            )}
-            {post.featured && (
-              <span className="px-2 py-1 rounded-full text-xs font-medium bg-background/90 border border-border/60 flex items-center gap-1 text-foreground">
-                <Star className="h-3 w-3" />
-                Featured
-              </span>
-            )}
-          </div>
-        </div>
+					<div className="absolute top-2 left-2 flex items-center gap-2">
+						{post.categories?.length > 0 && (
+							<span
+								className="px-2 py-1 rounded-full text-xs font-medium bg-background/90 border border-border/60"
+								style={{
+									border: `1px solid ${post.categories[0].backgroundColor || "#3B82F6"}`,
+									color: post.categories[0].backgroundColor || "#3B82F6",
+								}}
+							>
+								{post.categories[0].category}
+							</span>
+						)}
+						{post.featured && (
+							<span className="px-2 py-1 rounded-full text-xs font-medium bg-background/90 border border-border/60 flex items-center gap-1 text-foreground">
+								<Star className="h-3 w-3" />
+								Featured
+							</span>
+						)}
+					</div>
+				</div>
 
-        <div className="p-4 sm:p-6 flex flex-col justify-between flex-1">
-          <div className="space-y-2">
-            <h3 className="text-xl font-semibold tracking-tight leading-tight text-foreground">
-              <Link
-                to={`/articles/${post.slug}`}
-                className="hover:underline underline-offset-4"
-              >
-                {post.title}
-              </Link>
-            </h3>
+				<div className="p-4 sm:p-6 flex flex-col justify-between flex-1">
+					<div className="space-y-2">
+						<h3 className="text-xl font-semibold tracking-tight leading-tight text-foreground">
+							<Link
+								to={`/articles/${post.slug}`}
+								className="hover:underline underline-offset-4"
+							>
+								{post.title}
+							</Link>
+						</h3>
 
-            <p className="text-sm text-muted-foreground line-clamp-2">
-              {post.excerpt}
-            </p>
-          </div>
+						<p className="text-sm text-muted-foreground line-clamp-2">
+							{post.excerpt}
+						</p>
+					</div>
 
-          <div className="flex items-center justify-between mt-5 pt-4 border-t border-border/60 gap-4 flex-wrap">
-            <div className="flex items-center gap-3">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={avatar} alt={username} />
-                <AvatarFallback>{getUserInitial(post)}</AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col">
-                <span className="text-sm font-medium text-foreground">
-                  {username}
-                </span>
-                <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    <Calendar className="h-3 w-3" />
+					<div className="flex items-center justify-between mt-5 pt-4 border-t border-border/60 gap-4 flex-wrap">
+						<div className="flex items-center gap-3">
+							<Avatar className="h-8 w-8">
+								<AvatarImage src={avatar} alt={username} />
+								<AvatarFallback>{getUserInitial(post)}</AvatarFallback>
+							</Avatar>
+							<div className="flex flex-col">
+								<span className="text-sm font-medium text-foreground">
+									{username}
+								</span>
+								<div className="flex items-center gap-3 text-xs text-muted-foreground">
+									<span className="flex items-center gap-1">
+										<Calendar className="h-3 w-3" />
 
-                    {formatDateSimple(post.public_date)}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Eye className="h-3 w-3" />
-                    {post.viewCount}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    {post.averageRating}
-                    <Star className="h-3 w-3 text-yellow-400" />
-                  </span>
-                  <span className="flex items-center gap-1">
-                    {post.commentCount}
-                    <MessageSquare className="h-4 w-4 " />
-                  </span>
-                </div>
-              </div>
-            </div>
+										{formatDateSimple(post.public_date)}
+									</span>
+									<span className="flex items-center gap-1">
+										<Eye className="h-3 w-3" />
+										{post.viewCount}
+									</span>
+									<span className="flex items-center gap-1">
+										{post.averageRating}
+										<Star className="h-3 w-3 text-yellow-400" />
+									</span>
+									<span className="flex items-center gap-1">
+										{post.commentCount}
+										<MessageSquare className="h-4 w-4 " />
+									</span>
+								</div>
+							</div>
+						</div>
 
-            {/*Gộp nhóm 3 nút ở đây */}
-            <div className="flex items-center gap-2 px-2 py-1 rounded-md border border-border/60 bg-transparent">
-              <BookmarkButton
-                postId={post.id}
-                initialBookmarked={post.isSavedByCurrentUser}
-                variant="compact"
-                className="bg-transparent"
-              />
-              <RatingComponent
-                postId={post.id}
-                initialUserRating={post.userRating}
-                initialAverageRating={post.averageRating}
-                compact
-              />
-              <LikeButton
-                postId={post.id}
-                initialLiked={post.isLikedByCurrentUser}
-                initialLikeCount={post.likeCount}
-                variant="minimal"
-                size="md"
-                showCount={true}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+						{/*Gộp nhóm 3 nút ở đây */}
+						<div className="flex items-center gap-2 px-2 py-1 rounded-md border border-border/60 bg-transparent">
+							<BookmarkButton
+								postId={post.id}
+								initialBookmarked={post.isSavedByCurrentUser}
+								variant="compact"
+								className="bg-transparent"
+							/>
+							<RatingComponent
+								postId={post.id}
+								initialUserRating={post.userRating}
+								initialAverageRating={post.averageRating}
+								compact
+							/>
+							<LikeButton
+								postId={post.id}
+								initialLiked={post.isLikedByCurrentUser}
+								initialLikeCount={post.likeCount}
+								variant="minimal"
+								size="md"
+								showCount={true}
+							/>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
 };

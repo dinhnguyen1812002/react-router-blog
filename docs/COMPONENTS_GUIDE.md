@@ -9,13 +9,15 @@
 ## 🎯 Layout Components
 
 ### MainLayout
+
 **File**: `app/components/layout/MainLayout.tsx`
 
 **Mục đích**: Wrapper chính cho tất cả các trang, bao gồm Header và Footer
 
 **Usage**:
+
 ```tsx
-import { MainLayout } from '~/components/layout/MainLayout';
+import { MainLayout } from "~/components/layout/MainLayout";
 
 export default function MyPage() {
   return (
@@ -27,6 +29,7 @@ export default function MyPage() {
 ```
 
 **Props**:
+
 - `children`: React.ReactNode (required)
 - `className`: string (optional) - Custom classes cho main element
 
@@ -35,11 +38,13 @@ export default function MyPage() {
 ## 📄 Article Components
 
 ### ArticleCard
+
 **File**: `app/components/article/ArticleCard.tsx`
 
 **Mục đích**: Card hiển thị bài viết trong list view
 
 **Features**:
+
 - Thumbnail với hover zoom
 - Categories badges
 - Title và excerpt
@@ -48,16 +53,19 @@ export default function MyPage() {
 - Responsive layout
 
 **Usage**:
-```tsx
-import { ArticleCard } from '~/components/article/ArticleCard';
 
-<ArticleCard post={post} />
+```tsx
+import { ArticleCard } from "~/components/article/ArticleCard";
+
+<ArticleCard post={post} />;
 ```
 
 **Props**:
+
 - `post`: Post (required) - Object bài viết từ API
 
 **Styling**:
+
 - Desktop: Thumbnail left, content right
 - Mobile: Stack vertical
 - Hover: Shadow + border + thumbnail scale
@@ -67,11 +75,13 @@ import { ArticleCard } from '~/components/article/ArticleCard';
 ## 📂 Category Components
 
 ### CategoryCard
+
 **File**: `app/components/category/CategoryCard.tsx`
 
 **Mục đích**: Card hiển thị category trong grid
 
 **Features**:
+
 - Color bar phía trên
 - Icon với background màu category
 - Title và description
@@ -79,16 +89,19 @@ import { ArticleCard } from '~/components/article/ArticleCard';
 - Hover lift animation
 
 **Usage**:
-```tsx
-import { CategoryCard } from '~/components/category/CategoryCard';
 
-<CategoryCard category={category} />
+```tsx
+import { CategoryCard } from "~/components/category/CategoryCard";
+
+<CategoryCard category={category} />;
 ```
 
 **Props**:
+
 - `category`: Category (required) - Object category từ API
 
 **Styling**:
+
 - Color bar: 8px height với category.backgroundColor
 - Icon: 64x64 với background opacity 20%
 - Hover: Shadow + translate-y + scale icon
@@ -98,11 +111,13 @@ import { CategoryCard } from '~/components/category/CategoryCard';
 ## 🎭 Meme Components
 
 ### MemeGridItem
+
 **File**: `app/components/meme/MemeGridItem.tsx`
 
 **Mục đích**: Item trong meme grid
 
 **Features**:
+
 - Square aspect ratio
 - Lazy loading image
 - Hover overlay với zoom icon
@@ -110,25 +125,26 @@ import { CategoryCard } from '~/components/category/CategoryCard';
 - Click để mở lightbox
 
 **Usage**:
-```tsx
-import { MemeGridItem } from '~/components/meme/MemeGridItem';
 
-<MemeGridItem 
-  meme={meme} 
-  onClick={() => setSelectedMeme(meme)} 
-/>
+```tsx
+import { MemeGridItem } from "~/components/meme/MemeGridItem";
+
+<MemeGridItem meme={meme} onClick={() => setSelectedMeme(meme)} />;
 ```
 
 **Props**:
+
 - `meme`: Meme (required) - Object meme từ API
 - `onClick`: () => void (required) - Handler khi click
 
 ### MemeLightbox
+
 **File**: `app/components/meme/MemeLightbox.tsx`
 
 **Mục đích**: Modal viewer cho meme full size
 
 **Features**:
+
 - Full screen overlay
 - Backdrop blur
 - Close button
@@ -137,22 +153,24 @@ import { MemeGridItem } from '~/components/meme/MemeGridItem';
 - Image info section
 
 **Usage**:
-```tsx
-import { MemeLightbox } from '~/components/meme/MemeLightbox';
 
-{selectedMeme && (
-  <MemeLightbox 
-    meme={selectedMeme} 
-    onClose={() => setSelectedMeme(null)} 
-  />
-)}
+```tsx
+import { MemeLightbox } from "~/components/meme/MemeLightbox";
+
+{
+  selectedMeme && (
+    <MemeLightbox meme={selectedMeme} onClose={() => setSelectedMeme(null)} />
+  );
+}
 ```
 
 **Props**:
+
 - `meme`: Meme (required) - Meme để hiển thị
 - `onClose`: () => void (required) - Handler khi đóng
 
 **Interactions**:
+
 - Click backdrop → Close
 - Click X button → Close
 - Press ESC → Close
@@ -163,52 +181,67 @@ import { MemeLightbox } from '~/components/meme/MemeLightbox';
 ## 💀 Skeleton Components
 
 ### ArticleListSkeleton
+
 **File**: `app/components/skeleton/ArticleListSkeleton.tsx`
 
 **Mục đích**: Loading state cho article list
 
 **Usage**:
-```tsx
-import { ArticleListSkeleton } from '~/components/skeleton/ArticleListSkeleton';
 
-{isLoading ? <ArticleListSkeleton /> : <ArticleList />}
+```tsx
+import { ArticleListSkeleton } from "~/components/skeleton/ArticleListSkeleton";
+
+{
+  isLoading ? <ArticleListSkeleton /> : <ArticleList />;
+}
 ```
 
 **Features**:
+
 - 5 skeleton cards
 - Animate pulse
 - Match ArticleCard layout
 
 ### CategoryGridSkeleton
+
 **File**: `app/components/skeleton/CategoryGridSkeleton.tsx`
 
 **Mục đích**: Loading state cho category grid
 
 **Usage**:
-```tsx
-import { CategoryGridSkeleton } from '~/components/skeleton/CategoryGridSkeleton';
 
-{isLoading ? <CategoryGridSkeleton /> : <CategoryGrid />}
+```tsx
+import { CategoryGridSkeleton } from "~/components/skeleton/CategoryGridSkeleton";
+
+{
+  isLoading ? <CategoryGridSkeleton /> : <CategoryGrid />;
+}
 ```
 
 **Features**:
+
 - 8 skeleton cards
 - Grid layout matching CategoryCard
 - Animate pulse
 
 ### MemeGridSkeleton
+
 **File**: `app/components/skeleton/MemeGridSkeleton.tsx`
 
 **Mục đích**: Loading state cho meme grid
 
 **Usage**:
-```tsx
-import { MemeGridSkeleton } from '~/components/skeleton/MemeGridSkeleton';
 
-{isLoading ? <MemeGridSkeleton /> : <MemeGrid />}
+```tsx
+import { MemeGridSkeleton } from "~/components/skeleton/MemeGridSkeleton";
+
+{
+  isLoading ? <MemeGridSkeleton /> : <MemeGrid />;
+}
 ```
 
 **Features**:
+
 - 8 skeleton items
 - Square aspect ratio
 - Animate pulse
@@ -218,53 +251,60 @@ import { MemeGridSkeleton } from '~/components/skeleton/MemeGridSkeleton';
 ## 🎨 UI Components
 
 ### EmptyState
+
 **File**: `app/components/ui/EmptyState.tsx`
 
 **Mục đích**: Hiển thị khi không có dữ liệu
 
 **Usage**:
+
 ```tsx
-import { EmptyState } from '~/components/ui/EmptyState';
-import { FileText } from 'lucide-react';
+import { EmptyState } from "~/components/ui/EmptyState";
+import { FileText } from "lucide-react";
 
 <EmptyState
   icon={FileText}
   title="Không có bài viết"
   description="Chưa có bài viết nào được đăng."
   action={<button>Tạo bài viết</button>}
-/>
+/>;
 ```
 
 **Props**:
+
 - `icon`: LucideIcon (optional) - Icon component
 - `title`: string (required) - Tiêu đề
 - `description`: string (optional) - Mô tả
 - `action`: React.ReactNode (optional) - Action button/link
 
 ### Pagination
+
 **File**: `app/components/ui/Pagination.tsx`
 
 **Mục đích**: Component phân trang tái sử dụng
 
 **Usage**:
+
 ```tsx
-import { Pagination } from '~/components/ui/Pagination';
+import { Pagination } from "~/components/ui/Pagination";
 
 <Pagination
   currentPage={currentPage}
   totalPages={totalPages}
   onPageChange={handlePageChange}
   maxVisible={5}
-/>
+/>;
 ```
 
 **Props**:
+
 - `currentPage`: number (required) - Trang hiện tại (0-indexed)
 - `totalPages`: number (required) - Tổng số trang
 - `onPageChange`: (page: number) => void (required) - Handler
 - `maxVisible`: number (optional, default: 5) - Số page numbers hiển thị
 
 **Features**:
+
 - Smart page number calculation
 - Previous/Next buttons
 - Disabled states
@@ -275,6 +315,7 @@ import { Pagination } from '~/components/ui/Pagination';
 ## 🔧 Component Patterns
 
 ### Pattern 1: Loader + Component
+
 ```tsx
 // Loader fetch data server-side
 export async function loader() {
@@ -290,28 +331,25 @@ export default function Page({ loaderData }) {
 ```
 
 ### Pattern 2: Loading States
+
 ```tsx
 const [isLoading, setIsLoading] = useState(false);
 
-return (
-  <>
-    {isLoading ? <Skeleton /> : <Content />}
-  </>
-);
+return <>{isLoading ? <Skeleton /> : <Content />}</>;
 ```
 
 ### Pattern 3: Empty States
+
 ```tsx
-{data.length === 0 && (
-  <EmptyState
-    icon={Icon}
-    title="No data"
-    description="Description here"
-  />
-)}
+{
+  data.length === 0 && (
+    <EmptyState icon={Icon} title="No data" description="Description here" />
+  );
+}
 ```
 
 ### Pattern 4: Hover Effects
+
 ```tsx
 <div className="group hover:shadow-xl transition-all duration-300">
   <img className="group-hover:scale-105 transition-transform" />
@@ -323,21 +361,23 @@ return (
 ## 🎨 Styling Conventions
 
 ### Class Naming
+
 ```tsx
 // Base classes
-className="bg-white dark:bg-gray-800"
+className = "bg-white dark:bg-gray-800";
 
 // Hover states
-className="hover:shadow-xl hover:border-gray-300"
+className = "hover:shadow-xl hover:border-gray-300";
 
 // Transitions
-className="transition-all duration-300"
+className = "transition-all duration-300";
 
 // Responsive
-className="w-full sm:w-48 lg:w-64"
+className = "w-full sm:w-48 lg:w-64";
 ```
 
 ### Color System
+
 ```tsx
 // Background
 bg-white dark:bg-gray-800
@@ -352,16 +392,17 @@ border-gray-200 dark:border-gray-700
 ```
 
 ### Spacing
+
 ```tsx
 // Padding
-p-4   // 16px
-p-6   // 24px
-p-8   // 32px
+p - 4; // 16px
+p - 6; // 24px
+p - 8; // 32px
 
 // Gap
-gap-2  // 8px
-gap-4  // 16px
-gap-6  // 24px
+gap - 2; // 8px
+gap - 4; // 16px
+gap - 6; // 24px
 ```
 
 ---
@@ -369,17 +410,19 @@ gap-6  // 24px
 ## 🚀 Performance Tips
 
 ### 1. Lazy Loading
+
 ```tsx
 // Images
-<img loading="lazy" src={url} alt={alt} />
+<img loading="lazy" src={url} alt={alt} />;
 
 // Components
-const Component = lazy(() => import('./Component'));
+const Component = lazy(() => import("./Component"));
 ```
 
 ### 2. Memoization
+
 ```tsx
-import { memo } from 'react';
+import { memo } from "react";
 
 export const MyComponent = memo(function MyComponent({ data }) {
   // Component logic
@@ -387,6 +430,7 @@ export const MyComponent = memo(function MyComponent({ data }) {
 ```
 
 ### 3. Efficient Re-renders
+
 ```tsx
 // Sử dụng useCallback cho handlers
 const handleClick = useCallback(() => {
@@ -404,6 +448,7 @@ const computedValue = useMemo(() => {
 ## ♿ Accessibility
 
 ### Semantic HTML
+
 ```tsx
 <article>  // Cho article cards
 <nav>      // Cho navigation
@@ -412,6 +457,7 @@ const computedValue = useMemo(() => {
 ```
 
 ### ARIA Labels
+
 ```tsx
 <button aria-label="Close">
   <X />
@@ -423,14 +469,15 @@ const computedValue = useMemo(() => {
 ```
 
 ### Keyboard Support
+
 ```tsx
 // ESC key để đóng modal
 useEffect(() => {
   const handleEscape = (e: KeyboardEvent) => {
-    if (e.key === 'Escape') onClose();
+    if (e.key === "Escape") onClose();
   };
-  document.addEventListener('keydown', handleEscape);
-  return () => document.removeEventListener('keydown', handleEscape);
+  document.addEventListener("keydown", handleEscape);
+  return () => document.removeEventListener("keydown", handleEscape);
 }, [onClose]);
 ```
 
@@ -439,30 +486,34 @@ useEffect(() => {
 ## 🧪 Testing Components
 
 ### Unit Testing
-```tsx
-import { render, screen } from '@testing-library/react';
-import { ArticleCard } from './ArticleCard';
 
-test('renders article card', () => {
-  const post = { /* mock data */ };
+```tsx
+import { render, screen } from "@testing-library/react";
+import { ArticleCard } from "./ArticleCard";
+
+test("renders article card", () => {
+  const post = {
+    /* mock data */
+  };
   render(<ArticleCard post={post} />);
   expect(screen.getByText(post.title)).toBeInTheDocument();
 });
 ```
 
 ### Integration Testing
+
 ```tsx
-test('pagination works', () => {
+test("pagination works", () => {
   const handlePageChange = jest.fn();
   render(
-    <Pagination 
-      currentPage={0} 
-      totalPages={5} 
-      onPageChange={handlePageChange} 
-    />
+    <Pagination
+      currentPage={0}
+      totalPages={5}
+      onPageChange={handlePageChange}
+    />,
   );
-  
-  fireEvent.click(screen.getByText('Sau'));
+
+  fireEvent.click(screen.getByText("Sau"));
   expect(handlePageChange).toHaveBeenCalledWith(1);
 });
 ```
@@ -497,6 +548,7 @@ MainLayout
 ## 🎯 Best Practices
 
 ### 1. Component Composition
+
 ```tsx
 // Good: Small, focused components
 <ArticleCard post={post} />
@@ -506,11 +558,12 @@ MainLayout
 ```
 
 ### 2. Props Interface
+
 ```tsx
 // Good: Clear interface
 interface ArticleCardProps {
   post: Post;
-  variant?: 'default' | 'compact';
+  variant?: "default" | "compact";
 }
 
 // Bad: Unclear props
@@ -521,6 +574,7 @@ interface Props {
 ```
 
 ### 3. Default Props
+
 ```tsx
 // Good: Sensible defaults
 function Pagination({ maxVisible = 5 }) {
@@ -529,6 +583,7 @@ function Pagination({ maxVisible = 5 }) {
 ```
 
 ### 4. Error Boundaries
+
 ```tsx
 // Wrap components có thể fail
 <ErrorBoundary fallback={<ErrorState />}>
@@ -541,6 +596,7 @@ function Pagination({ maxVisible = 5 }) {
 ## 🔄 Component Lifecycle
 
 ### Mount
+
 ```tsx
 useEffect(() => {
   // Setup code
@@ -551,6 +607,7 @@ useEffect(() => {
 ```
 
 ### Update
+
 ```tsx
 useEffect(() => {
   // Update logic
@@ -558,6 +615,7 @@ useEffect(() => {
 ```
 
 ### Unmount
+
 ```tsx
 useEffect(() => {
   return () => {
@@ -571,16 +629,20 @@ useEffect(() => {
 ## 💡 Tips & Tricks
 
 ### Tip 1: Conditional Rendering
+
 ```tsx
 // Good: Early return
 if (!data) return <EmptyState />;
 return <Content data={data} />;
 
 // Also good: Ternary
-{data ? <Content data={data} /> : <EmptyState />}
+{
+  data ? <Content data={data} /> : <EmptyState />;
+}
 ```
 
 ### Tip 2: Event Handlers
+
 ```tsx
 // Good: Named handlers
 const handleClick = () => { /* ... */ };
@@ -591,6 +653,7 @@ const handleClick = () => { /* ... */ };
 ```
 
 ### Tip 3: Styling
+
 ```tsx
 // Good: Tailwind utilities
 className="flex items-center gap-4"
@@ -623,28 +686,35 @@ Khi tạo component mới, đảm bảo:
 **Đã tạo 11 components**:
 
 **Layout** (1):
+
 - MainLayout
 
 **Article** (1):
+
 - ArticleCard
 
 **Category** (1):
+
 - CategoryCard
 
 **Meme** (2):
+
 - MemeGridItem
 - MemeLightbox
 
 **Skeleton** (3):
+
 - ArticleListSkeleton
 - CategoryGridSkeleton
 - MemeGridSkeleton
 
 **UI** (2):
+
 - EmptyState
 - Pagination
 
 **Header/Footer** (2):
+
 - Header (existing)
 - Footer (existing)
 

@@ -44,7 +44,7 @@ public class AuthController {
       // Get refresh token from cookie
       Cookie[] cookies = request.getCookies();
       String refreshToken = null;
-      
+
       if (cookies != null) {
         for (Cookie cookie : cookies) {
           if ("refreshToken".equals(cookie.getName())) {
@@ -53,11 +53,11 @@ public class AuthController {
           }
         }
       }
-      
+
       if (refreshToken == null) {
         return ResponseEntity.status(401).body(new ErrorResponse("No refresh token"));
       }
-      
+
       // Validate refresh token
       try {
         Claims claims = Jwts.parserBuilder()
@@ -65,9 +65,9 @@ public class AuthController {
           .build()
           .parseClaimsJws(refreshToken)
           .getBody();
-        
+
         String userId = claims.getSubject();
-        
+
         // Generate new access token
         String newAccessToken = Jwts.builder()
           .setSubject(userId)
@@ -75,7 +75,7 @@ public class AuthController {
           .setExpiration(new Date(System.currentTimeMillis() + 15 * 60 * 1000)) // 15 min
           .signWith(Keys.hmacShaKeyFor(jwtSecret.getBytes()), SignatureAlgorithm.HS256)
           .compact();
-        
+
         // Optionally rotate refresh token
         String newRefreshToken = Jwts.builder()
           .setSubject(userId)
@@ -83,7 +83,7 @@ public class AuthController {
           .setExpiration(new Date(System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000)) // 7 days
           .signWith(Keys.hmacShaKeyFor(refreshTokenSecret.getBytes()), SignatureAlgorithm.HS256)
           .compact();
-        
+
         // Set new refresh token cookie
         Cookie newRefreshCookie = new Cookie("refreshToken", newRefreshToken);
         newRefreshCookie.setHttpOnly(true);
@@ -91,13 +91,13 @@ public class AuthController {
         newRefreshCookie.setPath("/");
         newRefreshCookie.setMaxAge(7 * 24 * 60 * 60); // 7 days
         response.addCookie(newRefreshCookie);
-        
+
         return ResponseEntity.ok(new TokenResponse(newAccessToken));
-        
+
       } catch (JwtException e) {
         return ResponseEntity.status(401).body(new ErrorResponse("Invalid refresh token"));
       }
-      
+
     } catch (Exception e) {
       return ResponseEntity.status(500).body(new ErrorResponse("Internal server error"));
     }
@@ -140,11 +140,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .antMatchers("/api/v1/auth/refresh-token").permitAll()  // ← Important
         .antMatchers("/api/v1/auth/forgot-password").permitAll()
         .antMatchers("/api/v1/auth/reset-password").permitAll()
-        
+
         // Protected endpoints - auth required
         .antMatchers("/api/v1/user/**").authenticated()
         .antMatchers("/api/v1/posts/**").authenticated()
-        
+
         // All other requests require auth
         .anyRequest().authenticated()
       .and()
@@ -158,6 +158,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 ## Testing
 
 ### Before Fix
+
 ```bash
 curl -X POST http://localhost:8080/api/v1/auth/refresh-token \
   -b "refreshToken=..." \
@@ -168,6 +169,7 @@ curl -X POST http://localhost:8080/api/v1/auth/refresh-token \
 ```
 
 ### After Fix
+
 ```bash
 curl -X POST http://localhost:8080/api/v1/auth/refresh-token \
   -b "refreshToken=..." \
@@ -180,17 +182,20 @@ curl -X POST http://localhost:8080/api/v1/auth/refresh-token \
 ## Verification
 
 1. **Check endpoint is public:**
+
    ```java
    .antMatchers("/api/v1/auth/refresh-token").permitAll()
    ```
 
 2. **Check no `@Secured` annotation:**
+
    ```java
    @PostMapping("/refresh-token")  // ← No @Secured
    public ResponseEntity<?> refreshToken(...) {
    ```
 
 3. **Check no `@PreAuthorize` annotation:**
+
    ```java
    @PostMapping("/refresh-token")  // ← No @PreAuthorize
    public ResponseEntity<?> refreshToken(...) {
@@ -198,15 +203,17 @@ curl -X POST http://localhost:8080/api/v1/auth/refresh-token \
 
 4. **Test in browser console:**
    ```javascript
-   import { authApi } from '~/api/auth';
-   authApi.refreshToken()
-     .then(r => console.log('✅ Success:', r))
-     .catch(e => console.error('❌ Error:', e.response?.status));
+   import { authApi } from "~/api/auth";
+   authApi
+     .refreshToken()
+     .then((r) => console.log("✅ Success:", r))
+     .catch((e) => console.error("❌ Error:", e.response?.status));
    ```
 
 ## Summary
 
 **The fix is simple:**
+
 1. Remove authentication requirement from `/auth/refresh-token` endpoint
 2. Keep it public (permitAll)
 3. Only validate refresh token cookie

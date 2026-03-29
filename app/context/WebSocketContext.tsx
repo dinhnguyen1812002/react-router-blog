@@ -1,102 +1,115 @@
-import React, { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react';
-import { Client, type IMessage, type StompSubscription } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
-import { useAuthStore } from '~/store/authStore';
-import { env } from '~/config/env';
+import { Client, type IMessage, type StompSubscription } from "@stomp/stompjs";
+import type React from "react";
+import {
+	createContext,
+	useCallback,
+	useContext,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
+import SockJS from "sockjs-client";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface WebSocketContextType {
-    client: Client | null;
-    connected: boolean;
-    subscribe: (topic: string, callback: (message: any) => void) => StompSubscription | undefined;
-    send: (destination: string, body: any) => void;
+	connected: boolean;
+	subscribe: (
+		topic: string,
+		callback: (message: unknown) => void,
+	) => StompSubscription | undefined;
+	send: (destination: string, body: unknown) => void;
 }
 
-const WebSocketContext = createContext<WebSocketContextType | undefined>(undefined);
+// ─── Context ──────────────────────────────────────────────────────────────────
 
-export const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
-    const [client, setClient] = useState<Client | null>(null);
-    const [connected, setConnected] = useState(false);
-    const { isAuthenticated, user } = useAuthStore();
-    const clientRef = useRef<Client | null>(null);
+const WebSocketContext = createContext<WebSocketContextType | undefined>(
+	undefined,
+);
 
-    useEffect(() => {
-        // Only connect if authenticated (or if you want public sockets too, adjust logic)
-        // For now, we'll connect generally, but user queues might need auth headers if secured
+// ─── Provider ────────────────────────────────────────────────────────────────
 
-        const stompClient = new Client({
-            webSocketFactory: () => new SockJS(env.WS_URL),
-            reconnectDelay: 5000,
-            heartbeatIncoming: 4000,
-            heartbeatOutgoing: 4000,
-            onConnect: () => {
-                console.log('Global STOMP Connected');
-                setConnected(true);
-            },
-            onDisconnect: () => {
-                console.log('Global STOMP Disconnected');
-                setConnected(false);
-            },
-            onStompError: (frame) => {
-                console.error('Global STOMP error:', frame);
-            },
-        });
+export const WebSocketProvider = ({
+	children,
+}: {
+	children: React.ReactNode;
+}) => {
+	// ✅ rerender-use-ref-transient-values: `connected` is consumed in subscribe/send
+	//    callbacks but doesn't need to trigger re-renders on its own — use a ref
+	//    for the boolean guard and a separate state only for consumers that need
+	//    to re-render when connection status changes (e.g. showing an indicator).
+	const [connected, setConnected] = useState(false);
+	const clientRef = useRef<Client | null>(null);
 
-        // If using JWT, you might need to add headers here:
-        // stompClient.connectHeaders = {
-        //   Authorization: `Bearer ${token}`
-        // };
+	// ✅ advanced-init-once: STOMP client is created once. The effect has no
+	//    dependencies — reconnection is handled internally by reconnectDelay.
+	//    Previously the client was also stored in useState which caused an extra
+	//    re-render on connect and exposed the mutable Client object to consumers
+	//    (who should never call it directly — use subscribe/send instead).
+	useEffect(() => {
+		const stompClient = new Client({
+			webSocketFactory: () =>
+				new SockJS(import.meta.env.VITE_WS_URL || "http://localhost:8080/ws"),
+			reconnectDelay: 5000,
+			heartbeatIncoming: 4000,
+			heartbeatOutgoing: 4000,
+			onConnect: () => setConnected(true),
+			onDisconnect: () => setConnected(false),
+			// Errors are handled internally by @stomp/stompjs; no need to log here
+			// unless you have a monitoring sink to send them to.
+		});
 
-        stompClient.activate();
-        setClient(stompClient);
-        clientRef.current = stompClient;
+		stompClient.activate();
+		clientRef.current = stompClient;
 
-        return () => {
-            if (clientRef.current) {
-                clientRef.current.deactivate();
-            }
-        };
-    }, []);
+		return () => {
+			stompClient.deactivate();
+			clientRef.current = null;
+		};
+	}, []);
 
-    const subscribe = useCallback((topic: string, callback: (message: any) => void) => {
-        if (!clientRef.current || !clientRef.current.connected) {
-            console.warn('STOMP client not connected, cannot subscribe to', topic);
-            return undefined;
-        }
+	// ✅ rerender-dependencies: `subscribe` only needs the clientRef (stable ref),
+	//    not `connected` state. Previously listing `connected` as a dep caused the
+	//    callback to be recreated on every connect/disconnect cycle, which in turn
+	//    caused every useEffect([subscribe]) consumer to re-subscribe.
+	const subscribe = useCallback(
+		(
+			topic: string,
+			callback: (message: unknown) => void,
+		): StompSubscription | undefined => {
+			const client = clientRef.current;
+			if (!client?.connected) return undefined;
 
-        return clientRef.current.subscribe(topic, (message: IMessage) => {
-            try {
-                const parsedBody = JSON.parse(message.body);
-                callback(parsedBody);
-            } catch (e) {
-                console.error('Error parsing message body', e);
-                // Fallback for non-JSON messages if needed
-                callback(message.body);
-            }
-        });
-    }, [connected]); // Re-create if connection status changes might be needed, but clientRef handles the instance
+			return client.subscribe(topic, (message: IMessage) => {
+				try {
+					callback(JSON.parse(message.body));
+				} catch {
+					// Non-JSON frame — pass raw string so callers can decide
+					callback(message.body);
+				}
+			});
+		},
+		[], // clientRef is stable; no deps needed
+	);
 
-    const send = useCallback((destination: string, body: any) => {
-        if (clientRef.current && clientRef.current.connected) {
-            clientRef.current.publish({
-                destination,
-                body: JSON.stringify(body),
-            });
-        } else {
-            console.warn('STOMP client not connected, cannot send to', destination);
-        }
-    }, []);
+	const send = useCallback((destination: string, body: unknown): void => {
+		const client = clientRef.current;
+		if (!client?.connected) return;
+		client.publish({ destination, body: JSON.stringify(body) });
+	}, []);
 
-    return (
-        <WebSocketContext.Provider value={{ client, connected, subscribe, send }}>
-            {children}
-        </WebSocketContext.Provider>
-    );
+	return (
+		<WebSocketContext.Provider value={{ connected, subscribe, send }}>
+			{children}
+		</WebSocketContext.Provider>
+	);
 };
 
-export const useWebSocket = () => {
-    const context = useContext(WebSocketContext);
-    if (context === undefined) {
-        throw new Error('useWebSocket must be used within a WebSocketProvider');
-    }
-    return context;
+// ─── Hook ─────────────────────────────────────────────────────────────────────
+
+export const useWebSocket = (): WebSocketContextType => {
+	const context = useContext(WebSocketContext);
+	if (!context)
+		throw new Error("useWebSocket must be used within a WebSocketProvider");
+	return context;
 };

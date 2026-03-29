@@ -1,26 +1,30 @@
 # Blog Redesign Implementation Plan
 
 ## Overview
+
 Comprehensive redesign of 3 main parts: Posts Listing, Post Detail, and Dashboard with modern UI/UX, advanced filtering, and enhanced user experience.
 
 ## Phase 1: Advanced Filter System & Enhanced Components
 
 ### 1.1 Advanced Filter System
+
 **File**: `app/hooks/useAdvancedFilters.ts`
+
 ```typescript
 interface AdvancedFilters {
   search: string;
   categories: string[];
   tags: string[];
-  dateRange: 'all' | 'today' | 'week' | 'month' | 'year';
-  sortBy: 'newest' | 'oldest' | 'popular' | 'trending' | 'az' | 'za';
-  popularity: 'most_viewed' | 'most_liked' | 'trending';
+  dateRange: "all" | "today" | "week" | "month" | "year";
+  sortBy: "newest" | "oldest" | "popular" | "trending" | "az" | "za";
+  popularity: "most_viewed" | "most_liked" | "trending";
   author: string;
   featured: boolean;
 }
 ```
 
 ### 1.2 Enhanced Components
+
 - **FeaturedPostsSection**: Hero section với 3-4 featured posts
 - **TrendingTagsCloud**: Interactive tag cloud với sizes based on popularity
 - **PopularAuthorsWidget**: Top authors với stats
@@ -31,6 +35,7 @@ interface AdvancedFilters {
 ## Phase 2: Posts Listing Redesign
 
 ### 2.1 New Layout Structure
+
 ```
 PostsListingPage
 ├── HeroSection (Featured Posts)
@@ -46,6 +51,7 @@ PostsListingPage
 ```
 
 ### 2.2 Enhanced Post Cards
+
 - Thumbnail với lazy loading
 - Author avatar và info
 - Reading time estimation
@@ -56,6 +62,7 @@ PostsListingPage
 - Share button
 
 ### 2.3 Advanced Filtering UI
+
 - Search bar với suggestions
 - Category dropdown với icons
 - Tags multi-select với autocomplete
@@ -67,6 +74,7 @@ PostsListingPage
 ## Phase 3: Post Detail Redesign
 
 ### 3.1 Enhanced Typography & Layout
+
 - Improved font hierarchy
 - Better line spacing
 - Responsive typography scale
@@ -74,6 +82,7 @@ PostsListingPage
 - Image zoom functionality
 
 ### 3.2 Interactive Elements
+
 - Reading progress bar (top of page)
 - Sticky TOC với smooth scrolling
 - Like button với animation
@@ -82,6 +91,7 @@ PostsListingPage
 - Print-friendly layout
 
 ### 3.3 Enhanced Sidebar
+
 - Author profile card với follow button
 - Related posts với mini filters
 - Popular posts widget
@@ -91,6 +101,7 @@ PostsListingPage
 ## Phase 4: Dashboard Redesign
 
 ### 4.1 Modern Sidebar Navigation
+
 ```
 Dashboard Sidebar
 ├── Overview (with charts)
@@ -110,6 +121,7 @@ Dashboard Sidebar
 ```
 
 ### 4.2 Overview Dashboard
+
 - Statistics cards với trend indicators
 - Charts: Views over time, Popular posts, Category distribution
 - Recent activity feed
@@ -117,6 +129,7 @@ Dashboard Sidebar
 - Performance metrics
 
 ### 4.3 Enhanced My Posts Management
+
 - Advanced filtering: status, category, date, performance
 - Bulk actions: publish, unpublish, delete
 - Inline editing capabilities
@@ -126,6 +139,7 @@ Dashboard Sidebar
 ## Phase 5: Technical Implementation
 
 ### 5.1 Performance Optimizations
+
 - Lazy loading cho images và components
 - Infinite scroll với React Query
 - Image optimization với WebP
@@ -133,6 +147,7 @@ Dashboard Sidebar
 - Memoization cho expensive calculations
 
 ### 5.2 Accessibility & SEO
+
 - ARIA labels và roles
 - Keyboard navigation
 - Screen reader support
@@ -141,6 +156,7 @@ Dashboard Sidebar
 - Open Graph tags
 
 ### 5.3 Responsive Design
+
 - Mobile-first approach
 - Breakpoints: sm (640px), md (768px), lg (1024px), xl (1280px)
 - Touch-friendly interactions
@@ -149,6 +165,7 @@ Dashboard Sidebar
 ## Technology Stack
 
 ### Frontend
+
 - **React 18** với TypeScript
 - **React Query** cho data fetching và caching
 - **Tailwind CSS** cho styling
@@ -157,12 +174,14 @@ Dashboard Sidebar
 - **Lucide React** cho icons
 
 ### Components Architecture
+
 - **Atomic Design**: Atoms → Molecules → Organisms → Templates → Pages
 - **Compound Components** cho complex UI elements
 - **Custom Hooks** cho business logic
 - **Context API** cho global state
 
 ### Data Management
+
 - **React Query** cho server state
 - **Zustand** cho client state
 - **Local Storage** cho user preferences
@@ -171,29 +190,34 @@ Dashboard Sidebar
 ## Implementation Timeline
 
 ### Week 1-2: Foundation
+
 - [ ] Advanced Filter System
 - [ ] Enhanced Components (FeaturedPosts, TrendingTags, etc.)
 - [ ] Performance optimizations setup
 
 ### Week 3-4: Posts Listing
-- [ ] Complete redesign của posts._index.tsx
+
+- [ ] Complete redesign của posts.\_index.tsx
 - [ ] New layout với sidebar
 - [ ] Advanced filtering implementation
 - [ ] Enhanced post cards
 
 ### Week 5-6: Post Detail
+
 - [ ] Typography và layout improvements
 - [ ] Interactive elements (progress bar, TOC, ratings)
 - [ ] Enhanced sidebar với related posts
 - [ ] Social sharing functionality
 
 ### Week 7-8: Dashboard
+
 - [ ] Modern sidebar navigation
 - [ ] Overview dashboard với charts
 - [ ] Enhanced my posts management
 - [ ] Profile và settings pages
 
 ### Week 9-10: Polish & Testing
+
 - [ ] Accessibility compliance
 - [ ] Performance optimization
 - [ ] Mobile responsiveness
@@ -202,12 +226,14 @@ Dashboard Sidebar
 ## Success Metrics
 
 ### User Experience
+
 - Improved page load times (< 2s)
 - Higher engagement rates
 - Better mobile experience
 - Accessibility score > 95
 
 ### Technical
+
 - Lighthouse score > 90
 - Core Web Vitals compliance
 - Zero accessibility violations

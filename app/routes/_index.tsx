@@ -1,118 +1,110 @@
 import { useQuery } from "@tanstack/react-query";
-import { MainLayout } from "~/components/layout/MainLayout";
-import { PostList } from "~/components/post/PostList";
+import { ArrowRight, Folder, Hash, TrendingUp } from "lucide-react";
+import { Link } from "react-router";
 
 import { categoriesApi } from "~/api/categories";
-import { tagsApi } from "~/api/tags";
-import { Link } from "react-router";
-import { Button } from "~/components/ui/button";
-
-import HeroSection from "~/components/layout/Hero";
-import NewLetter from "~/components/NewLetters";
-
-import {
-  TrendingUp,
-  ArrowRight,
-  Hash,
-  Folder,
-} from "lucide-react";
-import type { Category, Tag } from "~/types";
-
-import type { Route } from "../+types/root";
 import { postsApi } from "~/api/posts";
+import { tagsApi } from "~/api/tags";
+import HeroSection from "~/components/layout/Hero";
+import { MainLayout } from "~/components/layout/MainLayout";
+import NewLetter from "~/components/NewLetters";
+import { PostList } from "~/components/post/PostList";
+import { Button } from "~/components/ui/button";
+import type { Category, Tag } from "~/types";
+import type { Route } from "../+types/root";
 
-export function meta({ }: Route.MetaArgs) {
-  return [
-    // Basic SEO Metadata
-    { title: "Discover Inspiring Stories & Insights" },
-    {
-      name: "description",
-      content:
-        "Explore a vibrant community of writers sharing knowledge, tutorials, and insights. Discover trending articles, popular categories, and connect with creators on our blog platform.",
-    },
-    {
-      name: "keywords",
-      content:
-        "blog, articles, tutorials, writing community, trending topics, categories, insights, knowledge sharing",
-    },
+export function meta({}: Route.MetaArgs) {
+	return [
+		// Basic SEO Metadata
+		{ title: "Discover Inspiring Stories & Insights" },
+		{
+			name: "description",
+			content:
+				"Explore a vibrant community of writers sharing knowledge, tutorials, and insights. Discover trending articles, popular categories, and connect with creators on our blog platform.",
+		},
+		{
+			name: "keywords",
+			content:
+				"blog, articles, tutorials, writing community, trending topics, categories, insights, knowledge sharing",
+		},
 
-    // Open Graph (OG) Metadata for Social Media (e.g., Facebook, LinkedIn)
-    {
-      property: "og:title",
-      content: "Blog App - Your Source for Inspiring Content",
-    },
-    {
-      property: "og:description",
-      content:
-        "Join our blog platform to read, write, and connect with a global community of writers and readers. Explore trending articles and diverse topics.",
-    },
-    { property: "og:type", content: "website" },
-    { property: "og:url", content: "https://your-blog-app.com" }, // Replace with your actual domain
-    { property: "og:image", content: "https://your-blog-app.com/og-image.jpg" }, // Replace with a relevant image URL
-    { property: "og:site_name", content: "Blog App" },
+		// Open Graph (OG) Metadata for Social Media (e.g., Facebook, LinkedIn)
+		{
+			property: "og:title",
+			content: "Blog App - Your Source for Inspiring Content",
+		},
+		{
+			property: "og:description",
+			content:
+				"Join our blog platform to read, write, and connect with a global community of writers and readers. Explore trending articles and diverse topics.",
+		},
+		{ property: "og:type", content: "website" },
+		{ property: "og:url", content: "https://your-blog-app.com" }, // Replace with your actual domain
+		{ property: "og:image", content: "https://your-blog-app.com/og-image.jpg" }, // Replace with a relevant image URL
+		{ property: "og:site_name", content: "Blog App" },
 
-    // Twitter Card Metadata
-    { name: "twitter:card", content: "summary_large_image" },
-    { name: "twitter:title", content: "Blog App - Discover Inspiring Stories" },
-    {
-      name: "twitter:description",
-      content:
-        "Read and share inspiring articles on our blog platform. Join a community of writers and explore trending topics today!",
-    },
-    {
-      name: "twitter:image",
-      content: "https://your-blog-app.com/twitter-image.jpg",
-    }, // Replace with a relevant image URL
-    { name: "twitter:site", content: "@YourBlogHandle" }, // Replace with your Twitter handle
+		// Twitter Card Metadata
+		{ name: "twitter:card", content: "summary_large_image" },
+		{ name: "twitter:title", content: "Blog App - Discover Inspiring Stories" },
+		{
+			name: "twitter:description",
+			content:
+				"Read and share inspiring articles on our blog platform. Join a community of writers and explore trending topics today!",
+		},
+		{
+			name: "twitter:image",
+			content: "https://your-blog-app.com/twitter-image.jpg",
+		}, // Replace with a relevant image URL
+		{ name: "twitter:site", content: "@YourBlogHandle" }, // Replace with your Twitter handle
 
-    // Additional Metadata
-    { name: "robots", content: "index, follow" },
-    { name: "viewport", content: "width=device-width, initial-scale=1.0" },
-    { charset: "UTF-8" },
-  ];
+		// Additional Metadata
+		{ name: "robots", content: "index, follow" },
+		{ name: "viewport", content: "width=device-width, initial-scale=1.0" },
+		{ charset: "UTF-8" },
+	];
 }
 
 export default function HomePage() {
-  // Fetch featured posts
-  const { data: featuredPosts, isLoading: featuredLoading } = useQuery({
-    queryKey: ["posts", "featured"],
-    queryFn: () => postsApi.getFeaturedPosts(),
-  });
+	// Fetch featured posts
+	const { data: featuredPosts, isLoading: featuredLoading } = useQuery({
+		queryKey: ["posts", "featured"],
+		queryFn: () => postsApi.getFeaturedPosts(),
+	});
 
-  // Fetch latest posts
-  const { data: latestPosts, isLoading: latestLoading } = useQuery({
-    queryKey: ["posts", "latest"],
-    queryFn: () => postsApi.getPosts({ page: 0, size: 4 }),
-  });
+	// Fetch latest posts
+	const { data: latestPosts, isLoading: latestLoading } = useQuery({
+		queryKey: ["posts", "latest"],
+		queryFn: () => postsApi.getPosts({ page: 0, size: 4 }),
+	});
 
-  // Fetch popular posts
-  const { data: popularPosts, isLoading: popularLoading } = useQuery({
-    queryKey: ["posts", "popular"],
-    queryFn: () => postsApi.getPosts({ page: 0, size: 4 }), // TODO: Add popular sorting
-  });
+	// Fetch popular posts
+	const { data: popularPosts, isLoading: popularLoading } = useQuery({
+		queryKey: ["posts", "popular"],
+		queryFn: () => postsApi.getPosts({ page: 0, size: 4 }), // TODO: Add popular sorting
+	});
 
-  // Fetch categories
-  const { data: categoriesData, isLoading: categoriesLoading } = useQuery({
-    queryKey: ["categories"],
-    queryFn: () => categoriesApi.getAll(),
-  });
+	// Fetch categories
+	const { data: categoriesData, isLoading: categoriesLoading } = useQuery({
+		queryKey: ["categories"],
+		queryFn: () => categoriesApi.getAll(),
+	});
 
-  // Fetch trending tags
-  const { data: tagsData, isLoading: tagsLoading } = useQuery({
-    queryKey: ["tags"],
-    queryFn: () => tagsApi.getAll(),
-  });
+	// Fetch trending tags
+	const { data: tagsData, isLoading: tagsLoading } = useQuery({
+		queryKey: ["tags"],
+		queryFn: () => tagsApi.getAll(),
+	});
 
-  const categories = categoriesData;
-  const trendingTags = tagsData;
+	const categories = categoriesData;
+	const trendingTags = tagsData;
 
-  return (
-    <MainLayout>
-      {/* Enhanced Hero Section */}
-      <HeroSection />
+	return (
+		<MainLayout>
+			{/* Enhanced Hero Section */}
+			<HeroSection />
 
-      {/* Quick Search Section */}
-      {/* <section className="bg-gray-50 dark:bg-black py-12">
+			{/* Quick Search Section */}
+			{/* <section className="bg-gray-50 dark:bg-black py-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
@@ -133,244 +125,287 @@ export default function HomePage() {
         </div>
       </section> */}
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16 ">
+			<div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16 ">
+				<section
+					id="features"
+					className="py-32 bg-white bg-gray-50 dark:bg-black"
+				>
+					<div className="container mx-auto px-6">
+						<div className="max-w-3xl mb-20">
+							<h2 className="text-4xl font-bold mb-6 italic">
+								Built for the modern web.
+							</h2>
+							<p className="text-lg text-slate-600 dark:text-slate-400">
+								We stripped away everything you don't need, leaving only the
+								tools that make your writing stand out.
+							</p>
+						</div>
 
-        <section id="features" className="py-32 bg-white bg-gray-50 dark:bg-black">
-          <div className="container mx-auto px-6">
-            <div className="max-w-3xl mb-20">
-              <h2 className="text-4xl font-bold mb-6 italic">Built for the modern web.</h2>
-              <p className="text-lg text-slate-600 dark:text-slate-400">We stripped away everything you don't need, leaving only the tools that make your writing stand out.</p>
-            </div>
+						<div className="grid md:grid-cols-3 gap-16">
+							<div className="group">
+								<div className="w-14 h-14 bg-slate-50 border border-slate-200 flex items-center justify-center mb-8 group-hover:bg-black group-hover:text-white transition-all duration-300  dark:bg-slate-900 dark:border-slate-700 dark:group-hover:bg-white dark:group-hover:text-black">
+									<svg
+										className="w-6 h-6"
+										fill="none"
+										stroke="currentColor"
+										viewBox="0 0 24 24"
+									>
+										<path
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											strokeWidth="2"
+											d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+										/>
+									</svg>
+								</div>
+								<h3 className="text-2xl font-bold mb-4">Minimalist Editor</h3>
+								<p className="text-slate-600 leading-relaxed dark:text-slate-400">
+									Focus entirely on your writing with our distraction-free
+									markdown editor and clean reader view.
+								</p>
+							</div>
 
-            <div className="grid md:grid-cols-3 gap-16">
+							<div className="group">
+								<div className="w-14 h-14 bg-slate-50 border border-slate-200 flex items-center justify-center mb-8 group-hover:bg-black group-hover:text-white transition-all duration-300  dark:bg-slate-900 dark:border-slate-700 dark:group-hover:bg-white dark:group-hover:text-black">
+									<svg
+										className="w-6 h-6"
+										fill="none"
+										stroke="currentColor"
+										viewBox="0 0 24 24"
+									>
+										<path
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											strokeWidth="2"
+											d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+										/>
+									</svg>
+								</div>
+								<h3 className="text-2xl font-bold mb-4">Real-time Feedback</h3>
+								<p className="text-slate-600 leading-relaxed dark:text-slate-400">
+									Stay connected with your audience through instant
+									WebSocket-powered alerts for comments and likes.
+								</p>
+							</div>
 
-              <div className="group">
-                <div className="w-14 h-14 bg-slate-50 border border-slate-200 flex items-center justify-center mb-8 group-hover:bg-black group-hover:text-white transition-all duration-300  dark:bg-slate-900 dark:border-slate-700 dark:group-hover:bg-white dark:group-hover:text-black">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                </div>
-                <h3 className="text-2xl font-bold mb-4">Minimalist Editor</h3>
-                <p className="text-slate-600 leading-relaxed dark:text-slate-400">Focus entirely on your writing with our distraction-free markdown editor and clean reader view.</p>
-              </div>
-
-              <div className="group">
-                <div className="w-14 h-14 bg-slate-50 border border-slate-200 flex items-center justify-center mb-8 group-hover:bg-black group-hover:text-white transition-all duration-300  dark:bg-slate-900 dark:border-slate-700 dark:group-hover:bg-white dark:group-hover:text-black">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                  </svg>
-                </div>
-                <h3 className="text-2xl font-bold mb-4">Real-time Feedback</h3>
-                <p className="text-slate-600 leading-relaxed dark:text-slate-400">Stay connected with your audience through instant WebSocket-powered alerts for comments and likes.</p>
-              </div>
-
-              <div className="group">
-                <div className="w-14 h-14 bg-slate-50 border border-slate-200 flex items-center justify-center mb-8 group-hover:bg-black group-hover:text-white transition-all duration-300 dark:bg-slate-900 dark:border-slate-700 dark:group-hover:bg-white dark:group-hover:text-black">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                  </svg>
-                </div>
-                <h3 className="text-2xl font-bold mb-4">Global Scale</h3>
-                <p className="text-slate-600 leading-relaxed dark:text-slate-400">Blazing fast load times and automatic SEO optimization ensure your stories reach readers across the globe.</p>
-              </div>
-            </div>
-          </div>
-        </section>
-        {/* Featured Posts */}
-        <section>
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-4xl font-bold mb-6 italic">
-                Featured Articles
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400">
-                Hand-picked content from our community
-              </p>
-            </div>
-            {/* <Link to="/articles?featured=true">
+							<div className="group">
+								<div className="w-14 h-14 bg-slate-50 border border-slate-200 flex items-center justify-center mb-8 group-hover:bg-black group-hover:text-white transition-all duration-300 dark:bg-slate-900 dark:border-slate-700 dark:group-hover:bg-white dark:group-hover:text-black">
+									<svg
+										className="w-6 h-6"
+										fill="none"
+										stroke="currentColor"
+										viewBox="0 0 24 24"
+									>
+										<path
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											strokeWidth="2"
+											d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+										/>
+									</svg>
+								</div>
+								<h3 className="text-2xl font-bold mb-4">Global Scale</h3>
+								<p className="text-slate-600 leading-relaxed dark:text-slate-400">
+									Blazing fast load times and automatic SEO optimization ensure
+									your stories reach readers across the globe.
+								</p>
+							</div>
+						</div>
+					</div>
+				</section>
+				{/* Featured Posts */}
+				<section>
+					<div className="flex items-center justify-between mb-8">
+						<div>
+							<h2 className="text-4xl font-bold mb-6 italic">
+								Featured Articles
+							</h2>
+							<p className="text-gray-600 dark:text-gray-400">
+								Hand-picked content from our community
+							</p>
+						</div>
+						{/* <Link to="/articles?featured=true">
               <Button variant="outline" className="flex items-center space-x-2">
                 <span className="text-gray-600 dark:text-gray-400">View All</span>
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>        */}
-          </div>
+					</div>
 
-          <PostList
-            posts={featuredPosts?.data || []}
-            loading={featuredLoading}
-          />
-        </section>
+					<PostList
+						posts={featuredPosts?.data || []}
+						loading={featuredLoading}
+					/>
+				</section>
 
-        {/* Popular Categories */}
-        <section>
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-4xl font-bold mb-6 italic">
-                Popular Categories
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400">
-                Explore content by topic
-              </p>
-            </div>
-            {/* <Link to="/categories">
+				{/* Popular Categories */}
+				<section>
+					<div className="flex items-center justify-between mb-8">
+						<div>
+							<h2 className="text-4xl font-bold mb-6 italic">
+								Popular Categories
+							</h2>
+							<p className="text-gray-600 dark:text-gray-400">
+								Explore content by topic
+							</p>
+						</div>
+						{/* <Link to="/categories">
               <Button variant="outline" className="flex items-center space-x-2">
                 <span className="text-gray-600 dark:text-gray-400">All Categories</span>
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link> */}
-          </div>
+					</div>
 
-          {categoriesLoading ? (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 ">
-              {[...Array(8)].map((_, i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="bg-gray-200 dark:bg-gray-700 rounded-lg h-24"></div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 ">
-              {categories?.map((category: Category) => (
-                <Link
-                  key={category.id}
-                  to={`/articles?categorySlug=${category.slug}`}
-                  className="group p-6 bg-white dark:bg-black dark:border dark:border-gray-700  rounded-lg shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105"
-                >
-                  <div className="flex items-center space-x-3 mb-3">
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <Folder className="h-5 w-5 text-gray-300" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3
-                        className="font-semibold
+					{categoriesLoading ? (
+						<div className="grid grid-cols-2 md:grid-cols-4 gap-4 ">
+							{[...Array(8)].map((_, i) => (
+								<div key={i} className="animate-pulse">
+									<div className="bg-gray-200 dark:bg-gray-700 rounded-lg h-24"></div>
+								</div>
+							))}
+						</div>
+					) : (
+						<div className="grid grid-cols-2 md:grid-cols-4 gap-4 ">
+							{categories?.map((category: Category) => (
+								<Link
+									key={category.id}
+									to={`/articles?categorySlug=${category.slug}`}
+									className="group p-6 bg-white dark:bg-black dark:border dark:border-gray-700  rounded-lg shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105"
+								>
+									<div className="flex items-center space-x-3 mb-3">
+										<div className="w-10 h-10 rounded-lg flex items-center justify-center">
+											<Folder className="h-5 w-5 text-gray-300" />
+										</div>
+										<div className="flex-1 min-w-0">
+											<h3
+												className="font-semibold
                       dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate"
-                        style={{
-                          border: category.backgroundColor || "#6B7280",
-                        }}
-                      >
-                        {category.category}
-                      </h3>
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-2">
-                    {category.description ||
-                      "Explore articles in this category"}
-                  </p>
-                </Link>
-              ))}
-            </div>
-          )}
-        </section>
+												style={{
+													border: category.backgroundColor || "#6B7280",
+												}}
+											>
+												{category.category}
+											</h3>
+										</div>
+									</div>
+									<p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-2">
+										{category.description ||
+											"Explore articles in this category"}
+									</p>
+								</Link>
+							))}
+						</div>
+					)}
+				</section>
 
-        {/* Latest Posts */}
-        <section>
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-4xl font-bold mb-6 italic">
-                Latest Articles
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400">
-                Fresh content from our writers
-              </p>
-            </div>
-            <Link to="/articles">
-              <Button variant="outline" className="flex items-center space-x-2">
-                <span className="text-gray-600 dark:text-gray-400">
-                  View All
-                </span>
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
+				{/* Latest Posts */}
+				<section>
+					<div className="flex items-center justify-between mb-8">
+						<div>
+							<h2 className="text-4xl font-bold mb-6 italic">
+								Latest Articles
+							</h2>
+							<p className="text-gray-600 dark:text-gray-400">
+								Fresh content from our writers
+							</p>
+						</div>
+						<Link to="/articles">
+							<Button variant="outline" className="flex items-center space-x-2">
+								<span className="text-gray-600 dark:text-gray-400">
+									View All
+								</span>
+								<ArrowRight className="h-4 w-4" />
+							</Button>
+						</Link>
+					</div>
 
-          <PostList
-            posts={latestPosts?.content || []}
-            loading={latestLoading}
-          />
-        </section>
+					<PostList
+						posts={latestPosts?.content || []}
+						loading={latestLoading}
+					/>
+				</section>
 
-        {/* Trending Tags */}
-        <section>
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-4xl font-bold mb-6 italic">
-                Trending Topics
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400">
-                Popular tags and topics this week
-              </p>
-            </div>
-            <Link to="/tags">
-              <Button variant="outline" className="flex items-center space-x-2">
-                <span className="text-gray-600 dark:text-gray-400">
-                  All Tags
-                </span>
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
+				{/* Trending Tags */}
+				<section>
+					<div className="flex items-center justify-between mb-8">
+						<div>
+							<h2 className="text-4xl font-bold mb-6 italic">
+								Trending Topics
+							</h2>
+							<p className="text-gray-600 dark:text-gray-400">
+								Popular tags and topics this week
+							</p>
+						</div>
+						<Link to="/tags">
+							<Button variant="outline" className="flex items-center space-x-2">
+								<span className="text-gray-600 dark:text-gray-400">
+									All Tags
+								</span>
+								<ArrowRight className="h-4 w-4" />
+							</Button>
+						</Link>
+					</div>
 
-          {tagsLoading ? (
-            <div className="flex flex-wrap gap-3">
-              {[...Array(12)].map((_, i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="bg-gray-200 dark:bg-gray-700 rounded-full h-8 w-20"></div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="flex flex-wrap gap-3">
-              {trendingTags?.map((tag: Tag) => (
-                <Link
-                  key={tag.uuid}
-                  to={`/articles?tagSlug=${tag.slug}`}
-                  className="group inline-flex items-center space-x-2 px-4 py-2 bg-white dark:bg-black rounded-full shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105 border border-gray-200 dark:border-gray-700"
-                  style={{ borderColor: tag.color }}
-                >
-                  <Hash className="h-4 w-4" style={{ color: tag.color }} />
-                  <span className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                    {tag.name}
-                  </span>
-                  {/* {tag.postCount && (
+					{tagsLoading ? (
+						<div className="flex flex-wrap gap-3">
+							{[...Array(12)].map((_, i) => (
+								<div key={i} className="animate-pulse">
+									<div className="bg-gray-200 dark:bg-gray-700 rounded-full h-8 w-20"></div>
+								</div>
+							))}
+						</div>
+					) : (
+						<div className="flex flex-wrap gap-3">
+							{trendingTags?.map((tag: Tag) => (
+								<Link
+									key={tag.uuid}
+									to={`/articles?tagSlug=${tag.slug}`}
+									className="group inline-flex items-center space-x-2 px-4 py-2 bg-white dark:bg-black rounded-full shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105 border border-gray-200 dark:border-gray-700"
+									style={{ borderColor: tag.color }}
+								>
+									<Hash className="h-4 w-4" style={{ color: tag.color }} />
+									<span className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+										{tag.name}
+									</span>
+									{/* {tag.postCount && (
                     <Badge variant="secondary" className="text-xs">
                       {tag.postCount}
                     </Badge>
                   )} */}
-                </Link>
-              ))}
-            </div>
-          )}
-        </section>
+								</Link>
+							))}
+						</div>
+					)}
+				</section>
 
-        {/* Popular Posts */}
-        <section>
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-4xl font-bold mb-6 italic">
-                Most Popular
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400">
-                Reader favorites and trending content
-              </p>
-            </div>
-            <Link to="/articles?sort=popular">
-              <Button variant="outline" className="flex items-center space-x-2">
-                <TrendingUp className="h-4 w-4" />
-                <span className="text-gray-600 dark:text-gray-400">
-                  View Trending
-                </span>
-              </Button>
-            </Link>
-          </div>
+				{/* Popular Posts */}
+				<section>
+					<div className="flex items-center justify-between mb-8">
+						<div>
+							<h2 className="text-4xl font-bold mb-6 italic">Most Popular</h2>
+							<p className="text-gray-600 dark:text-gray-400">
+								Reader favorites and trending content
+							</p>
+						</div>
+						<Link to="/articles?sort=popular">
+							<Button variant="outline" className="flex items-center space-x-2">
+								<TrendingUp className="h-4 w-4" />
+								<span className="text-gray-600 dark:text-gray-400">
+									View Trending
+								</span>
+							</Button>
+						</Link>
+					</div>
 
-          <PostList
-            posts={popularPosts?.content || []}
-            loading={popularLoading}
-          />
-        </section>
+					<PostList
+						posts={popularPosts?.content || []}
+						loading={popularLoading}
+					/>
+				</section>
 
-        {/* Author Spotlight */}
-        {/*<section className="">
+				{/* Author Spotlight */}
+				{/*<section className="">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
               Author Spotlight
@@ -422,8 +457,8 @@ export default function HomePage() {
           </div>
         </section>*/}
 
-        <NewLetter />
-      </div>
-    </MainLayout>
-  );
+				<NewLetter />
+			</div>
+		</MainLayout>
+	);
 }

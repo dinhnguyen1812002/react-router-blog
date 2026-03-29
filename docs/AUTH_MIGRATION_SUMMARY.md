@@ -34,19 +34,20 @@
 
 ## Security Improvements
 
-| Aspect | Before | After |
-|--------|--------|-------|
-| Token Storage | localStorage (XSS vulnerable) | Memory only (safe) |
-| Refresh Token | localStorage (XSS vulnerable) | HttpOnly Cookie (safe) |
-| User Info | localStorage | Memory |
-| XSS Attack | Token can be stolen | Token cannot be accessed |
-| CSRF Protection | Weak | Strong (HttpOnly cookie) |
+| Aspect          | Before                        | After                    |
+| --------------- | ----------------------------- | ------------------------ |
+| Token Storage   | localStorage (XSS vulnerable) | Memory only (safe)       |
+| Refresh Token   | localStorage (XSS vulnerable) | HttpOnly Cookie (safe)   |
+| User Info       | localStorage                  | Memory                   |
+| XSS Attack      | Token can be stolen           | Token cannot be accessed |
+| CSRF Protection | Weak                          | Strong (HttpOnly cookie) |
 
 ## What You Need to Do
 
 ### Backend Changes Required
 
 1. **Login Endpoint** - Return accessToken in response body
+
    ```json
    {
      "accessToken": "jwt...",
@@ -55,11 +56,13 @@
    ```
 
 2. **Set Refresh Token Cookie**
+
    ```
    Set-Cookie: refreshToken=...; HttpOnly; Secure; SameSite=Strict
    ```
 
 3. **Refresh Endpoint** - Accept refresh token from cookie
+
    ```
    POST /auth/refresh-token
    // Uses HttpOnly cookie automatically
@@ -67,6 +70,7 @@
    ```
 
 4. **Profile Endpoint** - Return user data
+
    ```
    GET /user/profile
    Headers: Authorization: Bearer {accessToken}
@@ -92,15 +96,17 @@
 ### Verification Steps
 
 1. **Check Token Storage**
+
    ```
    DevTools → Application → Cookies
    Should see: refreshToken (HttpOnly)
-   
+
    DevTools → Application → Local Storage
    Should NOT see: token, user, auth-storage
    ```
 
 2. **Check Request Headers**
+
    ```
    DevTools → Network → Any API request
    Should see: Authorization: Bearer {token}
@@ -132,6 +138,7 @@
 ## Breaking Changes
 
 ⚠️ **Important**: If you have existing users with tokens in localStorage:
+
 - They will be logged out on first page load
 - They will need to login again
 - This is expected and secure
@@ -139,6 +146,7 @@
 ## Rollback Plan
 
 If you need to revert:
+
 1. Restore `app/store/authStore.ts` with persist middleware
 2. Restore `app/hooks/useAuthInit.ts` with localStorage rehydration
 3. Restore `app/lib/auth-utils.ts` with localStorage operations
@@ -156,6 +164,7 @@ However, this would reintroduce security vulnerabilities.
 ## Support
 
 For issues or questions:
+
 1. Check `docs/AUTHENTICATION_REFACTOR.md` for detailed explanation
 2. Check `docs/BACKEND_AUTH_SETUP.md` for backend implementation
 3. Review axios interceptor in `app/config/axios.ts`

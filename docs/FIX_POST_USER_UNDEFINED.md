@@ -33,12 +33,12 @@ Thêm `?.` khi truy cập properties của user:
 
 ```typescript
 // ❌ Before (sẽ crash nếu user undefined)
-post.user.username
-post.user.avatar
+post.user.username;
+post.user.avatar;
 
 // ✅ After (an toàn)
-post.user?.username
-post.user?.avatar
+post.user?.username;
+post.user?.avatar;
 ```
 
 ### 3. Thêm Fallback Values
@@ -47,18 +47,19 @@ Cung cấp giá trị mặc định khi user undefined:
 
 ```typescript
 // Username với fallback
-post.user?.username || 'Anonymous'
+post.user?.username || "Anonymous";
 
 // Avatar với fallback
-post.user?.avatar || undefined
+post.user?.avatar || undefined;
 
 // User initial với fallback
-post.user?.username?.charAt(0).toUpperCase() || 'A'
+post.user?.username?.charAt(0).toUpperCase() || "A";
 ```
 
 ## 📝 Files Đã Fix
 
 ### 1. `app/types/index.ts`
+
 ```typescript
 export interface Post {
   user?: User; // Made optional
@@ -66,6 +67,7 @@ export interface Post {
 ```
 
 ### 2. `app/components/post/PostCard.tsx`
+
 ```typescript
 // Line ~126
 {post.user?.username?.charAt(0).toUpperCase() || 'A'}
@@ -80,6 +82,7 @@ export interface Post {
 ```
 
 ### 3. `app/components/article/ArticleCard.tsx`
+
 ```typescript
 // Line ~86
 {post.user?.avatar ? (
@@ -91,11 +94,12 @@ export interface Post {
 ```
 
 ### 4. `app/components/post/ListArticles.tsx`
+
 ```typescript
 // Line ~77
-<AvatarImage 
-  src={resolveAvatarUrl(post.user?.avatar)} 
-  alt={post.user?.username || 'User'} 
+<AvatarImage
+  src={resolveAvatarUrl(post.user?.avatar)}
+  alt={post.user?.username || 'User'}
 />
 <AvatarFallback>{post.user?.username?.[0] || 'A'}</AvatarFallback>
 <span>{post.user?.username || 'Anonymous'}</span>
@@ -110,7 +114,7 @@ Tạo file `app/utils/post-helpers.ts` với các helper functions:
  * Lấy username an toàn
  */
 export function getSafeUsername(post: Post): string {
-  return post.user?.username || 'Anonymous';
+  return post.user?.username || "Anonymous";
 }
 
 /**
@@ -149,37 +153,40 @@ export function hasUserData(post: Post): boolean {
 ## 🧪 Testing
 
 ### Test Case 1: Post có user data
+
 ```typescript
 const post = {
-  id: '1',
-  title: 'Test',
+  id: "1",
+  title: "Test",
   user: {
-    username: 'john',
-    avatar: 'avatar.jpg'
-  }
+    username: "john",
+    avatar: "avatar.jpg",
+  },
 };
 // ✅ Hiển thị: john, avatar.jpg
 ```
 
 ### Test Case 2: Post không có user
+
 ```typescript
 const post = {
-  id: '1',
-  title: 'Test',
-  user: undefined
+  id: "1",
+  title: "Test",
+  user: undefined,
 };
 // ✅ Hiển thị: Anonymous, default avatar
 ```
 
 ### Test Case 3: Post có user nhưng thiếu fields
+
 ```typescript
 const post = {
-  id: '1',
-  title: 'Test',
+  id: "1",
+  title: "Test",
   user: {
     username: undefined,
-    avatar: undefined
-  }
+    avatar: undefined,
+  },
 };
 // ✅ Hiển thị: Anonymous, default avatar
 ```
@@ -187,40 +194,44 @@ const post = {
 ## 🎯 Best Practices
 
 ### 1. Luôn dùng Optional Chaining
+
 ```typescript
 // ✅ Good
-post.user?.username
+post.user?.username;
 
 // ❌ Bad
-post.user.username
+post.user.username;
 ```
 
 ### 2. Luôn có Fallback
+
 ```typescript
 // ✅ Good
-post.user?.username || 'Anonymous'
+post.user?.username || "Anonymous";
 
 // ⚠️ OK nhưng có thể hiển thị undefined
-post.user?.username
+post.user?.username;
 ```
 
 ### 3. Nested Optional Chaining
+
 ```typescript
 // ✅ Good
-post.user?.username?.charAt(0)
+post.user?.username?.charAt(0);
 
 // ❌ Bad (crash nếu username undefined)
-post.user?.username.charAt(0)
+post.user?.username.charAt(0);
 ```
 
 ### 4. Sử dụng Helper Functions
+
 ```typescript
 // ✅ Good - Reusable và consistent
-import { getSafeUsername } from '~/utils/post-helpers';
+import { getSafeUsername } from "~/utils/post-helpers";
 const username = getSafeUsername(post);
 
 // ⚠️ OK nhưng lặp lại code
-const username = post.user?.username || 'Anonymous';
+const username = post.user?.username || "Anonymous";
 ```
 
 ## 🔄 Migration Guide
@@ -228,24 +239,28 @@ const username = post.user?.username || 'Anonymous';
 Nếu có nhiều components cần fix:
 
 1. **Tìm tất cả usages**:
+
 ```bash
 grep -r "post\.user\." app/components/
 ```
 
 2. **Replace pattern**:
+
 ```
 Find: post.user.
 Replace: post.user?.
 ```
 
 3. **Thêm fallbacks**:
+
 ```typescript
 // Sau khi thêm ?., thêm fallback
-post.user?.username || 'Anonymous'
-post.user?.avatar || undefined
+post.user?.username || "Anonymous";
+post.user?.avatar || undefined;
 ```
 
 4. **Test từng component**:
+
 - Test với data có user
 - Test với data không có user
 - Test với user thiếu fields

@@ -1,59 +1,57 @@
-import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router';
-import { Card, CardContent, CardHeader } from '~/components/ui/Card';
-import { Button } from '~/components/ui/button';
-import { userPostsApi } from '~/api/userPosts';
-import { useAuthStore } from '~/store/authStore';
-import { StatsSkeleton } from '~/components/ui/LoadingSkeleton';
+import { useQuery } from "@tanstack/react-query";
 import {
-  Edit3,
-  BookOpen,
-  Bookmark,
-  Eye,
-  Heart,
-  MessageCircle,
-  Star,
-  TrendingUp,
-  Plus,
-  Calendar,
-  Clock
-} from 'lucide-react';
-import { ChartAreaIcons } from '~/components/chart/Chart-area-icons';
-import { ChartRadialText } from '~/components/chart/Chart-radial-text';
-
-
+	Bookmark,
+	BookOpen,
+	Calendar,
+	Clock,
+	Edit3,
+	Eye,
+	Heart,
+	MessageCircle,
+	Plus,
+	Star,
+	TrendingUp,
+} from "lucide-react";
+import { Link } from "react-router";
+import { userPostsApi } from "~/api/userPosts";
+import { ChartAreaIcons } from "~/components/chart/Chart-area-icons";
+import { ChartRadialText } from "~/components/chart/Chart-radial-text";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardHeader } from "~/components/ui/Card";
+import { StatsSkeleton } from "~/components/ui/LoadingSkeleton";
+import { useAuthStore } from "~/store/authStore";
 
 export default function DashboardPage() {
-  const { user } = useAuthStore();
+	const { user } = useAuthStore();
 
-  // Fetch user statistics
-  // const { data: stats, isLoading: statsLoading } = useQuery({
-  //   queryKey: ['user-stats'],
-  //   queryFn: userPostsApi.getUserStats,
-  //   enabled: !!user
-  // });
+	// Fetch user statistics
+	// const { data: stats, isLoading: statsLoading } = useQuery({
+	//   queryKey: ['user-stats'],
+	//   queryFn: userPostsApi.getUserStats,
+	//   enabled: !!user
+	// });
 
-  // Fetch recent posts
-  // const { data: recentPosts, isLoading: postsLoading } = useQuery({
-  //   queryKey: ['user-posts', 0, 5],
-  //   queryFn: () => userPostsApi.getUserPosts(0, 5),
-  //   enabled: !!user
-  // });
+	// Fetch recent posts
+	// const { data: recentPosts, isLoading: postsLoading } = useQuery({
+	//   queryKey: ['user-posts', 0, 5],
+	//   queryFn: () => userPostsApi.getUserPosts(0, 5),
+	//   enabled: !!user
+	// });
 
-  return (
-    <div className="space-y-6">
-      {/* Welcome Section */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-          Chào mừng trở lại, {user?.username}!
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          Đây là tổng quan về hoạt động của bạn trên BlogPlatform
-        </p>
-      </div>
+	return (
+		<div className="space-y-6">
+			{/* Welcome Section */}
+			<div>
+				<h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+					Chào mừng trở lại, {user?.username}!
+				</h1>
+				<p className="text-gray-600 dark:text-gray-400">
+					Đây là tổng quan về hoạt động của bạn trên BlogPlatform
+				</p>
+			</div>
 
-      {/* Stats Overview */}
-      {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+			{/* Stats Overview */}
+			{/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statsLoading ? (
           <StatsSkeleton  />
         ) : (
@@ -157,56 +155,56 @@ export default function DashboardPage() {
         )}
       </div> */}
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+			{/* Quick Actions */}
+			<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+				<ChartAreaIcons />
+				<ChartRadialText />
+				<Link to="/dashboard/article">
+					<Card className="h-full card-hover cursor-pointer border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 group">
+						<CardContent className="flex flex-col items-center justify-center p-8 text-center h-full">
+							<div className="p-4 bg-blue-100 dark:bg-blue-900/30 rounded-full mb-4 group-hover:scale-110 transition-transform duration-200">
+								<Edit3 className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+							</div>
+							<h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+								Viết bài mới
+							</h3>
+							<p className="text-sm text-gray-600 dark:text-gray-400">
+								Chia sẻ ý tưởng và kiến thức của bạn
+							</p>
+						</CardContent>
+					</Card>
+				</Link>
 
-        <ChartAreaIcons />
-        <ChartRadialText />
-        <Link to="/dashboard/article">
-          <Card className="h-full card-hover cursor-pointer border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 group">
-            <CardContent className="flex flex-col items-center justify-center p-8 text-center h-full">
-              <div className="p-4 bg-blue-100 dark:bg-blue-900/30 rounded-full mb-4 group-hover:scale-110 transition-transform duration-200">
-                <Edit3 className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                Viết bài mới
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Chia sẻ ý tưởng và kiến thức của bạn
-              </p>
-            </CardContent>
-          </Card>
-        </Link>
+				<Link to="/dashboard/bookmarks">
+					<Card className="h-full card-hover cursor-pointer group">
+						<CardContent className="flex flex-col items-center justify-center p-8 text-center h-full">
+							<div className="p-4 bg-purple-100 dark:bg-purple-900/30 rounded-full mb-4 group-hover:scale-110 transition-transform duration-200">
+								<Bookmark className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+							</div>
+							<h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+								Bài viết đã lưu
+							</h3>
+							<p className="text-sm text-gray-600 dark:text-gray-400">
+								Xem lại các bài viết bạn đã đánh dấu
+							</p>
+						</CardContent>
+					</Card>
+				</Link>
+			</div>
 
-        <Link to="/dashboard/bookmarks">
-          <Card className="h-full card-hover cursor-pointer group">
-            <CardContent className="flex flex-col items-center justify-center p-8 text-center h-full">
-              <div className="p-4 bg-purple-100 dark:bg-purple-900/30 rounded-full mb-4 group-hover:scale-110 transition-transform duration-200">
-                <Bookmark className="w-8 h-8 text-purple-600 dark:text-purple-400" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                Bài viết đã lưu
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Xem lại các bài viết bạn đã đánh dấu
-              </p>
-            </CardContent>
-          </Card>
-        </Link>
-      </div>
-
-      {/* Recent Posts */}
-      <Card>
-        <CardHeader className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Bài viết gần đây</h2>
-          <Link to="/dashboard/posts">
-            <Button variant="outline" size="sm">
-              Xem tất cả
-            </Button>
-          </Link>
-        </CardHeader>
-        
-      </Card>
-    </div>
-  );
+			{/* Recent Posts */}
+			<Card>
+				<CardHeader className="flex items-center justify-between">
+					<h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+						Bài viết gần đây
+					</h2>
+					<Link to="/dashboard/posts">
+						<Button variant="outline" size="sm">
+							Xem tất cả
+						</Button>
+					</Link>
+				</CardHeader>
+			</Card>
+		</div>
+	);
 }

@@ -7,16 +7,19 @@ Sidebar navigation cho dashboard user đã được thiết kế lại với gia
 ## Tính năng chính
 
 ### 1. **Responsive Design**
+
 - Tự động thu gọn trên màn hình nhỏ
 - Overlay trên mobile
 - Toggle collapse/expand trên desktop
 
 ### 2. **Tìm kiếm Menu**
+
 - Tìm kiếm real-time trong các menu items
 - Hỗ trợ tìm kiếm theo tên và mô tả
 - Phím tắt: `⌘K`
 
 ### 3. **Phân loại Menu**
+
 - Nhóm menu theo categories:
   - **Chính**: Dashboard tổng quan
   - **Nội dung**: Quản lý bài viết, viết bài mới, bookmarks
@@ -24,6 +27,7 @@ Sidebar navigation cho dashboard user đã được thiết kế lại với gia
   - **Tài khoản**: Hồ sơ và cài đặt
 
 ### 4. **Phím tắt**
+
 - `⌘1`: Tổng quan
 - `⌘2`: Bài viết của tôi
 - `⌘3`: Bài viết đã lưu
@@ -36,18 +40,21 @@ Sidebar navigation cho dashboard user đã được thiết kế lại với gia
 - `⌘?`: Hiển thị phím tắt
 
 ### 5. **Badges và Indicators**
+
 - Badge số lượng cho các menu items
 - Indicator "Mới" cho tính năng mới
 - Badge "Pro" cho tính năng premium
 - Online status indicator
 
 ### 6. **Quick Stats**
+
 - Hiển thị thống kê nhanh (số bài viết, lượt xem)
 - Chỉ hiển thị khi sidebar mở rộng
 
 ## Cấu trúc Component
 
 ### DashboardSidebar
+
 ```typescript
 interface DashboardSidebarProps {
   sidebarOpen: boolean;
@@ -60,6 +67,7 @@ interface DashboardSidebarProps {
 ```
 
 ### Navigation Items
+
 ```typescript
 interface NavItem {
   name: string;
@@ -77,11 +85,13 @@ interface NavItem {
 ## Sử dụng
 
 ### 1. **Import Component**
+
 ```typescript
-import { DashboardSidebar } from '~/components/layout/DashboardSidebar';
+import { DashboardSidebar } from "~/components/layout/DashboardSidebar";
 ```
 
 ### 2. **Sử dụng trong Layout**
+
 ```typescript
 <DashboardSidebar
   sidebarOpen={sidebarOpen}
@@ -94,26 +104,28 @@ import { DashboardSidebar } from '~/components/layout/DashboardSidebar';
 ```
 
 ### 3. **Thêm Menu Item Mới**
+
 ```typescript
 const navigation: NavItem[] = [
   // ... existing items
   {
-    name: 'Tên Menu',
-    href: '/dashboard/path',
+    name: "Tên Menu",
+    href: "/dashboard/path",
     icon: IconComponent,
-    description: 'Mô tả menu',
-    shortcut: '⌘X',
-    category: 'content',
+    description: "Mô tả menu",
+    shortcut: "⌘X",
+    category: "content",
     isNew: true, // optional
     isPro: true, // optional
-    badge: 5 // optional
-  }
+    badge: 5, // optional
+  },
 ];
 ```
 
 ## Styling
 
 ### CSS Classes
+
 - `.sidebar-item`: Base class cho menu items
 - `.card-hover`: Hiệu ứng hover cho cards
 - `.animate-fade-in`: Animation fade in
@@ -121,6 +133,7 @@ const navigation: NavItem[] = [
 - `.animate-slide-in-bottom`: Animation slide từ dưới lên
 
 ### Theme Support
+
 - Hỗ trợ dark/light mode
 - Gradient backgrounds
 - Smooth transitions
@@ -129,12 +142,14 @@ const navigation: NavItem[] = [
 ## Accessibility
 
 ### Keyboard Navigation
+
 - Tab navigation
 - Enter/Space để activate
 - Arrow keys để navigate
 - Escape để close modal
 
 ### Screen Reader Support
+
 - ARIA labels
 - Semantic HTML
 - Focus management
@@ -143,12 +158,14 @@ const navigation: NavItem[] = [
 ## Performance
 
 ### Optimizations
+
 - Lazy loading cho icons
 - Memoized components
 - Debounced search
 - Efficient re-renders
 
 ### State Management
+
 - Local state cho search và filters
 - Persistent sidebar collapse state
 - Theme preference storage
@@ -173,6 +190,7 @@ const navigation: NavItem[] = [
    - Ensure focus management
 
 ### Debug Tips
+
 - Use browser dev tools
 - Check console for errors
 - Verify component props
@@ -181,6 +199,7 @@ const navigation: NavItem[] = [
 ## Future Enhancements
 
 ### Planned Features
+
 - [ ] Drag and drop menu reordering
 - [ ] Custom menu categories
 - [ ] Menu item pinning
@@ -190,6 +209,7 @@ const navigation: NavItem[] = [
 - [ ] Menu item shortcuts customization
 
 ### Performance Improvements
+
 - [ ] Virtual scrolling for large menus
 - [ ] Image optimization
 - [ ] Bundle size reduction
@@ -206,4 +226,4 @@ Khi thêm tính năng mới cho sidebar:
 5. Update documentation
 6. Test responsive behavior
 7. Verify keyboard navigation
-8. Check theme compatibility 
+8. Check theme compatibility

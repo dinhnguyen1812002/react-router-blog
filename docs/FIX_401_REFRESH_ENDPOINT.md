@@ -3,7 +3,7 @@
 ## Problem
 
 ```
-Refresh token request failed: 
+Refresh token request failed:
 {
   status: 401,
   message: "Full authentication is required to access this resource",
@@ -56,17 +56,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 ### Frontend Changes (Already Done ✅)
 
 I've updated frontend to:
+
 1. Check if refresh token cookie exists before trying to refresh
 2. Send access token if available (for backward compatibility)
 3. Better error logging
 
 **Files updated:**
+
 - `app/api/auth.ts` - Now sends access token if available
 - `app/hooks/useAuthInit.ts` - Checks for refresh token cookie first
 
 ## Why This Matters
 
 **OAuth2 Standard:**
+
 - Login endpoint: Public (no auth required)
 - Refresh endpoint: Public (no auth required, only validates refresh token)
 - Protected endpoints: Require access token
@@ -76,6 +79,7 @@ Your refresh endpoint should follow this pattern.
 ## Testing
 
 ### Before Fix
+
 ```bash
 curl -X POST http://localhost:8080/api/v1/auth/refresh-token \
   -b "refreshToken=..." \
@@ -85,6 +89,7 @@ curl -X POST http://localhost:8080/api/v1/auth/refresh-token \
 ```
 
 ### After Fix
+
 ```bash
 curl -X POST http://localhost:8080/api/v1/auth/refresh-token \
   -b "refreshToken=..." \

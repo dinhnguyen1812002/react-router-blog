@@ -1,246 +1,188 @@
 # OAuth Implementation Guide
 
-## 🔐 OAuth Login Flow Implementation
+Tài liệu này mô tả bản triển khai OAuth hoàn chỉnh theo kiến trúc hiện tại của dự án: React Router v7 ở frontend, backend làm OAuth broker, JWT access token ở memory, refresh token trong cookie `HttpOnly`, và đồng bộ thông tin người dùng từ API hiện có.
 
-Đây là implementation hoàn chỉnh cho OAuth login với Google, GitHub và Discord sử dụng popup window pattern.
+## Flow đang dùng trong dự án
 
-## 📋 **Flow Overview**
+1. Người dùng nhấn `Continue with Google/GitHub/Discord`.
+2. Frontend redirect sang backend:
+   - `GET {BACKEND_BASE_URL}/oauth2/authorization/google`
+   - `GET {BACKEND_BASE_URL}/oauth2/authorization/github`
+   - `GET {BACKEND_BASE_URL}/oauth2/authorization/discord`
+3. Backend chuyển hướng tới provider, xác thực người dùng, nhận `code`, đổi `code` lấy token/provider profile.
+4. Backend tạo hoặc cập nhật bản ghi `users` và `oauth_accounts`, sinh JWT access token + refresh token.
+5. Backend redirect về frontend:
+   - `GET {FRONTEND_URL}/oauth2/redirect?token={JWT}`
+   - hoặc `GET {FRONTEND_URL}/oauth2/redirect?error={message}`
+6. Frontend route `/oauth2/redirect`:
+   - lưu access token vào `zustand` memory store
+   - gọi `GET /api/v1/user/profile`
+   - đồng bộ `user` vào store
+   - điều hướng về trang ban đầu
 
-```
-Frontend (SPA)
-├─ window.open(Google/GitHub/Discord)
-├─ nhận access_token / authorization_code
-├─ window.postMessage(token/code)
-└─ POST /api/v1/auth/oauth/login { provider, code/token }
-```
+## Các file đã tích hợp ở frontend
 
-## 🏗️ **Architecture Components**
+- `app/hooks/useOAuthLogin.ts`
+  - lưu `returnTo` vào `sessionStorage`
+  - redirect sang backend OAuth endpoint
+- `app/routes/oauth2.redirect.tsx`
+  - nhận `token/error`
+  - gọi `authApi.finalizeOAuthLogin()`
+- `app/api/auth.ts`
+  - chuẩn hóa user response
+  - tạo `getOAuthAuthorizationUrl()`
+  - tạo `finalizeOAuthLogin()`
+- `app/components/auth/OAuthButtons.tsx`
+  - dùng redirect flow cho Google, GitHub, Discord
+- `app/routes/login.tsx`
+  - hiển thị banner lỗi/thành công từ OAuth callback
+- `app/routes/auth.callback.$provider.tsx`
+  - route tương thích ngược cho cấu hình callback cũ
 
-### 1. **useOAuthLogin Hook** (`app/hooks/useOAuthLogin.ts`)
-- Quản lý OAuth flow logic
-- Build OAuth URLs cho từng provider
-- Xử lý popup window communication
-- Gọi API backend để authenticate
+## Environment cần cấu hình
 
-### 2. **OAuthButtons Component** (`app/components/auth/OAuthButtons.tsx`)
-- UI components cho OAuth login buttons
-- Support Google, GitHub, Discord
-- Loading states và error handling
-- Responsive design với icons
+Frontend:
 
-### 3. **OAuth Callback Route** (`app/routes/auth.callback.$provider.tsx`)
-- Xử lý OAuth callback từ providers
-- Extract authorization code hoặc access token
-- Send message về parent window
-- Auto-close popup window
-
-### 4. **Auth API Extension** (`app/api/auth.ts`)
-- `oauthLogin()` method để gửi code/token lên backend
-- Xử lý response và update auth store
-- Error handling và retry logic
-
-## 🔧 **Setup Instructions**
-
-### 1. **Environment Variables**
 ```bash
-# Copy và config
-cp .env.example .env
-
-# Thêm OAuth credentials
-VITE_GOOGLE_CLIENT_ID=your_google_client_id
-VITE_GITHUB_CLIENT_ID=your_github_client_id  
-VITE_DISCORD_CLIENT_ID=your_discord_client_id
+VITE_API_BASE_URL=http://localhost:8080/api/v1
+VITE_BACKEND_BASE_URL=http://localhost:8080
 ```
 
-### 2. **OAuth Provider Setup**
+Backend:
 
-#### **Google OAuth**
-1. Tạo project tại [Google Cloud Console](https://console.cloud.google.com/)
-2. Enable Google+ API
-3. Tạo OAuth 2.0 credentials
-4. Thêm redirect URI: `http://localhost:5173/auth/callback/google`
-
-#### **GitHub OAuth**
-1. Vào GitHub Settings > Developer settings > OAuth Apps
-2. Tạo New OAuth App
-3. Authorization callback URL: `http://localhost:5173/auth/callback/github`
-
-#### **Discord OAuth**
-1. Tạo application tại [Discord Developer Portal](https://discord.com/developers/applications)
-2. Vào OAuth2 settings
-3. Thêm redirect: `http://localhost:5173/auth/callback/discord`
-
-### 3. **Backend API Endpoint**
-Backend cần implement endpoint:
-```
-POST /api/v1/auth/oauth/login
-{
-  "provider": "google|github|discord",
-  "code": "authorization_code_from_oauth",
-  "token": "access_token_if_available"  
-}
-
-Response:
-{
-  "success": true,
-  "user": { ... },
-  "accessToken": "jwt_token",
-  "refreshToken": "refresh_token" // optional
-}
+```bash
+FRONTEND_URL=http://localhost:5173
+JWT_ACCESS_SECRET=replace_me
+JWT_REFRESH_SECRET=replace_me
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
+GITHUB_CLIENT_ID=...
+GITHUB_CLIENT_SECRET=...
+DISCORD_CLIENT_ID=...
+DISCORD_CLIENT_SECRET=...
 ```
 
-## 🎯 **Usage Examples**
+## Mô hình dữ liệu khuyến nghị ở backend
 
-### **Basic Usage**
-```tsx
-import { OAuthButtons } from '~/components/auth/OAuthButtons';
+```sql
+create table users (
+  id uuid primary key,
+  email varchar(255) not null unique,
+  username varchar(100) not null unique,
+  slug varchar(120) not null unique,
+  avatar varchar(500),
+  password_hash varchar(255),
+  provider varchar(50),
+  created_at timestamp not null,
+  updated_at timestamp not null
+);
 
-function LoginPage() {
-  const handleSuccess = (user) => {
-    console.log('Login successful:', user);
-    // Redirect or update UI
-  };
-
-  const handleError = (error) => {
-    console.error('Login failed:', error);
-    // Show error message
-  };
-
-  return (
-    <OAuthButtons 
-      onSuccess={handleSuccess}
-      onError={handleError}
-    />
-  );
-}
+create table oauth_accounts (
+  id uuid primary key,
+  user_id uuid not null references users(id) on delete cascade,
+  provider varchar(50) not null,
+  provider_user_id varchar(255) not null,
+  provider_email varchar(255),
+  access_token varchar(2000),
+  refresh_token varchar(2000),
+  token_expires_at timestamp,
+  created_at timestamp not null,
+  updated_at timestamp not null,
+  unique (provider, provider_user_id)
+);
 ```
 
-### **Custom Hook Usage**
-```tsx
-import { useOAuthLogin } from '~/hooks/useOAuthLogin';
+## Code mẫu backend
 
-function CustomLoginButton() {
-  const { loginWithOAuth, isLoading, error } = useOAuthLogin();
+Ví dụ service xử lý callback:
 
-  const handleGoogleLogin = async () => {
-    const result = await loginWithOAuth('google');
-    if (result.success) {
-      // Handle success
+```java
+public AuthResult handleOAuthLogin(OAuthProvider provider, OAuthProfile profile) {
+    OAuthAccount account = oauthAccountRepository
+        .findByProviderAndProviderUserId(provider.name(), profile.providerUserId())
+        .orElse(null);
+
+    User user;
+    if (account != null) {
+        user = account.getUser();
+        user.setAvatar(profile.avatarUrl());
+    } else {
+        user = userRepository.findByEmail(profile.email())
+            .map(existing -> linkExistingUser(existing, provider, profile))
+            .orElseGet(() -> createOAuthUser(provider, profile));
     }
-  };
 
-  return (
-    <button onClick={handleGoogleLogin} disabled={isLoading}>
-      {isLoading ? 'Logging in...' : 'Login with Google'}
-    </button>
-  );
+    String accessToken = jwtService.issueAccessToken(user);
+    String refreshToken = jwtService.issueRefreshToken(user);
+    refreshTokenService.rotate(user.getId(), refreshToken);
+
+    return new AuthResult(user, accessToken, refreshToken);
 }
 ```
 
-## 🔒 **Security Features**
+Ví dụ redirect success:
 
-### **Origin Verification**
-```typescript
-// Popup message listener chỉ accept messages từ same origin
-if (event.origin !== window.location.origin) {
-  return;
+```java
+String redirectUrl = UriComponentsBuilder
+    .fromUriString(frontendUrl + "/oauth2/redirect")
+    .queryParam("token", accessToken)
+    .build(true)
+    .toUriString();
+
+response.addCookie(refreshTokenCookie(refreshToken));
+response.sendRedirect(redirectUrl);
+```
+
+Ví dụ endpoint current user:
+
+```java
+@GetMapping("/api/v1/user/profile")
+public UserProfileResponse me(@AuthenticationPrincipal JwtUser principal) {
+    User user = userService.requireById(principal.userId());
+    return UserProfileResponse.from(user);
 }
 ```
 
-### **Timeout Protection**
-```typescript
-// Auto-timeout sau 5 phút
-setTimeout(() => {
-  cleanup();
-  reject(new Error('Authentication timeout'));
-}, 5 * 60 * 1000);
-```
+## Cấu hình provider
 
-### **Popup Blocking Detection**
-```typescript
-if (!popup) {
-  reject(new Error('Popup blocked. Please allow popups for this site.'));
-  return;
-}
-```
+Google:
 
-## 🧪 **Testing**
+- Redirect URI backend: `http://localhost:8080/login/oauth2/code/google`
+- Scope: `openid email profile`
 
-### **Test OAuth Flow**
-1. Truy cập `/test-oauth` để test
-2. Click vào provider buttons
-3. Kiểm tra console logs
-4. Verify user data trong response
+GitHub:
 
-### **Debug Mode**
-```typescript
-// Enable debug logs
-console.log(`🔐 Starting OAuth login with ${provider}`);
-console.log(`🌐 OAuth URL: ${oauthUrl}`);
-console.log(`✅ Received token/code from ${provider}`);
-```
+- Redirect URI backend: `http://localhost:8080/login/oauth2/code/github`
+- Scope: `read:user user:email`
 
-## 🚨 **Common Issues & Solutions**
+Discord:
 
-### **Popup Blocked**
-- Ensure user action triggers popup
-- Add popup blocker detection
-- Provide fallback redirect method
+- Redirect URI backend: `http://localhost:8080/login/oauth2/code/discord`
+- Scope: `identify email`
 
-### **CORS Issues**
-- Configure backend CORS for OAuth callbacks
-- Ensure redirect URIs match exactly
+## Bảo mật bắt buộc
 
-### **Token Validation**
-- Verify tokens on backend
-- Handle expired tokens gracefully
-- Implement token refresh logic
+- Không lưu access token vào `localStorage`.
+- Refresh token phải ở cookie `HttpOnly`, `Secure`, `SameSite=Lax` hoặc `SameSite=None` nếu khác site.
+- Whitelist chính xác `FRONTEND_URL`.
+- Backend phải verify email/provider account trước khi link tài khoản hiện có.
+- Không tin dữ liệu trả về từ frontend callback, chỉ tin dữ liệu backend đã xác minh với provider.
+- Luôn rotate refresh token sau refresh hoặc đăng nhập mới.
+- Nên mã hóa `access_token` và `refresh_token` của provider trước khi lưu DB, hoặc chỉ lưu khi thực sự cần gọi API provider về sau.
+- Nếu hỗ trợ link nhiều provider cho một user, áp unique `(provider, provider_user_id)` và audit log thao tác link/unlink.
 
-## 📱 **Mobile Considerations**
+## Tích hợp với kiến trúc hiện tại
 
-### **Popup Alternatives**
-```typescript
-// Detect mobile và use redirect instead of popup
-const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-if (isMobile) {
-  window.location.href = oauthUrl;
-} else {
-  openOAuthPopup(oauthUrl);
-}
-```
+- `zustand` vẫn là nguồn state cho `user`, `token`, `isAuthenticated`.
+- `axios` interceptor tiếp tục gắn `Authorization: Bearer <token>` và tự refresh khi gặp `401`.
+- `useAuthInit()` vẫn chịu trách nhiệm phục hồi session bằng refresh token cookie khi app mount.
+- Login/password và OAuth dùng chung cùng một auth store nên route guard hiện có không cần viết lại.
 
-## 🔄 **Integration với Existing Auth**
+## Kiểm thử khuyến nghị
 
-### **Auth Store Integration**
-```typescript
-// OAuth success tự động update auth store
-if (user && finalToken) {
-  useAuthStore.getState().login(user, finalToken);
-}
-```
-
-### **Route Protection**
-```typescript
-// Protected routes vẫn hoạt động như bình thường
-const { isAuthenticated } = useAuthStore();
-if (!isAuthenticated) {
-  return <Navigate to="/login" />;
-}
-```
-
-## 📊 **Performance Optimizations**
-
-- **Lazy loading**: OAuth components chỉ load khi cần
-- **Code splitting**: Separate OAuth logic vào chunks riêng
-- **Caching**: Cache OAuth URLs và configurations
-- **Preconnect**: DNS prefetch cho OAuth providers
-
-## 🎨 **UI/UX Best Practices**
-
-- **Loading states**: Show spinner khi đang authenticate
-- **Error handling**: Clear error messages cho users
-- **Accessibility**: Proper ARIA labels và keyboard navigation
-- **Responsive**: Mobile-friendly OAuth buttons
-- **Branding**: Consistent với provider brand guidelines
-
-OAuth implementation này cung cấp một solution robust, secure và user-friendly cho authentication với multiple providers!
+1. Đăng nhập Google/GitHub/Discord từ `/login`.
+2. Xác nhận backend set cookie `refresh-token`.
+3. Xác nhận frontend gọi được `/api/v1/user/profile`.
+4. Reload trang, kiểm tra `useAuthInit()` phục hồi session.
+5. Giả lập access token hết hạn, kiểm tra interceptor tự refresh.
+6. Giả lập callback lỗi, xác nhận redirect về `/login` với thông báo lỗi.

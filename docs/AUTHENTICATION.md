@@ -16,15 +16,14 @@
 ```
 
 **Response thành công:**
+
 ```json
 {
   "id": "2489d3e0-df7a-4d7e-b719-7270a5af3644",
   "username": "testuser",
   "email": "testuser@example.com",
   "avatar": null,
-  "roles": [
-    "ROLE_USER"
-  ]
+  "roles": ["ROLE_USER"]
 }
 ```
 
@@ -43,14 +42,13 @@
 ```
 
 **Response thành công:**
+
 ```json
 {
   "id": "f865c9ea-bb30-4ac8-82d4-52cf46c08525",
   "username": "tôi là nguyen",
   "email": "toilanguyen@gmail.com",
-  "roles": [
-    "ROLE_USER"
-  ],
+  "roles": ["ROLE_USER"],
   "tokenType": "Bearer ",
   "accessToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmODY1YzllYS1iYjMwLTRhYzgtODJkNC01MmNmNDZjMDg1MjUiLCJlbWFpbCI6InRvaWxhbmd1eWVuQGdtYWlsLmNvbSIsImlhdCI6MTc1NDExMDAwOCwiZXhwIjoxNzU0MTk2NDA4fQ.7wAQib5SBuIQOC_wxZ2Q-T6DoFpdmI46Eij5YmAE6tE"
 }
@@ -63,11 +61,13 @@
 - **Authorization:** **Bắt buộc** - Bearer Token
 
 **Headers:**
+
 ```
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 **Response thành công:**
+
 ```json
 {
   "success": true,
@@ -97,6 +97,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 **Response thành công:**
+
 ```json
 {
   "success": true,
@@ -119,6 +120,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 **Response thành công:**
+
 ```json
 {
   "success": true,
@@ -141,6 +143,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 **Response thành công:**
+
 ```json
 {
   "success": true,
@@ -155,6 +158,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 - **Authorization:** **Bắt buộc** - Bearer Token
 
 **Response thành công:**
+
 ```json
 {
   "success": true,
@@ -165,6 +169,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ## Xử lý lỗi
 
 ### Lỗi xác thực (401 Unauthorized)
+
 ```json
 {
   "success": false,
@@ -174,6 +179,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 ### Lỗi validation (400 Bad Request)
+
 ```json
 {
   "success": false,
@@ -186,6 +192,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 ### Lỗi server (500 Internal Server Error)
+
 ```json
 {
   "success": false,
@@ -207,6 +214,7 @@ Token có thời gian hết hạn, khi hết hạn bạn cần đăng nhập l�
 ## Test với curl
 
 ### Đăng ký
+
 ```bash
 curl -X POST http://localhost:8888/api/v1/auth/register \
 -H "Content-Type: application/json" \
@@ -218,6 +226,7 @@ curl -X POST http://localhost:8888/api/v1/auth/register \
 ```
 
 ### Đăng nhập
+
 ```bash
 curl -X POST http://localhost:8888/api/v1/auth/login \
 -H "Content-Type: application/json" \
@@ -228,6 +237,7 @@ curl -X POST http://localhost:8888/api/v1/auth/login \
 ```
 
 ### Lấy thông tin user (với token)
+
 ```bash
 TOKEN="your-jwt-token-here"
 

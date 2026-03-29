@@ -5,6 +5,7 @@
 All frontend code has been refactored and is ready to use.
 
 ### Files Modified
+
 - [x] `app/store/authStore.ts` - Memory-only storage, no localStorage
 - [x] `app/hooks/useAuthInit.ts` - Fetch user profile on init
 - [x] `app/hooks/useAuth.ts` - Updated for new store
@@ -13,6 +14,7 @@ All frontend code has been refactored and is ready to use.
 - [x] `app/root.tsx` - Cleaned up
 
 ### Documentation Created
+
 - [x] `docs/AUTHENTICATION_REFACTOR.md` - Detailed explanation
 - [x] `docs/BACKEND_AUTH_SETUP.md` - Backend implementation guide
 - [x] `docs/AUTH_MIGRATION_SUMMARY.md` - Migration summary
@@ -27,6 +29,7 @@ All frontend code has been refactored and is ready to use.
 ### Required Endpoints
 
 #### 1. POST /auth/login
+
 - [x] Validate credentials
 - [x] Generate access token (JWT, 15-30 min expiration)
 - [x] Generate refresh token (JWT, 7-30 day expiration)
@@ -35,6 +38,7 @@ All frontend code has been refactored and is ready to use.
 - [x] Return user object in response
 
 **Response Format:**
+
 ```json
 {
   "accessToken": "eyJhbGc...",
@@ -49,11 +53,13 @@ All frontend code has been refactored and is ready to use.
 ```
 
 **Cookie Header:**
+
 ```
 Set-Cookie: refreshToken=eyJhbGc...; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=604800
 ```
 
 #### 2. POST /auth/refresh-token
+
 - [x] Read refresh token from HttpOnly cookie
 - [x] Validate refresh token
 - [x] Generate new access token
@@ -63,6 +69,7 @@ Set-Cookie: refreshToken=eyJhbGc...; HttpOnly; Secure; SameSite=Strict; Path=/; 
 **Request:** No body needed (uses cookie)
 
 **Response Format:**
+
 ```json
 {
   "accessToken": "eyJhbGc..."
@@ -70,15 +77,18 @@ Set-Cookie: refreshToken=eyJhbGc...; HttpOnly; Secure; SameSite=Strict; Path=/; 
 ```
 
 #### 3. GET /user/profile
+
 - [x] Verify access token from Authorization header
 - [x] Return user profile data
 
 **Request Headers:**
+
 ```
 Authorization: Bearer eyJhbGc...
 ```
 
 **Response Format:**
+
 ```json
 {
   "id": "user-id",
@@ -91,21 +101,25 @@ Authorization: Bearer eyJhbGc...
 ```
 
 #### 4. POST /auth/logout
+
 - [x] Verify access token
 - [x] Clear refresh token cookie
 - [x] Optionally invalidate token on server
 
 **Request Headers:**
+
 ```
 Authorization: Bearer eyJhbGc...
 ```
 
 **Cookie Header (Response):**
+
 ```
 Set-Cookie: refreshToken=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0
 ```
 
 #### 5. POST /auth/register
+
 - [x] Validate input
 - [x] Create user
 - [x] Generate tokens (same as login)
@@ -120,12 +134,14 @@ Set-Cookie: refreshToken=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0
 
 ```typescript
 // 1. CORS - Must allow credentials
-app.use(cors({
-  origin: 'http://localhost:5173',  // Your frontend URL
-  credentials: true,  // ← CRITICAL
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Your frontend URL
+    credentials: true, // ← CRITICAL
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 
 // 2. Body Parser
 app.use(express.json());
@@ -134,7 +150,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // 4. Routes
-app.use('/api/v1', routes);
+app.use("/api/v1", routes);
 ```
 
 ### Environment Variables
@@ -158,14 +174,14 @@ NODE_ENV=development
 const accessToken = jwt.sign(
   { id: user.id, email: user.email },
   process.env.JWT_SECRET,
-  { expiresIn: '15m' }  // 15 minutes
+  { expiresIn: "15m" }, // 15 minutes
 );
 
 // Refresh Token - Long-lived
 const refreshToken = jwt.sign(
-  { id: user.id, type: 'refresh' },
+  { id: user.id, type: "refresh" },
   process.env.REFRESH_TOKEN_SECRET,
-  { expiresIn: '7d' }  // 7 days
+  { expiresIn: "7d" }, // 7 days
 );
 ```
 
@@ -264,6 +280,7 @@ const refreshToken = jwt.sign(
 ## Quick Start
 
 ### 1. Frontend (Already Done ✅)
+
 ```bash
 # No action needed - frontend is ready
 # Just verify no TypeScript errors:
@@ -271,6 +288,7 @@ npm run typecheck
 ```
 
 ### 2. Backend (TODO)
+
 ```bash
 # Implement endpoints according to docs/BACKEND_AUTH_SETUP.md
 # Key files to update:
@@ -280,6 +298,7 @@ npm run typecheck
 ```
 
 ### 3. Test
+
 ```bash
 # Use docs/TEST_REFRESH_TOKEN.md for testing
 # Or run automated tests
@@ -287,6 +306,7 @@ npm test
 ```
 
 ### 4. Deploy
+
 ```bash
 # Follow deployment checklist above
 # Update environment variables
@@ -297,15 +317,15 @@ npm test
 
 ## Documentation Reference
 
-| Document | Purpose |
-|----------|---------|
-| `AUTHENTICATION_REFACTOR.md` | Detailed explanation of changes |
-| `BACKEND_AUTH_SETUP.md` | Backend implementation guide |
-| `AUTH_MIGRATION_SUMMARY.md` | Summary of what changed |
-| `REFRESH_TOKEN_401_FIX.md` | Troubleshooting 401 errors |
-| `TEST_REFRESH_TOKEN.md` | Testing and debugging guide |
-| `QUICK_FIX_401.md` | Quick reference for common issues |
-| `IMPLEMENTATION_CHECKLIST.md` | This file |
+| Document                      | Purpose                           |
+| ----------------------------- | --------------------------------- |
+| `AUTHENTICATION_REFACTOR.md`  | Detailed explanation of changes   |
+| `BACKEND_AUTH_SETUP.md`       | Backend implementation guide      |
+| `AUTH_MIGRATION_SUMMARY.md`   | Summary of what changed           |
+| `REFRESH_TOKEN_401_FIX.md`    | Troubleshooting 401 errors        |
+| `TEST_REFRESH_TOKEN.md`       | Testing and debugging guide       |
+| `QUICK_FIX_401.md`            | Quick reference for common issues |
+| `IMPLEMENTATION_CHECKLIST.md` | This file                         |
 
 ---
 

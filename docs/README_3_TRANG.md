@@ -9,9 +9,11 @@
 ## 📄 1. Trang Danh sách Bài viết
 
 ### URL: `/articles`
+
 ### File: `app/routes/articles._index.tsx`
 
 ### Tính năng
+
 ✅ Layout list dọc tương tự Medium
 ✅ Thumbnail + tiêu đề + mô tả + metadata
 ✅ Tác giả với avatar
@@ -24,6 +26,7 @@
 ✅ Dark mode support
 
 ### Layout
+
 ```
 ┌─────────────────────────────────┐
 │ Header (Sticky)                 │
@@ -41,6 +44,7 @@
 ```
 
 ### Màu sắc
+
 - Background: Gray-50 → White gradient
 - Cards: White với border gray-200
 - Hover: Shadow-xl + border-gray-300
@@ -51,9 +55,11 @@
 ## 📂 2. Trang Danh mục
 
 ### URL: `/categories`
+
 ### File: `app/routes/category.index.tsx`
 
 ### Tính năng
+
 ✅ Grid layout responsive (1-4 cột)
 ✅ Color bar phía trên mỗi card
 ✅ Icon với background màu category
@@ -65,6 +71,7 @@
 ✅ Dark mode support
 
 ### Layout
+
 ```
 ┌─────────────────────────────────┐
 │ Header                          │
@@ -81,6 +88,7 @@
 ```
 
 ### Card Structure
+
 ```
 ┌─────────────────┐
 │ [Color Bar]     │ ← 8px height
@@ -99,9 +107,11 @@
 ## 🎭 3. Trang Meme Gallery
 
 ### URL: `/memes`
+
 ### File: `app/routes/memes._index.tsx`
 
 ### Tính năng
+
 ✅ Grid layout cho images (aspect-ratio 1:1)
 ✅ Infinite scroll (auto-load khi scroll)
 ✅ Lazy loading images
@@ -113,6 +123,7 @@
 ✅ Dark mode support
 
 ### Layout
+
 ```
 ┌─────────────────────────────────┐
 │ Header (Sticky) [Refresh Btn]   │
@@ -129,6 +140,7 @@
 ```
 
 ### Lightbox
+
 ```
 ┌─────────────────────────────────┐
 │ [X]                             │ ← Close button
@@ -145,6 +157,7 @@
 ```
 
 ### Infinite Scroll Logic
+
 ```typescript
 1. Load page 0 (initial)
 2. User scrolls xuống
@@ -159,6 +172,7 @@
 ## 🎨 Design System
 
 ### Spacing Scale
+
 ```
 xs:  4px   (gap-1)
 sm:  8px   (gap-2)
@@ -169,6 +183,7 @@ xl:  32px  (gap-8)
 ```
 
 ### Border Radius
+
 ```
 sm:   4px  (rounded)
 md:   8px  (rounded-lg)
@@ -177,6 +192,7 @@ full: 9999px (rounded-full)
 ```
 
 ### Shadow Scale
+
 ```
 sm:   subtle shadow
 md:   normal shadow
@@ -186,6 +202,7 @@ xl:   prominent shadow
 ```
 
 ### Transition Timing
+
 ```
 Fast:   150ms (hover states)
 Normal: 300ms (default)
@@ -197,48 +214,55 @@ Slow:   500ms (complex animations)
 ## 📱 Responsive Grid
 
 ### Articles (List Layout)
-| Device | Layout |
-|--------|--------|
-| Mobile (< 640px) | Stack vertical, thumbnail top |
+
+| Device              | Layout                        |
+| ------------------- | ----------------------------- |
+| Mobile (< 640px)    | Stack vertical, thumbnail top |
 | Tablet (640-1024px) | Thumbnail left, content right |
-| Desktop (> 1024px) | Same, max-width 1024px |
+| Desktop (> 1024px)  | Same, max-width 1024px        |
 
 ### Categories (Grid Layout)
-| Device | Columns |
-|--------|---------|
-| Mobile (< 640px) | 1 column |
-| Tablet (640-1024px) | 2 columns |
+
+| Device                | Columns   |
+| --------------------- | --------- |
+| Mobile (< 640px)      | 1 column  |
+| Tablet (640-1024px)   | 2 columns |
 | Desktop (1024-1280px) | 3 columns |
-| Large (> 1280px) | 4 columns |
+| Large (> 1280px)      | 4 columns |
 
 ### Memes (Grid Layout)
-| Device | Columns |
-|--------|---------|
-| Mobile (< 640px) | 1 column |
-| Tablet (640-1024px) | 2 columns |
+
+| Device                | Columns   |
+| --------------------- | --------- |
+| Mobile (< 640px)      | 1 column  |
+| Tablet (640-1024px)   | 2 columns |
 | Desktop (1024-1280px) | 3 columns |
-| Large (> 1280px) | 4 columns |
+| Large (> 1280px)      | 4 columns |
 
 ---
 
 ## 🛠️ Tech Stack
 
 ### Frontend Framework
+
 - **React Router v7**: SSR, routing, data loading
 - **React 18**: UI library
 - **TypeScript**: Type safety
 
 ### Styling
+
 - **Tailwind CSS v4**: Utility-first CSS
 - **Custom CSS**: Animations và effects đặc biệt
 - **Dark Mode**: Built-in support
 
 ### Libraries
+
 - **lucide-react**: Icons
 - **date-fns**: Date formatting
 - **Intersection Observer**: Infinite scroll
 
 ### Build Tools
+
 - **Vite**: Fast build tool
 - **TypeScript**: Type checking
 - **PostCSS**: CSS processing
@@ -276,16 +300,19 @@ docs/
 ## 🚀 Quick Start
 
 ### 1. Cài đặt
+
 ```bash
 npm install
 ```
 
 ### 2. Chạy Development
+
 ```bash
 npm run dev
 ```
 
 ### 3. Truy cập
+
 ```
 Articles:   http://localhost:5173/articles
 Categories: http://localhost:5173/categories
@@ -327,6 +354,7 @@ Memes:      http://localhost:5173/memes
 ## 🎯 Key Features
 
 ### Performance
+
 ⚡ Server-Side Rendering (SSR)
 ⚡ Code splitting by route
 ⚡ Lazy loading images
@@ -334,6 +362,7 @@ Memes:      http://localhost:5173/memes
 ⚡ Optimized re-renders
 
 ### User Experience
+
 ✨ Smooth animations
 ✨ Hover effects
 ✨ Loading states
@@ -341,12 +370,14 @@ Memes:      http://localhost:5173/memes
 ✨ Error handling
 
 ### Responsive
+
 📱 Mobile-first design
 📱 Flexible grid system
 📱 Touch-friendly
 📱 Adaptive layouts
 
 ### Accessibility
+
 ♿ Semantic HTML
 ♿ Keyboard navigation
 ♿ Focus states
@@ -358,21 +389,25 @@ Memes:      http://localhost:5173/memes
 ## 🎨 Design Principles
 
 ### 1. Minimalism
+
 - Loại bỏ mọi thứ không cần thiết
 - Focus vào nội dung chính
 - Whitespace hợp lý
 
 ### 2. Consistency
+
 - Spacing system nhất quán
 - Color palette thống nhất
 - Typography hierarchy rõ ràng
 
 ### 3. Clarity
+
 - Clear visual hierarchy
 - Obvious interactive elements
 - Predictable behaviors
 
 ### 4. Performance
+
 - Fast loading
 - Smooth interactions
 - Efficient rendering
@@ -382,31 +417,35 @@ Memes:      http://localhost:5173/memes
 ## 🔧 Customization
 
 ### Thay đổi màu sắc
+
 ```tsx
 // Trong component
-className="bg-gray-900"  // Đổi sang bg-blue-600
-className="text-gray-600" // Đổi sang text-blue-500
+className = "bg-gray-900"; // Đổi sang bg-blue-600
+className = "text-gray-600"; // Đổi sang text-blue-500
 ```
 
 ### Thay đổi spacing
+
 ```tsx
 // Gap giữa items
-className="gap-6"  // Đổi sang gap-8 (32px)
+className = "gap-6"; // Đổi sang gap-8 (32px)
 
 // Padding
-className="p-6"    // Đổi sang p-8 (32px)
+className = "p-6"; // Đổi sang p-8 (32px)
 ```
 
 ### Thay đổi animations
+
 ```tsx
 // Duration
-className="duration-300"  // Đổi sang duration-500
+className = "duration-300"; // Đổi sang duration-500
 
 // Easing
-className="ease-out"      // Đổi sang ease-in-out
+className = "ease-out"; // Đổi sang ease-in-out
 ```
 
 ### Thêm features mới
+
 Tham khảo section "Future Enhancements" trong `3_TRANG_WEB_MINIMALIST.md`
 
 ---
@@ -414,19 +453,25 @@ Tham khảo section "Future Enhancements" trong `3_TRANG_WEB_MINIMALIST.md`
 ## 🐛 Common Issues
 
 ### Issue 1: API không kết nối được
-**Solution**: 
+
+**Solution**:
+
 - Check backend server đã chạy chưa
 - Verify `.env` có đúng URL không
 - Check CORS configuration
 
 ### Issue 2: Images không hiển thị
+
 **Solution**:
+
 - Verify image URLs hợp lệ
 - Check CORS cho images
 - Inspect network requests
 
 ### Issue 3: Dark mode không hoạt động
+
 **Solution**:
+
 - Check themeStore initialization
 - Verify dark: classes trong Tailwind
 - Check localStorage
@@ -436,12 +481,14 @@ Tham khảo section "Future Enhancements" trong `3_TRANG_WEB_MINIMALIST.md`
 ## 📊 Performance Metrics
 
 ### Target (Lighthouse)
+
 - Performance: > 90
 - Accessibility: > 95
 - Best Practices: > 90
 - SEO: > 90
 
 ### Actual Results
+
 ```
 Articles Page:
 - FCP: ~1.2s
@@ -464,24 +511,28 @@ Memes Page:
 ## 🎓 Code Quality
 
 ### TypeScript
+
 ✅ Full type coverage
 ✅ No `any` types
 ✅ Strict mode enabled
 ✅ Interface definitions
 
 ### React Best Practices
+
 ✅ Functional components
 ✅ Hooks properly used
 ✅ No unnecessary re-renders
 ✅ Clean component structure
 
 ### CSS Best Practices
+
 ✅ Utility-first approach
 ✅ Consistent naming
 ✅ Responsive design
 ✅ Accessibility styles
 
 ### Comments
+
 ✅ Tiếng Việt
 ✅ Giải thích logic
 ✅ Component descriptions
@@ -492,16 +543,19 @@ Memes Page:
 ## 🌟 Highlights
 
 ### Articles Page
+
 🎯 **Best for**: Reading và browsing content
 💡 **Inspiration**: Medium, Dev.to
 🎨 **Style**: Clean, readable, content-focused
 
 ### Categories Page
+
 🎯 **Best for**: Discovery và exploration
 💡 **Inspiration**: Notion, Dribbble
 🎨 **Style**: Visual, colorful, organized
 
 ### Memes Page
+
 🎯 **Best for**: Entertainment và browsing
 💡 **Inspiration**: Pinterest, Unsplash
 🎨 **Style**: Image-focused, infinite scroll
@@ -510,13 +564,13 @@ Memes Page:
 
 ## 📖 Documentation Files
 
-| File | Mô tả |
-|------|-------|
-| `HUONG_DAN_CAI_DAT.md` | Hướng dẫn cài đặt và chạy project |
-| `THIET_KE_3_TRANG.md` | Chi tiết thiết kế từng trang |
-| `3_TRANG_WEB_MINIMALIST.md` | Tài liệu kỹ thuật đầy đủ |
-| `DEMO_TESTING.md` | Hướng dẫn test và demo |
-| `README_3_TRANG.md` | Tổng quan (file này) |
+| File                        | Mô tả                             |
+| --------------------------- | --------------------------------- |
+| `HUONG_DAN_CAI_DAT.md`      | Hướng dẫn cài đặt và chạy project |
+| `THIET_KE_3_TRANG.md`       | Chi tiết thiết kế từng trang      |
+| `3_TRANG_WEB_MINIMALIST.md` | Tài liệu kỹ thuật đầy đủ          |
+| `DEMO_TESTING.md`           | Hướng dẫn test và demo            |
+| `README_3_TRANG.md`         | Tổng quan (file này)              |
 
 ---
 
@@ -542,21 +596,25 @@ npm run dev
 ## 💡 Tips
 
 ### Tip 1: Fast Development
+
 - Vite HMR tự động reload khi edit
 - React Router preserves state
 - Tailwind JIT compile nhanh
 
 ### Tip 2: Debug
+
 - Chrome DevTools → Network tab
 - React DevTools extension
 - Console logs
 
 ### Tip 3: Customize
+
 - Edit Tailwind classes trực tiếp
 - Thêm custom CSS trong `pages.css`
 - Update colors, spacing, typography
 
 ### Tip 4: Deploy
+
 ```bash
 npm run build
 npm start
@@ -578,6 +636,7 @@ npm start
 ## 📞 Support
 
 Nếu cần hỗ trợ:
+
 1. Đọc documentation trong `docs/`
 2. Check console và network logs
 3. Verify API endpoints

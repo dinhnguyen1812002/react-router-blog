@@ -1,17 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 /**
  * Hook to check if code is running on client side
  * Useful for preventing SSR issues with browser-only APIs
  */
 export const useClientOnly = () => {
-  const [isClient, setIsClient] = useState(false);
+	const [isClient, setIsClient] = useState(false);
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+	useEffect(() => {
+		setIsClient(true);
+	}, []);
 
-  return isClient;
+	return isClient;
 };
 
 /**
@@ -19,8 +19,8 @@ export const useClientOnly = () => {
  * Returns null during SSR, window object on client
  */
 export const useWindow = () => {
-  const isClient = useClientOnly();
-  return isClient ? window : null;
+	const isClient = useClientOnly();
+	return isClient ? window : null;
 };
 
 /**
@@ -28,16 +28,19 @@ export const useWindow = () => {
  * Useful for components that use browser-only APIs
  */
 interface ClientOnlyProps {
-  children: React.ReactNode;
-  fallback?: React.ReactNode;
+	children: React.ReactNode;
+	fallback?: React.ReactNode;
 }
 
-export function ClientOnly({ children, fallback = null }: ClientOnlyProps): React.ReactElement | null {
-  const isClient = useClientOnly();
-  
-  if (!isClient) {
-    return fallback ? (fallback as React.ReactElement) : null;
-  }
-  
-  return children as React.ReactElement;
+export function ClientOnly({
+	children,
+	fallback = null,
+}: ClientOnlyProps): React.ReactElement | null {
+	const isClient = useClientOnly();
+
+	if (!isClient) {
+		return fallback ? (fallback as React.ReactElement) : null;
+	}
+
+	return children as React.ReactElement;
 }

@@ -13,10 +13,12 @@ Ví dụ: `/dashboard/posts/edit/123`
 ### 2. Các bước thực hiện
 
 #### Bước 1: Load bài viết
+
 - Khi vào trang, hệ thống tự động fetch dữ liệu bài viết từ API
 - Form sẽ được điền tự động với dữ liệu hiện có
 
 #### Bước 2: Chỉnh sửa nội dung
+
 - **Tiêu đề**: Nhập tiêu đề bài viết (5-200 ký tự)
 - **Nội dung**: Viết nội dung bằng Rich Text hoặc Markdown
 - **Tóm tắt**: Viết tóm tắt ngắn gọn (5-200 ký tự)
@@ -47,18 +49,22 @@ Có 3 cách để lưu:
 ### 3. Các tính năng bổ sung
 
 #### Xem trước (Preview)
+
 - Click nút "Xem trước" để xem bài viết như người đọc
 - Hỗ trợ cả Rich Text và Markdown
 
 #### Tải lại (Reload)
+
 - Click nút "Tải lại" để fetch lại dữ liệu từ server
 - Hữu ích khi muốn hủy các thay đổi chưa lưu
 
 #### Focus Mode
+
 - Click icon Focus để vào chế độ tập trung
 - Ẩn sidebar, tối đa hóa không gian viết
 
 #### Writing Stats
+
 - Số từ
 - Thời gian đọc ước tính
 - Số ký tự
@@ -80,16 +86,19 @@ Có 3 cách để lưu:
 ## Troubleshooting
 
 ### Lỗi: "Không thể tải bài viết"
+
 - Kiểm tra ID bài viết có đúng không
 - Kiểm tra quyền truy cập (chỉ author mới edit được bài của mình)
 - Click "Thử lại" để fetch lại
 
 ### Lỗi: "Có lỗi xảy ra khi cập nhật"
+
 - Kiểm tra kết nối internet
 - Kiểm tra các trường bắt buộc đã điền chưa
 - Xem chi tiết lỗi trong console (F12)
 
 ### Auto-save không hoạt động
+
 - Kiểm tra có đang ở chế độ edit (có postId) không
 - Kiểm tra đã điền tiêu đề và nội dung chưa
 - Xem trạng thái auto-save ở header
@@ -103,7 +112,7 @@ import { usePostEditor } from '~/hooks/usePostEditor';
 
 function EditPostPage() {
   const { id } = useParams();
-  
+
   const {
     form,
     selectedTags,

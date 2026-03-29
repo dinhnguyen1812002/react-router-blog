@@ -37,12 +37,14 @@ The **ProfileCustomizationController** provides comprehensive endpoints for mana
 Updates the custom profile markdown content for the authenticated user. This allows users to create a rich, formatted profile description using Markdown syntax.
 
 **Request Headers:**
+
 ```
 Authorization: Bearer <jwt_token>
 Content-Type: application/json
 ```
 
 **Request Body:**
+
 ```json
 {
   "markdownContent": "# Welcome to My Profile\n\nI am a passionate developer...\n\n## Skills\n- Java\n- Spring Boot\n- React"
@@ -55,6 +57,7 @@ Content-Type: application/json
 | markdownContent | String | Yes | Markdown formatted content for the profile. Must not be blank. |
 
 **Response:** `200 OK`
+
 ```json
 {
   "id": "user-123",
@@ -74,16 +77,19 @@ Content-Type: application/json
 ```
 
 **Status Codes:**
+
 - `200 OK` - Profile markdown updated successfully
 - `400 Bad Request` - Invalid request body (e.g., blank markdown content)
 - `401 Unauthorized` - Missing or invalid JWT token
 - `404 Not Found` - User not found
 
 **Validation Rules:**
+
 - `markdownContent` must not be blank
 - Markdown content can include headers, lists, code blocks, links, images, etc.
 
 **Example cURL:**
+
 ```bash
 curl -X PUT http://localhost:8080/api/v1/profile \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
@@ -110,6 +116,7 @@ Retrieves the custom profile information for a specific user by their username. 
 | username | String | Yes | The username of the user whose profile to retrieve |
 
 **Response:** `200 OK`
+
 ```json
 {
   "id": "user-123",
@@ -129,20 +136,23 @@ Retrieves the custom profile information for a specific user by their username. 
 ```
 
 **Status Codes:**
+
 - `200 OK` - Profile retrieved successfully
 - `404 Not Found` - User with specified username not found
 
 **Example cURL:**
+
 ```bash
 curl -X GET http://localhost:8080/api/v1/profile/john_doe
 ```
 
 **Example JavaScript/Fetch:**
+
 ```javascript
-fetch('http://localhost:8080/api/v1/profile/john_doe')
-  .then(response => response.json())
-  .then(data => console.log(data))
-  .catch(error => console.error('Error:', error));
+fetch("http://localhost:8080/api/v1/profile/john_doe")
+  .then((response) => response.json())
+  .then((data) => console.log(data))
+  .catch((error) => console.error("Error:", error));
 ```
 
 ---
@@ -157,12 +167,14 @@ fetch('http://localhost:8080/api/v1/profile/john_doe')
 Performs a full update of the authenticated user's profile information. All provided fields will be updated. This is a complete replacement operation for the specified fields.
 
 **Request Headers:**
+
 ```
 Authorization: Bearer <jwt_token>
 Content-Type: application/json
 ```
 
 **Request Body:**
+
 ```json
 {
   "username": "john_doe_updated",
@@ -191,6 +203,7 @@ Content-Type: application/json
 | socialMediaLinks | Map | No | Social media platform URLs (GITHUB, TWITTER, LINKEDIN, FACEBOOK, INSTAGRAM, etc.) |
 
 **Response:** `200 OK`
+
 ```json
 {
   "id": "user-123",
@@ -211,6 +224,7 @@ Content-Type: application/json
 ```
 
 **Status Codes:**
+
 - `200 OK` - Profile updated successfully
 - `400 Bad Request` - Invalid request data (e.g., invalid email format, username too short)
 - `401 Unauthorized` - Missing or invalid JWT token
@@ -218,12 +232,14 @@ Content-Type: application/json
 - `409 Conflict` - Username or email already exists
 
 **Validation Rules:**
+
 - `username` must be at least 3 characters long
 - `email` must be a valid email format
 - `username` and `email` must be unique across the system
 - Social media links must be valid URLs
 
 **Example cURL:**
+
 ```bash
 curl -X PUT http://localhost:8080/api/v1/profile/profile \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
@@ -252,12 +268,14 @@ curl -X PUT http://localhost:8080/api/v1/profile/profile \
 Performs a partial update of the authenticated user's profile. Only the fields provided in the request body will be updated; other fields remain unchanged. This is useful for updating specific profile attributes without affecting others.
 
 **Request Headers:**
+
 ```
 Authorization: Bearer <jwt_token>
 Content-Type: application/json
 ```
 
 **Request Body (Example - Update only bio and website):**
+
 ```json
 {
   "bio": "Updated bio text",
@@ -277,6 +295,7 @@ Content-Type: application/json
 | socialMediaLinks | Map | No | Social media platform URLs |
 
 **Response:** `200 OK`
+
 ```json
 {
   "id": "user-123",
@@ -295,6 +314,7 @@ Content-Type: application/json
 ```
 
 **Status Codes:**
+
 - `200 OK` - Profile patched successfully
 - `400 Bad Request` - Invalid request data
 - `401 Unauthorized` - Missing or invalid JWT token
@@ -302,10 +322,12 @@ Content-Type: application/json
 - `409 Conflict` - Username or email already exists
 
 **Difference between PUT and PATCH:**
+
 - **PUT** (`/api/v1/profile/profile`): Full update - all fields in request are updated
 - **PATCH** (`/api/v1/profile/profile`): Partial update - only provided fields are updated
 
 **Example cURL:**
+
 ```bash
 curl -X PATCH http://localhost:8080/api/v1/profile/profile \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
@@ -328,6 +350,7 @@ curl -X PATCH http://localhost:8080/api/v1/profile/profile \
 Uploads a new avatar image for the authenticated user. The file is processed and stored, and a URL to the uploaded avatar is returned.
 
 **Request Headers:**
+
 ```
 Authorization: Bearer <jwt_token>
 Content-Type: multipart/form-data
@@ -339,12 +362,14 @@ Content-Type: multipart/form-data
 | file | File | Yes | Image file to upload (multipart form data) |
 
 **Supported File Types:**
+
 - JPEG (.jpg, .jpeg)
 - PNG (.png)
 - GIF (.gif)
 - WebP (.webp)
 
 **Response:** `200 OK`
+
 ```json
 {
   "url": "https://example.com/avatars/user-123-avatar.jpg"
@@ -352,17 +377,20 @@ Content-Type: multipart/form-data
 ```
 
 **Status Codes:**
+
 - `200 OK` - Avatar uploaded successfully
 - `400 Bad Request` - Invalid file format or file too large
 - `401 Unauthorized` - Missing or invalid JWT token
 - `404 Not Found` - User not found
 
 **File Constraints:**
+
 - Maximum file size: 5MB (configurable)
 - Supported formats: JPEG, PNG, GIF, WebP
 - Image dimensions: Recommended 200x200px or larger
 
 **Example cURL:**
+
 ```bash
 curl -X POST http://localhost:8080/api/v1/profile/avatar \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
@@ -370,20 +398,21 @@ curl -X POST http://localhost:8080/api/v1/profile/avatar \
 ```
 
 **Example JavaScript/Fetch:**
+
 ```javascript
 const formData = new FormData();
-formData.append('file', fileInput.files[0]);
+formData.append("file", fileInput.files[0]);
 
-fetch('http://localhost:8080/api/v1/profile/avatar', {
-  method: 'POST',
+fetch("http://localhost:8080/api/v1/profile/avatar", {
+  method: "POST",
   headers: {
-    'Authorization': 'Bearer ' + token
+    Authorization: "Bearer " + token,
   },
-  body: formData
+  body: formData,
 })
-  .then(response => response.json())
-  .then(data => console.log('Avatar URL:', data.url))
-  .catch(error => console.error('Error:', error));
+  .then((response) => response.json())
+  .then((data) => console.log("Avatar URL:", data.url))
+  .catch((error) => console.error("Error:", error));
 ```
 
 ---
@@ -398,11 +427,13 @@ fetch('http://localhost:8080/api/v1/profile/avatar', {
 Retrieves the complete profile information for the currently authenticated user. This endpoint returns all profile details including custom markdown, statistics, and social media links.
 
 **Request Headers:**
+
 ```
 Authorization: Bearer <jwt_token>
 ```
 
 **Response:** `200 OK`
+
 ```json
 {
   "id": "user-123",
@@ -422,27 +453,30 @@ Authorization: Bearer <jwt_token>
 ```
 
 **Status Codes:**
+
 - `200 OK` - Profile retrieved successfully
 - `401 Unauthorized` - Missing or invalid JWT token
 - `404 Not Found` - User not found
 
 **Example cURL:**
+
 ```bash
 curl -X GET http://localhost:8080/api/v1/profile/profile \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
 
 **Example JavaScript/Fetch:**
+
 ```javascript
-fetch('http://localhost:8080/api/v1/profile/profile', {
-  method: 'GET',
+fetch("http://localhost:8080/api/v1/profile/profile", {
+  method: "GET",
   headers: {
-    'Authorization': 'Bearer ' + token
-  }
+    Authorization: "Bearer " + token,
+  },
 })
-  .then(response => response.json())
-  .then(data => console.log('Current user profile:', data))
-  .catch(error => console.error('Error:', error));
+  .then((response) => response.json())
+  .then((data) => console.log("Current user profile:", data))
+  .catch((error) => console.error("Error:", error));
 ```
 
 ---
@@ -462,6 +496,7 @@ Retrieves the profile information for a specific user by their user ID. This end
 | userId | String | Yes | The unique identifier of the user |
 
 **Response:** `200 OK`
+
 ```json
 {
   "id": "user-123",
@@ -481,20 +516,23 @@ Retrieves the profile information for a specific user by their user ID. This end
 ```
 
 **Status Codes:**
+
 - `200 OK` - Profile retrieved successfully
 - `404 Not Found` - User with specified ID not found
 
 **Example cURL:**
+
 ```bash
 curl -X GET http://localhost:8080/api/v1/profile/profile/user-123
 ```
 
 **Example JavaScript/Fetch:**
+
 ```javascript
-fetch('http://localhost:8080/api/v1/profile/profile/user-123')
-  .then(response => response.json())
-  .then(data => console.log('User profile:', data))
-  .catch(error => console.error('Error:', error));
+fetch("http://localhost:8080/api/v1/profile/profile/user-123")
+  .then((response) => response.json())
+  .then((data) => console.log("User profile:", data))
+  .catch((error) => console.error("Error:", error));
 ```
 
 ---
@@ -557,6 +595,7 @@ Response returned after successful avatar upload.
 ### Common Error Responses
 
 #### 400 Bad Request
+
 ```json
 {
   "status": 400,
@@ -569,6 +608,7 @@ Response returned after successful avatar upload.
 ```
 
 #### 401 Unauthorized
+
 ```json
 {
   "status": 401,
@@ -577,6 +617,7 @@ Response returned after successful avatar upload.
 ```
 
 #### 404 Not Found
+
 ```json
 {
   "status": 404,
@@ -585,6 +626,7 @@ Response returned after successful avatar upload.
 ```
 
 #### 409 Conflict
+
 ```json
 {
   "status": 409,
@@ -599,6 +641,7 @@ Response returned after successful avatar upload.
 ### Complete Profile Setup Workflow
 
 #### Step 1: Update Profile Information
+
 ```bash
 curl -X PUT http://localhost:8080/api/v1/profile/profile \
   -H "Authorization: Bearer $TOKEN" \
@@ -616,6 +659,7 @@ curl -X PUT http://localhost:8080/api/v1/profile/profile \
 ```
 
 #### Step 2: Upload Avatar
+
 ```bash
 curl -X POST http://localhost:8080/api/v1/profile/avatar \
   -H "Authorization: Bearer $TOKEN" \
@@ -623,6 +667,7 @@ curl -X POST http://localhost:8080/api/v1/profile/avatar \
 ```
 
 #### Step 3: Add Custom Profile Markdown
+
 ```bash
 curl -X PUT http://localhost:8080/api/v1/profile \
   -H "Authorization: Bearer $TOKEN" \
@@ -633,6 +678,7 @@ curl -X PUT http://localhost:8080/api/v1/profile \
 ```
 
 #### Step 4: Retrieve Complete Profile
+
 ```bash
 curl -X GET http://localhost:8080/api/v1/profile/profile \
   -H "Authorization: Bearer $TOKEN"
@@ -641,20 +687,20 @@ curl -X GET http://localhost:8080/api/v1/profile/profile \
 ### Frontend Integration Example (React)
 
 ```javascript
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 function UserProfile() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem("authToken");
 
   useEffect(() => {
     // Fetch current user profile
-    fetch('http://localhost:8080/api/v1/profile/profile', {
-      headers: { 'Authorization': `Bearer ${token}` }
+    fetch("http://localhost:8080/api/v1/profile/profile", {
+      headers: { Authorization: `Bearer ${token}` },
     })
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         setProfile(data);
         setLoading(false);
       });
@@ -662,26 +708,32 @@ function UserProfile() {
 
   const handleAvatarUpload = async (file) => {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
 
-    const response = await fetch('http://localhost:8080/api/v1/profile/avatar', {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${token}` },
-      body: formData
-    });
+    const response = await fetch(
+      "http://localhost:8080/api/v1/profile/avatar",
+      {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      },
+    );
     const data = await response.json();
     setProfile({ ...profile, avatar: data.url });
   };
 
   const handleProfileUpdate = async (updates) => {
-    const response = await fetch('http://localhost:8080/api/v1/profile/profile', {
-      method: 'PATCH',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+    const response = await fetch(
+      "http://localhost:8080/api/v1/profile/profile",
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updates),
       },
-      body: JSON.stringify(updates)
-    });
+    );
     const data = await response.json();
     setProfile(data);
   };
@@ -720,6 +772,7 @@ export default UserProfile;
 ## Rate Limiting
 
 To prevent abuse, the following rate limits are recommended:
+
 - Profile updates: 10 requests per minute per user
 - Avatar uploads: 5 requests per minute per user
 - Profile reads: 100 requests per minute per user
@@ -729,6 +782,7 @@ To prevent abuse, the following rate limits are recommended:
 ## Changelog
 
 ### Version 1.0 (Current)
+
 - Initial release with full profile customization features
 - Support for markdown profile content
 - Avatar upload functionality

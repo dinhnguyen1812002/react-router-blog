@@ -1,54 +1,54 @@
-import { Outlet } from "react-router"
-import { AppSidebar } from "~/components/app-sidebar"
+import { Outlet } from "react-router";
+import { AppSidebar } from "~/components/app-sidebar";
+import { AdminRequired } from "~/components/ProtectedRoute";
 import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "~/components/ui/breadcrumb"
-import { Separator } from "~/components/ui/separator"
+	Breadcrumb,
+	BreadcrumbItem,
+	BreadcrumbLink,
+	BreadcrumbList,
+	BreadcrumbPage,
+	BreadcrumbSeparator,
+} from "~/components/ui/breadcrumb";
+import { Separator } from "~/components/ui/separator";
 import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "~/components/ui/sidebar"
-import { AdminRequired } from "~/components/ProtectedRoute"
+	SidebarInset,
+	SidebarProvider,
+	SidebarTrigger,
+} from "~/components/ui/sidebar";
 
 export default function Page() {
-  return (
-    <AdminRequired>
-      <SidebarProvider className="min-h-screen">
-        <AppSidebar />
-        <SidebarInset className="min-h-screen">
-          <header className="sticky top-0 z-20 flex h-16 shrink-0 items-center gap-2 border-b bg-background/95 backdrop-blur transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-            <div className="flex items-center gap-2 px-4">
-              <SidebarTrigger className="-ml-1" />
-              <Separator
-                orientation="vertical"
-                className="mr-2 data-[orientation=vertical]:h-4"
-              />
-              <Breadcrumb className="text-sm">
-                <BreadcrumbList>
-                  <BreadcrumbItem className="hidden md:block">
-                    <BreadcrumbLink href="#">
-                      Building Your Application
-                    </BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator className="hidden md:block" />
-                  <BreadcrumbItem>
-                    <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                  </BreadcrumbItem>
-                </BreadcrumbList>
-              </Breadcrumb>
-            </div>
-          </header>
-          <div className="flex flex-1 flex-col gap-4 p-4 pt-2">
-            <Outlet />
-          </div>
-        </SidebarInset>
-      </SidebarProvider>
-    </AdminRequired>
-  )
+	return (
+		<AdminRequired>
+			<SidebarProvider className="min-h-screen">
+				<AppSidebar />
+				<SidebarInset className="min-h-screen">
+					<header className="sticky top-0 z-20 flex h-16 shrink-0 items-center gap-2 border-b bg-background/95 backdrop-blur transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+						<div className="flex items-center gap-2 px-4">
+							<SidebarTrigger className="-ml-1" />
+							<Separator
+								orientation="vertical"
+								className="mr-2 data-[orientation=vertical]:h-4"
+							/>
+							<Breadcrumb className="text-sm">
+								<BreadcrumbList>
+									<BreadcrumbItem className="hidden md:block">
+										<BreadcrumbLink href="#">
+											Building Your Application
+										</BreadcrumbLink>
+									</BreadcrumbItem>
+									<BreadcrumbSeparator className="hidden md:block" />
+									<BreadcrumbItem>
+										<BreadcrumbPage>Data Fetching</BreadcrumbPage>
+									</BreadcrumbItem>
+								</BreadcrumbList>
+							</Breadcrumb>
+						</div>
+					</header>
+					<div className="flex flex-1 flex-col gap-4 p-4 pt-2">
+						<Outlet />
+					</div>
+				</SidebarInset>
+			</SidebarProvider>
+		</AdminRequired>
+	);
 }

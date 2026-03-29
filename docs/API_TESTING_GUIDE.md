@@ -5,14 +5,17 @@ Tài liệu này hướng dẫn cách kiểm thử (test) các API của dự á
 ## 1. Chuẩn bị
 
 ### Công cụ cần thiết
+
 - **Postman hoặc bất cứ api testing tool nào bạn thích :** Tải tại [https://www.postman.com/downloads/](https://www.postman.com/downloads/).
 - **Swagger UI:** Truy cập [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html) sau khi chạy ứng dụng.
 - **Java & Gradle:** Đảm bảo bạn đã cài đặt Java và Gradle.
 
 ### Chạy ứng dụng
+
 ```bash
 ./gradlew bootRun
 ```
+
 Ứng dụng sẽ chạy trên cổng `8888`.
 
 ## 2. Hướng dẫn theo chức năng
@@ -35,6 +38,7 @@ Vui lòng tham khảo các tài liệu chi tiết dưới đây cho từng nhóm
 Nếu bạn không dùng Postman, bạn có thể sử dụng `curl` trên terminal.
 
 ### Đăng nhập
+
 ```bash
 curl -X POST http://localhost:8080/api/v1/auth/login \
 -H "Content-Type: application/json" \
@@ -45,12 +49,15 @@ curl -X POST http://localhost:8080/api/v1/auth/login \
 ```
 
 ### Lấy danh sách bài viết (sử dụng token)
+
 ```bash
 # Thay YOUR_TOKEN bằng token bạn nhận được
 TOKEN="YOUR_TOKEN"
 
 curl -X GET http://localhost:8080/api/v1/posts \
 -H "Authorization: Bearer $TOKEN"
+```
+
 ```
 
 ```

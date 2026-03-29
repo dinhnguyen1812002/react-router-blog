@@ -7,259 +7,260 @@
 
 /* Fade in animation cho page load */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.4s ease-out;
+	animation: fadeIn 0.4s ease-out;
 }
 
 /* Shimmer effect cho loading skeleton */
 @keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
-  }
-  100% {
-    background-position: 1000px 0;
-  }
+	0% {
+		background-position: -1000px 0;
+	}
+	100% {
+		background-position: 1000px 0;
+	}
 }
 
 .animate-shimmer {
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.2) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  background-size: 1000px 100%;
-  animation: shimmer 2s infinite;
+	background: linear-gradient(
+		90deg,
+		rgba(255, 255, 255, 0) 0%,
+		rgba(255, 255, 255, 0.2) 50%,
+		rgba(255, 255, 255, 0) 100%
+	);
+	background-size: 1000px 100%;
+	animation: shimmer 2s infinite;
 }
 
 /* Pulse animation cho loading states */
 @keyframes pulse-subtle {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.7;
+	}
 }
 
 .animate-pulse-subtle {
-  animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+	animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 /* ===== ARTICLE PAGE STYLES ===== */
 
 /* Smooth hover transition cho article cards */
 .article-card {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .article-card:hover {
-  transform: translateY(-2px);
+	transform: translateY(-2px);
 }
 
 /* Category badge hover effect */
 .category-badge {
-  transition: transform 0.2s ease;
+	transition: transform 0.2s ease;
 }
 
 .category-badge:hover {
-  transform: scale(1.05);
+	transform: scale(1.05);
 }
 
 /* ===== CATEGORY PAGE STYLES ===== */
 
 /* Category card với gradient overlay */
 .category-card {
-  position: relative;
-  overflow: hidden;
+	position: relative;
+	overflow: hidden;
 }
 
 .category-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, transparent 0%, rgba(0, 0, 0, 0.03) 100%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: linear-gradient(135deg, transparent 0%, rgba(0, 0, 0, 0.03) 100%);
+	opacity: 0;
+	transition: opacity 0.3s ease;
+	pointer-events: none;
 }
 
 .category-card:hover::before {
-  opacity: 1;
+	opacity: 1;
 }
 
 /* Icon container animation */
 .category-icon-container {
-  transition: all 0.3s ease;
+	transition: all 0.3s ease;
 }
 
 .category-card:hover .category-icon-container {
-  transform: scale(1.1) rotate(5deg);
+	transform: scale(1.1) rotate(5deg);
 }
 
 /* ===== MEME PAGE STYLES ===== */
 
 /* Meme grid item với aspect ratio */
 .meme-item {
-  position: relative;
-  overflow: hidden;
-  aspect-ratio: 1 / 1;
+	position: relative;
+	overflow: hidden;
+	aspect-ratio: 1 / 1;
 }
 
 /* Image zoom effect */
 .meme-image {
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+	transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .meme-item:hover .meme-image {
-  transform: scale(1.1);
+	transform: scale(1.1);
 }
 
 /* Lightbox backdrop blur */
 .lightbox-backdrop {
-  backdrop-filter: blur(8px);
-  animation: fadeIn 0.2s ease-out;
+	backdrop-filter: blur(8px);
+	animation: fadeIn 0.2s ease-out;
 }
 
 /* Lightbox content slide up */
 @keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+	from {
+		opacity: 0;
+		transform: translateY(20px) scale(0.95);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
 }
 
 .lightbox-content {
-  animation: slideUp 0.3s ease-out;
+	animation: slideUp 0.3s ease-out;
 }
 
 /* ===== UTILITY CLASSES ===== */
 
 /* Smooth scroll behavior */
 html {
-  scroll-behavior: smooth;
+	scroll-behavior: smooth;
 }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+	width: 8px;
+	height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+	background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(156, 163, 175, 0.5);
-  border-radius: 4px;
+	background: rgba(156, 163, 175, 0.5);
+	border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(156, 163, 175, 0.7);
+	background: rgba(156, 163, 175, 0.7);
 }
 
 /* Dark mode scrollbar */
 .dark ::-webkit-scrollbar-thumb {
-  background: rgba(75, 85, 99, 0.5);
+	background: rgba(75, 85, 99, 0.5);
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: rgba(75, 85, 99, 0.7);
+	background: rgba(75, 85, 99, 0.7);
 }
 
 /* Text selection */
 ::selection {
-  background-color: rgba(59, 130, 246, 0.3);
-  color: inherit;
+	background-color: rgba(59, 130, 246, 0.3);
+	color: inherit;
 }
 
 /* Focus visible styles */
 *:focus-visible {
-  outline: 2px solid rgba(59, 130, 246, 0.5);
-  outline-offset: 2px;
-  border-radius: 4px;
+	outline: 2px solid rgba(59, 130, 246, 0.5);
+	outline-offset: 2px;
+	border-radius: 4px;
 }
 
 /* ===== RESPONSIVE UTILITIES ===== */
 
 /* Hide scrollbar nhưng vẫn scroll được */
 .scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+	-ms-overflow-style: none;
+	scrollbar-width: none;
 }
 
 .scrollbar-hide::-webkit-scrollbar {
-  display: none;
+	display: none;
 }
 
 /* Gradient text effect */
 .gradient-text {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-clip: text;
 }
 
 /* Glass morphism effect */
 .glass {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+	background: rgba(255, 255, 255, 0.8);
+	backdrop-filter: blur(10px);
+	border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .dark .glass {
-  background: rgba(17, 24, 39, 0.8);
-  border: 1px solid rgba(75, 85, 99, 0.2);
+	background: rgba(17, 24, 39, 0.8);
+	border: 1px solid rgba(75, 85, 99, 0.2);
 }
 
 /* ===== PRINT STYLES ===== */
 
 @media print {
-  .no-print {
-    display: none !important;
-  }
-  
-  .article-card {
-    break-inside: avoid;
-  }
+	.no-print {
+		display: none !important;
+	}
+
+	.article-card {
+		break-inside: avoid;
+	}
 }
 
 /* ===== ACCESSIBILITY ===== */
 
 /* Reduced motion cho users có preference */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
 }
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
-  .article-card,
-  .category-card,
-  .meme-item {
-    border-width: 2px;
-  }
+	.article-card,
+	.category-card,
+	.meme-item {
+		border-width: 2px;
+	}
 }

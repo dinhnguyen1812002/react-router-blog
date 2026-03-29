@@ -1,415 +1,454 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { MainLayout } from "~/components/layout/MainLayout";
-import { PageBackground } from "~/components/layout/PageBackground";
-import { useAuth } from "~/hooks/useAuth";
-import { OAuthButtons } from "~/components/auth/OAuthButtons";
-import { ThemedCard, ThemedCardContent } from "~/components/ui/ThemedCard";
-import { ThemedInput } from "~/components/ui/ThemedInput";
-import { ThemedButton } from "~/components/ui/ThemedButton";
 import {
-  Mail,
-  Lock,
-  LogIn,
-  AlertCircle,
-  CheckCircle,
-  Eye,
-  EyeOff,
-  ChevronsRight,
+	AlertCircle,
+	CheckCircle,
+	Eye,
+	EyeOff,
+	Loader2,
+	Lock,
+	LogIn,
+	Mail,
 } from "lucide-react";
-import { Button } from "~/components/ui/button";
+import { AnimatePresence, motion } from "motion/react";
+import { useCallback, useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { Link, useLocation, useNavigate } from "react-router";
+import { toast } from "sonner";
+import { z } from "zod";
+import { OAuthButtons } from "~/components/auth/OAuthButtons";
+import { useAuth } from "~/hooks/useAuth";
 import type { Route } from "../+types/root";
 
-
 export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "Login page" },
-    {
-      name: "description",
-      content:
-        "Tổng hợp các bài viết hay nhất về công nghệ, lập trình, chia sẻ kinh nghiệm và xu hướng mới từ cộng đồng. Tìm kiếm, lọc và khám phá nội dung phù hợp với bạn.",
-    },
-    {
-      name: "keywords",
-      content:
-        "blog, bài viết, lập trình, công nghệ, chia sẻ, kinh nghiệm, xu hướng",
-    },
-    { property: "og:title", content: "Blog cộng đồng - Bài viết mới nhất" },
-    {
-      property: "og:description",
-      content:
-        "Khám phá các bài viết nổi bật và xu hướng. Tìm kiếm theo chủ đề bạn yêu thích.",
-    },
-    { property: "og:type", content: "website" },
-  ];
+	return [
+		{ title: "Login - Blog Community" },
+		{
+			name: "description",
+			content: "Sign in to your account to access your personalized dashboard.",
+		},
+	];
 }
+
 const loginSchema = z.object({
-  email: z.string().email("Email không hợp lệ"),
-  password: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
-  rememberMe: z.boolean().optional(),
+	email: z
+		.string()
+		.min(1, "Email is required")
+		.email("Please enter a valid email address"),
+	password: z
+		.string()
+		.min(1, "Password is required")
+		.min(8, "Password must be at least 8 characters"),
+	rememberMe: z.boolean().optional(),
 });
 
 type LoginForm = z.infer<typeof loginSchema>;
 
+function FieldError({ message }: { message: string }) {
+	return (
+		<motion.p
+			initial={{ opacity: 0, y: -4 }}
+			animate={{ opacity: 1, y: 0 }}
+			exit={{ opacity: 0, y: -4 }}
+			className="mt-2 text-sm text-red-600 dark:text-red-400"
+			role="alert"
+		>
+			{message}
+		</motion.p>
+	);
+}
+
+function Banner({
+	type,
+	message,
+}: {
+	type: "error" | "success";
+	message: string;
+}) {
+	const isError = type === "error";
+	return (
+		<motion.div
+			initial={{ opacity: 0, y: -10 }}
+			animate={{ opacity: 1, y: 0 }}
+			exit={{ opacity: 0, y: -10 }}
+			className={`mb-6 p-4 rounded-lg border flex items-center gap-2 ${
+				isError
+					? "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
+					: "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800"
+			}`}
+		>
+			{isError ? (
+				<AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
+			) : (
+				<CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
+			)}
+			<p
+				className={`text-sm ${
+					isError
+						? "text-red-700 dark:text-red-400"
+						: "text-green-700 dark:text-green-400"
+				}`}
+			>
+				{message}
+			</p>
+		</motion.div>
+	);
+}
+
+function Divider({ label }: { label: string }) {
+	return (
+		<div className="relative my-8">
+			<div className="absolute inset-0 flex items-center">
+				<div className="w-full border-t border-slate-200 dark:border-slate-700" />
+			</div>
+			<div className="relative flex justify-center text-sm">
+				<span className="px-4 bg-slate-50 dark:bg-slate-900 text-slate-500 dark:text-slate-400">
+					{label}
+				</span>
+			</div>
+		</div>
+	);
+}
+
 export default function LoginPage() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { login, isAuthenticated, isLoading, error, clearError } = useAuth();
-  const [successMessage, setSuccessMessage] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+	const navigate = useNavigate();
+	const location = useLocation();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<LoginForm>({
-    resolver: zodResolver(loginSchema),
-  });
+	// Destructure only what's needed; assume clearError is stable (memoized in useAuth)
+	const { login, isAuthenticated, isLoading, error, clearError } = useAuth();
 
-  // Check for success message from registration or password reset
-  useEffect(() => {
-    if (location.state?.message) {
-      setSuccessMessage(location.state.message);
-      // Clear the message from location state
-      navigate(location.pathname, { replace: true, state: {} });
-    }
-  }, [location.state, navigate, location.pathname]);
+	const [feedback, setFeedback] = useState<{
+		type: "error" | "success";
+		message: string;
+	} | null>(null);
+	const [showPassword, setShowPassword] = useState(false);
 
-  // Redirect if already authenticated
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/", { replace: true });
-    }
-  }, [isAuthenticated, navigate]);
+	const {
+		register,
+		handleSubmit,
+		formState: { errors, isSubmitting, touchedFields },
+	} = useForm<LoginForm>({
+		resolver: zodResolver(loginSchema),
+		// onBlur triggers validation when user leaves a field.
+		// onChange re-validates after the first submission attempt or touch.
+		mode: "onBlur",
+		reValidateMode: "onChange",
+	});
 
-  // Clear error when component unmounts or when user starts typing
-  useEffect(() => {
-    return () => clearError();
-  }, [clearError]);
+	// Show one-time message passed via location state (e.g. post-registration).
+	// Guard with a ref-like check to avoid looping.
+	useEffect(() => {
+		const msg = location.state?.message as string | undefined;
+		const type =
+			(location.state?.type as "error" | "success" | undefined) ?? "success";
+		if (!msg) return;
 
-  const onSubmit = async (data: LoginForm) => {
-    clearError();
-    setSuccessMessage("");
+		setFeedback({ type, message: msg });
 
-    const result = await login(data);
+		if (type === "error") {
+			toast.error(msg);
+		} else {
+			toast.success(msg);
+		}
 
-    if (!result.success) {
-      // Error is handled by the useAuth hook
-      console.error("Login failed:", result.error);
-    }
-  };
+		// Clear the state so refreshing doesn't re-show the banner
+		navigate(location.pathname, { replace: true, state: null });
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []); // Intentionally run once on mount only
 
-  const onSwitchToRegister = () => {
-    navigate("/register");
-  };
+	// Redirect authenticated users away from the login page
+	useEffect(() => {
+		if (isAuthenticated) {
+			navigate("/", { replace: true });
+		}
+	}, [isAuthenticated, navigate]);
 
-  const handleOAuthSuccess = (user: any) => {
-    console.log('✅ OAuth login successful:', user);
-    // Navigation will be handled by the auth store effect
-  };
+	// Clear auth errors on unmount
+	useEffect(() => {
+		return () => {
+			clearError();
+		};
+	}, [clearError]);
 
-  const handleOAuthError = (error: string) => {
-    console.error('❌ OAuth login error:', error);
-    // Error will be displayed by the OAuthButtons component
-  };
+	const onSubmit = useCallback(
+		async (data: LoginForm) => {
+			clearError();
+			setFeedback(null);
 
-  return (
-    <div className="min-h-screen bg-slate-50 dark:bg-black flex ">
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 to-slate-800/90 z-10"></div>
-        <img
-          // src="https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop"
-          src="/login.jpg"
-          alt="Modern workspace"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="relative z-20 flex flex-col justify-center px-12 text-white dark:text-black">
-          <div className="max-w-md">
-            <div className="mb-8">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 backdrop-blur-sm rounded-2xl mb-6">
-                <Link to="/">
-                  <ChevronsRight className="h-5 w-5 text-white" />
-                </Link>
-              </div>
-            </div>
-            <h2 className="text-4xl font-bold mb-4 leading-tight text-white">
-              Welcome back to your workspace
-            </h2>
-            <p className="text-lg text-slate-300 leading-relaxed">
-              Sign in to access your personalized dashboard, manage your
-              projects, and collaborate with your team.
-            </p>
-            <div className="mt-12 space-y-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                  <svg
-                    className="w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-                <span className="text-slate-200">Secure authentication</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                  <svg
-                    className="w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-                <span className="text-slate-200">Fast and reliable</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                  <svg
-                    className="w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-                <span className="text-slate-200">24/7 support available</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+			const result = await login(data);
 
-      <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-12">
-        <div className="w-full max-w-md">
-          <div className="mb-8 lg:hidden text-center">
-            <div className="inline-flex items-center justify-center w-14 h-14 bg-slate-900 rounded-xl mb-4">
-              <LogIn className="w-7 h-7 text-white" />
-            </div>
-          </div>
+			if (result.success) {
+				toast.success("Welcome back!");
+				// Navigation is handled by the isAuthenticated effect above
+			} else {
+				toast.error(result.error ?? "Login failed. Please try again.");
+			}
+		},
+		[login, clearError],
+	);
 
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-slate-900 mb-2 dark:text-white">
-              Welcome Back
-            </h1>
-            <p className="text-slate-600">
-              Sign in to continue to your account
-            </p>
-          </div>
+	const handleOAuthSuccess = useCallback(() => {
+		toast.success("Welcome back!");
+		// Navigation handled by isAuthenticated effect
+	}, []);
 
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <div className="flex items-center">
-                <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
-                <p className="text-sm text-red-700">{error}</p>
-              </div>
-            </div>
-          )}
+	const handleOAuthError = useCallback((oauthError: string) => {
+		toast.error(oauthError || "OAuth login failed. Please try again.");
+	}, []);
 
-          {successMessage && (
-            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-              <div className="flex items-center">
-                <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
-                <p className="text-sm text-green-700">{successMessage}</p>
-              </div>
-            </div>
-          )}
+	// RHF tracks touched fields natively via formState.touchedFields
+	const shouldShowError = (field: keyof LoginForm) =>
+		Boolean(touchedFields[field] && errors[field]);
 
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="space-y-6"
-            noValidate
-          >
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-semibold text-slate-700 mb-2 dark:text-amber-50"
-              >
-                Email Address
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-slate-400" />
-                </div>
-                <input
-                  type="email"
-                  id="email"
-                  {...register("email")}
-                  className={`block w-full pl-10 pr-3 py-3 border  dark:text-amber-50${
-                    errors.email
-                      ? "border-red-300 focus:border-red-500 focus:ring-red-500"
-                      : "border-slate-300 focus:border-slate-500 focus:ring-slate-500"
-                  } rounded-lg focus:outline-none focus:ring-2 transition-colors`}
-                  placeholder="you@example.com"
-                  aria-label="Email Address"
-                  aria-invalid={errors.email ? "true" : "false"}
-                  aria-describedby={errors.email ? "email-error" : undefined}
-                />
-              </div>
-              {errors.email && (
-                <p
-                  id="email-error"
-                  className="mt-2 text-sm text-red-600"
-                  role="alert"
-                >
-                  {errors.email.message}
-                </p>
-              )}
-            </div>
+	// Disable the button while an async operation is in-flight.
+	// Prefer isSubmitting (RHF) as the primary signal; isLoading covers
+	// auth-store side-effects that happen after the promise resolves.
+	const isBusy = isSubmitting || isLoading;
 
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-semibold text-slate-700 mb-2  dark:text-amber-50"
-              >
-                Password
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-slate-400" />
-                </div>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  id="password"
-                  {...register("password")}
-                  className={`block w-full pl-10 pr-12 py-3 border ${
-                    errors.password
-                      ? "border-red-300 focus:border-red-500 focus:ring-red-500"
-                      : "border-slate-300 focus:border-slate-500 focus:ring-slate-500"
-                  } rounded-lg focus:outline-none focus:ring-2 transition-colors`}
-                  placeholder="••••••••"
-                  aria-label="Password"
-                  aria-invalid={errors.password ? "true" : "false"}
-                  aria-describedby={
-                    errors.password ? "password-error" : undefined
-                  }
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
-                </button>
-              </div>
-              {errors.password && (
-                <p
-                  id="password-error"
-                  className="mt-2 text-sm text-red-600"
-                  role="alert"
-                >
-                  {errors.password.message}
-                </p>
-              )}
-            </div>
+	// ── Render ────────────────────────────────────────────────────────────────
 
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="rememberMe"
-                  {...register("rememberMe")}
-                  className="h-4 w-4 text-slate-700 border-slate-300 rounded focus:ring-slate-500 focus:ring-2 transition-colors cursor-pointer"
-                  aria-label="Remember me"
-                />
-                <label
-                  htmlFor="rememberMe"
-                  className="ml-2 block text-sm text-slate-700 cursor-pointer"
-                >
-                  Remember me
-                </label>
-              </div>
-              <Link
-                to="/forgot-password"
-                className="text-sm font-semibold text-slate-700 hover:text-slate-900 transition-colors"
-              >
-                Forgot password?
-              </Link>
-            </div>
+	return (
+		<div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 flex">
+			{/* ── Left panel (desktop only) ───────────────────────────────────── */}
+			<div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+				<div className="absolute inset-0 bg-gradient-to-br from-slate-900/95 to-slate-800/95 z-10" />
+				<img
+					src="/login.jpg"
+					alt="Modern workspace"
+					className="absolute inset-0 w-full h-full object-cover"
+				/>
+				<div className="relative z-20 flex flex-col justify-center px-12 text-white">
+					<motion.div
+						initial={{ opacity: 0, y: 20 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.6 }}
+						className="max-w-md"
+					>
+						<div className="mb-8">
+							<div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 backdrop-blur-sm rounded-2xl mb-6">
+								<LogIn className="h-8 w-8 text-white" />
+							</div>
+						</div>
+						<h2 className="text-4xl font-bold mb-4 leading-tight text-white">
+							Welcome back to your workspace
+						</h2>
+						<p className="text-lg text-slate-300 leading-relaxed">
+							Sign in to access your personalized dashboard, manage your
+							projects, and collaborate with your team.
+						</p>
+						<div className="mt-12 space-y-4">
+							{[
+								"Secure authentication",
+								"Fast and reliable",
+								"24/7 support available",
+							].map((feature, index) => (
+								<motion.div
+									key={feature}
+									initial={{ opacity: 0, x: -20 }}
+									animate={{ opacity: 1, x: 0 }}
+									transition={{ duration: 0.6, delay: 0.2 + index * 0.1 }}
+									className="flex items-center space-x-3"
+								>
+									<div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+										<CheckCircle className="w-5 h-5 text-white" />
+									</div>
+									<span className="text-slate-200">{feature}</span>
+								</motion.div>
+							))}
+						</div>
+					</motion.div>
+				</div>
+			</div>
 
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-gradient-to-r from-slate-700 to-slate-900 text-white font-semibold py-3 px-4 rounded-lg hover:from-slate-800 hover:to-slate-950 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-              aria-label={isSubmitting ? "Signing in..." : "Sign in"}
-            >
-              {isSubmitting ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                  Signing in...
-                </>
-              ) : (
-                <>
-                  <LogIn className="w-5 h-5 mr-2" />
-                  Sign In
-                </>
-              )}
-            </button>
-          </form>
+			<div className="w-full lg:w-1/2 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+				<motion.div
+					initial={{ opacity: 0, y: 20 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.5 }}
+					className="w-full max-w-md"
+				>
+					{/* Mobile logo */}
+					<div className="mb-8 lg:hidden text-center">
+						<div className="inline-flex items-center justify-center w-14 h-14 bg-slate-900 dark:bg-white rounded-xl mb-4">
+							<LogIn className="w-7 h-7 text-white dark:text-slate-900" />
+						</div>
+					</div>
 
-          {/* OAuth Section */}
-          <div className="mt-8">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-200"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-slate-50 lg:bg-white text-slate-500 dark:bg-black dark:text-slate-400">
-                  Hoặc tiếp tục với
-                </span>
-              </div>
-            </div>
-            
-            <div className="mt-6">
-              <OAuthButtons 
-                onSuccess={handleOAuthSuccess}
-                onError={handleOAuthError}
-              />
-            </div>
-          </div>
+					{/* Heading */}
+					<div className="mb-8">
+						<h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-2">
+							Welcome Back
+						</h1>
+						<p className="text-slate-600 dark:text-slate-400">
+							Sign in to continue to your account
+						</p>
+					</div>
 
-          <div className="mt-8">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-200"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-slate-50 lg:bg-white text-slate-500 dark:bg-black dark:text-slate-400">
-                  Chưa có tài khoản?
-                </span>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={onSwitchToRegister}
-              className="mt-4 w-full bg-white dark:bg-gray-800 text-slate-700 dark:text-slate-300 font-semibold py-3 px-4 rounded-lg border-2 border-slate-200 dark:border-gray-600 hover:border-slate-300 dark:hover:border-gray-500 hover:bg-slate-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 transition-all duration-200"
-            >
-              Tạo tài khoản mới
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+					{/* Banners */}
+					<AnimatePresence>
+						{error && <Banner key="error" type="error" message={error} />}
+					</AnimatePresence>
+					<AnimatePresence>
+						{feedback && (
+							<Banner
+								key={feedback.type}
+								type={feedback.type}
+								message={feedback.message}
+							/>
+						)}
+					</AnimatePresence>
+
+					{/* Form */}
+					<form
+						onSubmit={handleSubmit(onSubmit)}
+						className="space-y-5"
+						noValidate
+					>
+						{/* Email */}
+						<div>
+							<label
+								htmlFor="email"
+								className="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2"
+							>
+								Email Address
+							</label>
+							<div className="relative">
+								<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+									<Mail className="h-5 w-5 text-slate-400" />
+								</div>
+								<input
+									type="email"
+									id="email"
+									{...register("email")}
+									className={`block w-full pl-10 pr-3 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 ${
+										shouldShowError("email")
+											? "border-red-300 focus:border-red-500 focus:ring-red-500"
+											: "border-slate-300 dark:border-slate-600 focus:border-slate-500 focus:ring-slate-500"
+									}`}
+									placeholder="you@example.com"
+									aria-label="Email Address"
+									aria-invalid={shouldShowError("email")}
+									aria-describedby={
+										shouldShowError("email") ? "email-error" : undefined
+									}
+								/>
+							</div>
+							<AnimatePresence>
+								{shouldShowError("email") && (
+									<FieldError message={errors.email!.message!} />
+								)}
+							</AnimatePresence>
+						</div>
+
+						{/* Password */}
+						<div>
+							<label
+								htmlFor="password"
+								className="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2"
+							>
+								Password
+							</label>
+							<div className="relative">
+								<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+									<Lock className="h-5 w-5 text-slate-400" />
+								</div>
+								<input
+									type={showPassword ? "text" : "password"}
+									id="password"
+									{...register("password")}
+									className={`block w-full pl-10 pr-12 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 ${
+										shouldShowError("password")
+											? "border-red-300 focus:border-red-500 focus:ring-red-500"
+											: "border-slate-300 dark:border-slate-600 focus:border-slate-500 focus:ring-slate-500"
+									}`}
+									placeholder="••••••••"
+									aria-label="Password"
+									aria-invalid={shouldShowError("password")}
+									aria-describedby={
+										shouldShowError("password") ? "password-error" : undefined
+									}
+								/>
+								<button
+									type="button"
+									onClick={() => setShowPassword((v) => !v)}
+									className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+									aria-label={showPassword ? "Hide password" : "Show password"}
+								>
+									{showPassword ? (
+										<EyeOff className="h-5 w-5" />
+									) : (
+										<Eye className="h-5 w-5" />
+									)}
+								</button>
+							</div>
+							<AnimatePresence>
+								{shouldShowError("password") && (
+									<FieldError message={errors.password!.message!} />
+								)}
+							</AnimatePresence>
+						</div>
+
+						{/* Remember me / Forgot password */}
+						<div className="flex items-center justify-between flex-wrap gap-2">
+							<div className="flex items-center">
+								<input
+									type="checkbox"
+									id="rememberMe"
+									{...register("rememberMe")}
+									className="h-4 w-4 text-slate-700 border-slate-300 rounded focus:ring-slate-500 focus:ring-2 transition-colors cursor-pointer"
+								/>
+								<label
+									htmlFor="rememberMe"
+									className="ml-2 block text-sm text-slate-700 dark:text-slate-300 cursor-pointer"
+								>
+									Remember me
+								</label>
+							</div>
+							<Link
+								to="/forgot-password"
+								className="text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
+							>
+								Forgot password?
+							</Link>
+						</div>
+
+						{/* Submit */}
+						<button
+							type="submit"
+							disabled={isBusy}
+							className="w-full bg-gradient-to-r from-slate-700 to-slate-900 dark:from-slate-200 dark:to-slate-400 text-white dark:text-slate-900 font-semibold py-3 px-4 rounded-lg hover:from-slate-800 hover:to-slate-950 dark:hover:from-slate-100 dark:hover:to-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+							aria-label={isBusy ? "Signing in…" : "Sign in"}
+						>
+							{isBusy ? (
+								<>
+									<Loader2 className="w-5 h-5 mr-2 animate-spin" />
+									Signing in…
+								</>
+							) : (
+								<>
+									<LogIn className="w-5 h-5 mr-2" />
+									Sign In
+								</>
+							)}
+						</button>
+					</form>
+
+					{/* OAuth */}
+					<Divider label="Or continue with" />
+					<OAuthButtons
+						onSuccess={handleOAuthSuccess}
+						onError={handleOAuthError}
+					/>
+
+					{/* Register CTA */}
+					<Divider label="Don't have an account?" />
+					<Link
+						to="/register"
+						className="block mt-4 w-full text-center bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold py-3 px-4 rounded-lg border-2 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 transition-all duration-200"
+					>
+						Create a new account
+					</Link>
+				</motion.div>
+			</div>
+		</div>
+	);
 }

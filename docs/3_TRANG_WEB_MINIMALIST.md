@@ -5,7 +5,7 @@
 Đã hoàn thành thiết kế và code cho 3 trang web với phong cách minimalist, hiện đại:
 
 1. **Trang Danh sách Bài viết** (`/articles`)
-2. **Trang Danh mục** (`/categories`)  
+2. **Trang Danh mục** (`/categories`)
 3. **Trang Meme Gallery** (`/memes`)
 
 ---
@@ -13,6 +13,7 @@
 ## 🎨 Thiết kế Minimalist
 
 ### Nguyên tắc Thiết kế
+
 - **Simplicity**: Loại bỏ mọi thứ không cần thiết
 - **Whitespace**: Sử dụng khoảng trắng hợp lý
 - **Typography**: Hierarchy rõ ràng, dễ đọc
@@ -20,6 +21,7 @@
 - **Animations**: Subtle, smooth, có mục đích
 
 ### Color Palette
+
 ```css
 /* Light Mode */
 Background: #f9fafb → #ffffff (gradient)
@@ -36,6 +38,7 @@ Border: #374151
 ```
 
 ### Typography Scale
+
 ```
 Heading 1: 2.25rem (36px) - 3rem (48px)
 Heading 2: 1.5rem (24px) - 2rem (32px)
@@ -49,16 +52,19 @@ Small: 0.75rem (12px)
 ## 📄 1. Trang Danh sách Bài viết
 
 ### File Location
+
 `app/routes/articles._index.tsx`
 
 ### Tính năng Chính
 
 #### ✅ Layout List Dọc (Medium-style)
+
 - Mỗi bài viết là một card ngang
 - Thumbnail bên trái (desktop) hoặc trên (mobile)
 - Content bên phải với đầy đủ thông tin
 
 #### ✅ Thông tin Hiển thị
+
 - **Thumbnail**: Hình đại diện bài viết
 - **Categories**: Badges với màu từ API
 - **Title**: Tiêu đề bài viết (line-clamp-2)
@@ -69,17 +75,20 @@ Small: 0.75rem (12px)
 - **Stats**: Views, Likes
 
 #### ✅ Pagination
+
 - Nút Previous/Next
 - Hiển thị số trang (tối đa 5)
 - Active state rõ ràng
 - Disabled state khi ở đầu/cuối
 
 #### ✅ Filter & Sort
+
 - **Sort**: Mới nhất / Xem nhiều nhất
 - **Category Filter**: Qua URL params
 - **Sticky Header**: Header dính khi scroll
 
 #### ✅ Hover Effects
+
 ```css
 Card hover:
 - Shadow: none → shadow-xl
@@ -89,6 +98,7 @@ Card hover:
 ```
 
 ### Code Structure
+
 ```typescript
 // Loader: Fetch data server-side
 export async function loader({ request }) {
@@ -106,6 +116,7 @@ export default function ArticlesIndex({ loaderData }) {
 ```
 
 ### Responsive Breakpoints
+
 ```
 Mobile:   < 640px  → Stack vertical, thumbnail full width
 Tablet:   640-1024px → Thumbnail left, content right
@@ -117,17 +128,20 @@ Desktop:  > 1024px → Max-width 1024px, centered
 ## 📂 2. Trang Danh mục
 
 ### File Location
+
 `app/routes/category.index.tsx`
 
 ### Tính năng Chính
 
 #### ✅ Grid Layout Responsive
+
 - 1 cột (mobile)
 - 2 cột (tablet)
 - 3 cột (desktop)
 - 4 cột (large desktop)
 
 #### ✅ Category Card Design
+
 - **Color Bar**: Thanh màu phía trên (8px height)
 - **Icon Area**: Icon với background màu nhạt
 - **Title**: Tên category
@@ -135,6 +149,7 @@ Desktop:  > 1024px → Max-width 1024px, centered
 - **Footer**: "Xem bài viết" + arrow icon
 
 #### ✅ Hover Effects
+
 ```css
 Card hover:
 - Shadow: none → shadow-2xl
@@ -145,12 +160,15 @@ Card hover:
 ```
 
 #### ✅ Color System
+
 Mỗi category có màu riêng từ API:
+
 - Color bar: backgroundColor
 - Icon background: backgroundColor với 20% opacity
 - Icon color: backgroundColor
 
 ### Code Structure
+
 ```typescript
 // Loader: Fetch categories
 export async function loader() {
@@ -161,7 +179,7 @@ export async function loader() {
 // Component: Render grid
 export default function CategoryIndex({ loaderData }) {
   const { categories } = loaderData;
-  
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {categories.map(category => (
@@ -173,6 +191,7 @@ export default function CategoryIndex({ loaderData }) {
 ```
 
 ### Interactions
+
 1. Click vào category → Navigate đến `/articles?category={slug}`
 2. Hover → Animations và effects
 3. Responsive → Grid tự động điều chỉnh
@@ -182,16 +201,19 @@ export default function CategoryIndex({ loaderData }) {
 ## 🎭 3. Trang Meme Gallery
 
 ### File Location
+
 `app/routes/memes._index.tsx`
 
 ### Tính năng Chính
 
 #### ✅ Grid Layout cho Images
+
 - Aspect ratio 1:1 (square)
 - Responsive columns (1-4)
 - Gap 24px giữa các items
 
 #### ✅ Infinite Scroll
+
 ```typescript
 // Sử dụng Intersection Observer
 useEffect(() => {
@@ -201,24 +223,27 @@ useEffect(() => {
         loadMoreMemes();
       }
     },
-    { threshold: 0.1 }
+    { threshold: 0.1 },
   );
-  
+
   if (observerTarget.current) {
     observer.observe(observerTarget.current);
   }
-  
+
   return () => observer.disconnect();
 }, [hasMore, loading, page]);
 ```
 
 #### ✅ Lazy Loading
+
 - Images: `loading="lazy"` attribute
 - Load khi scroll gần đến
 - Performance optimization
 
 #### ✅ Lightbox Viewer
+
 **Features**:
+
 - Full screen overlay
 - Click backdrop để đóng
 - Close button ở góc
@@ -226,16 +251,19 @@ useEffect(() => {
 - Info section với title, description, stats
 
 **Animations**:
+
 - Backdrop: Fade in
 - Content: Slide up + scale
 - Duration: 200-300ms
 
 #### ✅ Refresh Button
+
 - Icon với spin animation khi loading
 - Reload toàn bộ danh sách
 - Reset về page 0
 
 #### ✅ Hover Effects
+
 ```css
 Meme card hover:
 - Image: scale(1) → scale(1.1)
@@ -245,6 +273,7 @@ Meme card hover:
 ```
 
 ### Code Structure
+
 ```typescript
 // State management
 const [memes, setMemes] = useState<Meme[]>([]);
@@ -256,7 +285,7 @@ const [selectedMeme, setSelectedMeme] = useState<Meme | null>(null);
 // Infinite scroll logic
 const loadMoreMemes = async () => {
   const response = await getMemes(page + 1);
-  setMemes(prev => [...prev, ...response.content]);
+  setMemes((prev) => [...prev, ...response.content]);
   setPage(page + 1);
   setHasMore(!response.last);
 };
@@ -271,6 +300,7 @@ const handleRefresh = async () => {
 ```
 
 ### Components
+
 1. **MemeCard**: Grid item với image và info
 2. **Lightbox**: Modal viewer
 3. **LoadingIndicator**: Spinner khi loading
@@ -283,6 +313,7 @@ const handleRefresh = async () => {
 ### React Router v7 Features
 
 #### Server-Side Rendering (SSR)
+
 ```typescript
 // Loader function chạy trên server
 export async function loader({ request }: Route.LoaderArgs) {
@@ -299,16 +330,18 @@ export default function Page({ loaderData }: Route.ComponentProps) {
 ```
 
 #### Client-Side Navigation
+
 - Không reload page khi navigate
 - Smooth transitions
 - Preserve scroll position (optional)
 
 #### URL State Management
+
 ```typescript
 const [searchParams, setSearchParams] = useSearchParams();
 
 // Read params
-const page = searchParams.get('page');
+const page = searchParams.get("page");
 
 // Update params
 const updateParams = (key: string, value: string) => {
@@ -321,6 +354,7 @@ const updateParams = (key: string, value: string) => {
 ### Tailwind CSS v4
 
 #### Utility-First Approach
+
 ```tsx
 <div className="flex items-center gap-4 p-6 rounded-lg border border-gray-200 hover:shadow-xl transition-all">
   {/* Content */}
@@ -328,6 +362,7 @@ const updateParams = (key: string, value: string) => {
 ```
 
 #### Responsive Design
+
 ```tsx
 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
   {/* Items */}
@@ -335,6 +370,7 @@ const updateParams = (key: string, value: string) => {
 ```
 
 #### Dark Mode
+
 ```tsx
 <div className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
   {/* Content */}
@@ -344,6 +380,7 @@ const updateParams = (key: string, value: string) => {
 ### TypeScript Integration
 
 #### Type Safety
+
 ```typescript
 // Định nghĩa types
 interface Post {
@@ -357,6 +394,7 @@ const posts: Post[] = await postsApi.getPosts();
 ```
 
 #### API Response Types
+
 ```typescript
 interface PaginatedResponse<T> {
   content: T[];
@@ -372,6 +410,7 @@ interface PaginatedResponse<T> {
 ## 🚀 Performance Optimizations
 
 ### 1. Image Loading
+
 ```tsx
 // Lazy loading
 <img loading="lazy" src={url} alt={alt} />
@@ -383,6 +422,7 @@ interface PaginatedResponse<T> {
 ```
 
 ### 2. Infinite Scroll
+
 ```typescript
 // Efficient với Intersection Observer
 const observer = new IntersectionObserver(
@@ -391,12 +431,14 @@ const observer = new IntersectionObserver(
       loadMore();
     }
   },
-  { threshold: 0.1 }
+  { threshold: 0.1 },
 );
 ```
 
 ### 3. Code Splitting
+
 React Router tự động split code theo routes:
+
 ```
 articles._index.tsx → articles-chunk.js
 category.index.tsx → category-chunk.js
@@ -404,10 +446,11 @@ memes._index.tsx → memes-chunk.js
 ```
 
 ### 4. Caching
+
 ```typescript
 // React Query caching
 const { data } = useQuery({
-  queryKey: ['posts', page],
+  queryKey: ["posts", page],
   queryFn: () => postsApi.getPosts({ page }),
   staleTime: 5 * 60 * 1000, // 5 minutes
 });
@@ -418,6 +461,7 @@ const { data } = useQuery({
 ## 📱 Responsive Design Details
 
 ### Breakpoints
+
 ```
 sm:  640px  (Tablet portrait)
 md:  768px  (Tablet landscape)
@@ -427,6 +471,7 @@ xl:  1280px (Large desktop)
 ```
 
 ### Grid Columns by Device
+
 ```
 Articles:  1 col (all devices)
 Categories: 1 → 2 → 3 → 4 cols
@@ -434,6 +479,7 @@ Memes:     1 → 2 → 3 → 4 cols
 ```
 
 ### Touch Optimization
+
 - Larger tap targets (min 44x44px)
 - Swipe gestures support (native)
 - No hover states on touch devices
@@ -443,6 +489,7 @@ Memes:     1 → 2 → 3 → 4 cols
 ## ♿ Accessibility Features
 
 ### Semantic HTML
+
 ```tsx
 <article>  // Cho article cards
 <nav>      // Cho pagination
@@ -451,16 +498,19 @@ Memes:     1 → 2 → 3 → 4 cols
 ```
 
 ### Keyboard Navigation
+
 - Tab order hợp lý
 - Focus states rõ ràng
 - Enter/Space để activate
 
 ### Screen Reader Support
+
 - Aria labels khi cần
 - Semantic structure
 - Alt text đầy đủ
 
 ### Color Contrast
+
 - WCAG AA compliant
 - Text contrast ratio > 4.5:1
 - Interactive elements contrast > 3:1
@@ -472,6 +522,7 @@ Memes:     1 → 2 → 3 → 4 cols
 ### Thay đổi số items per page
 
 **Articles:**
+
 ```typescript
 // Trong loader function
 const params: GetPostsParams = {
@@ -480,6 +531,7 @@ const params: GetPostsParams = {
 ```
 
 **Memes:**
+
 ```typescript
 // Trong getMemes call
 const response = await getMemes(page, 20); // Thay đổi size
@@ -488,14 +540,16 @@ const response = await getMemes(page, 20); // Thay đổi size
 ### Thay đổi màu chủ đạo
 
 **Tailwind classes:**
+
 ```tsx
 // Từ gray sang blue
-className="bg-gray-900 hover:bg-gray-800"
+className = "bg-gray-900 hover:bg-gray-800";
 // Thành
-className="bg-blue-600 hover:bg-blue-700"
+className = "bg-blue-600 hover:bg-blue-700";
 ```
 
 **CSS variables:**
+
 ```css
 :root {
   --primary: #3b82f6;
@@ -506,18 +560,24 @@ className="bg-blue-600 hover:bg-blue-700"
 ### Thay đổi animations
 
 **Duration:**
+
 ```tsx
 // Từ
-className="transition-all duration-300"
+className = "transition-all duration-300";
 // Thành
-className="transition-all duration-500"
+className = "transition-all duration-500";
 ```
 
 **Custom animations:**
+
 ```css
 @keyframes customFade {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .custom-fade {
@@ -528,17 +588,19 @@ className="transition-all duration-500"
 ### Thay đổi grid layout
 
 **Columns:**
+
 ```tsx
 // Từ
-className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+className = "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
 // Thành
-className="grid-cols-2 md:grid-cols-3 lg:grid-cols-5"
+className = "grid-cols-2 md:grid-cols-3 lg:grid-cols-5";
 ```
 
 **Gap:**
+
 ```tsx
 // Từ gap-6 (24px) sang gap-8 (32px)
-className="grid gap-8"
+className = "grid gap-8";
 ```
 
 ---
@@ -548,6 +610,7 @@ className="grid gap-8"
 ### Manual Testing Checklist
 
 #### Trang Articles
+
 - [ ] Load danh sách bài viết
 - [ ] Pagination hoạt động
 - [ ] Sort by newest/views
@@ -557,6 +620,7 @@ className="grid gap-8"
 - [ ] Responsive trên mobile/tablet/desktop
 
 #### Trang Categories
+
 - [ ] Load tất cả categories
 - [ ] Grid responsive đúng
 - [ ] Hover effects hoạt động
@@ -565,6 +629,7 @@ className="grid gap-8"
 - [ ] Empty state (nếu không có category)
 
 #### Trang Memes
+
 - [ ] Load memes ban đầu
 - [ ] Infinite scroll khi scroll xuống
 - [ ] Click meme → mở lightbox
@@ -574,6 +639,7 @@ className="grid gap-8"
 - [ ] End message khi hết memes
 
 ### Browser Testing
+
 ```
 ✅ Chrome (latest)
 ✅ Firefox (latest)
@@ -582,6 +648,7 @@ className="grid gap-8"
 ```
 
 ### Device Testing
+
 ```
 ✅ iPhone (375px)
 ✅ iPad (768px)
@@ -590,6 +657,7 @@ className="grid gap-8"
 ```
 
 ### Performance Testing
+
 ```bash
 # Lighthouse audit
 npm run build
@@ -602,6 +670,7 @@ npx serve build
 ## 📦 Files Created
 
 ### Routes
+
 ```
 app/routes/articles._index.tsx    # Trang danh sách bài viết
 app/routes/category.index.tsx     # Trang danh mục
@@ -609,11 +678,13 @@ app/routes/memes._index.tsx       # Trang meme gallery
 ```
 
 ### Styles
+
 ```
 app/styles/pages.css              # Custom CSS cho 3 trang
 ```
 
 ### Documentation
+
 ```
 docs/HUONG_DAN_CAI_DAT.md        # Hướng dẫn cài đặt
 docs/THIET_KE_3_TRANG.md         # Chi tiết thiết kế
@@ -621,6 +692,7 @@ docs/3_TRANG_WEB_MINIMALIST.md   # Tài liệu tổng hợp (file này)
 ```
 
 ### Updated Files
+
 ```
 app/routes.ts                     # Thêm route cho articles
 app/root.tsx                      # Import pages.css
@@ -631,22 +703,27 @@ app/root.tsx                      # Import pages.css
 ## 🎯 Quick Start
 
 ### 1. Cài đặt
+
 ```bash
 npm install
 ```
 
 ### 2. Cấu hình
+
 Tạo file `.env`:
+
 ```env
 VITE_API_BASE_URL=http://localhost:8080/api
 ```
 
 ### 3. Chạy Development
+
 ```bash
 npm run dev
 ```
 
 ### 4. Truy cập các trang
+
 ```
 Articles:   http://localhost:5173/articles
 Categories: http://localhost:5173/categories
@@ -658,21 +735,26 @@ Memes:      http://localhost:5173/memes
 ## 🐛 Troubleshooting
 
 ### Lỗi: "Cannot read property 'content' of undefined"
+
 **Nguyên nhân**: API không trả về đúng format
 **Giải pháp**: Kiểm tra API response structure
 
 ### Lỗi: Images không load
+
 **Nguyên nhân**: CORS hoặc URL không hợp lệ
-**Giải pháp**: 
+**Giải pháp**:
+
 - Kiểm tra CORS headers
 - Verify image URLs
 - Check network tab
 
 ### Lỗi: Infinite scroll không hoạt động
+
 **Nguyên nhân**: Browser không hỗ trợ Intersection Observer
 **Giải pháp**: Thêm polyfill hoặc fallback
 
 ### Lỗi: Dark mode không hoạt động
+
 **Nguyên nhân**: Theme store chưa được init
 **Giải pháp**: Kiểm tra themeStore setup
 
@@ -681,24 +763,28 @@ Memes:      http://localhost:5173/memes
 ## 🎨 Design Decisions
 
 ### Tại sao chọn List layout cho Articles?
+
 - Dễ đọc hơn grid
 - Hiển thị nhiều thông tin hơn
 - Tương tự Medium - UX quen thuộc
 - Mobile-friendly
 
 ### Tại sao chọn Grid layout cho Categories?
+
 - Visual hierarchy tốt
 - Dễ scan và tìm kiếm
 - Tận dụng màu sắc
 - Scalable với nhiều categories
 
 ### Tại sao chọn Infinite Scroll cho Memes?
+
 - UX tốt cho image gallery
 - Không cần click pagination
 - Smooth browsing experience
 - Mobile-friendly
 
 ### Tại sao dùng Tailwind CSS?
+
 - Utility-first → Fast development
 - Responsive built-in
 - Dark mode support
@@ -710,6 +796,7 @@ Memes:      http://localhost:5173/memes
 ## 📈 Future Enhancements
 
 ### Phase 2 - Có thể thêm
+
 1. **Search**: Full-text search cho articles
 2. **Filters**: Advanced filters (date range, author)
 3. **Bookmarks**: Save favorite articles/memes
@@ -718,6 +805,7 @@ Memes:      http://localhost:5173/memes
 6. **Reactions**: Like, love, laugh reactions
 
 ### Phase 3 - Advanced Features
+
 1. **Personalization**: Recommended articles
 2. **Analytics**: View tracking, engagement metrics
 3. **PWA**: Offline support
@@ -729,17 +817,20 @@ Memes:      http://localhost:5173/memes
 ## 📚 Resources
 
 ### Documentation
+
 - [React Router v7](https://reactrouter.com)
 - [Tailwind CSS v4](https://tailwindcss.com)
 - [Lucide Icons](https://lucide.dev)
 - [date-fns](https://date-fns.org)
 
 ### Design Inspiration
+
 - [Medium](https://medium.com) - Article list layout
 - [Dribbble](https://dribbble.com) - Category cards
 - [Unsplash](https://unsplash.com) - Image gallery
 
 ### Tools
+
 - [Figma](https://figma.com) - Design mockups
 - [Chrome DevTools](https://developer.chrome.com/docs/devtools) - Debugging
 - [Lighthouse](https://developers.google.com/web/tools/lighthouse) - Performance audit
@@ -749,6 +840,7 @@ Memes:      http://localhost:5173/memes
 ## ✅ Checklist Hoàn thành
 
 ### Code
+
 - [x] Trang Articles với list layout
 - [x] Trang Categories với grid layout
 - [x] Trang Memes với infinite scroll
@@ -761,6 +853,7 @@ Memes:      http://localhost:5173/memes
 - [x] Comments tiếng Việt
 
 ### Documentation
+
 - [x] Hướng dẫn cài đặt
 - [x] Chi tiết thiết kế
 - [x] Code structure explanation
@@ -768,6 +861,7 @@ Memes:      http://localhost:5173/memes
 - [x] Troubleshooting guide
 
 ### Styling
+
 - [x] Minimalist design
 - [x] Neutral color palette
 - [x] Smooth animations

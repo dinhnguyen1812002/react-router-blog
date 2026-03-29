@@ -5,6 +5,7 @@
 All frontend code is complete and working correctly.
 
 ### What's Done
+
 - [x] Token stored in memory only (not localStorage)
 - [x] Refresh token in HttpOnly cookie
 - [x] User info fetched from `/user/profile`
@@ -13,6 +14,7 @@ All frontend code is complete and working correctly.
 - [x] Debug logging for troubleshooting
 
 ### Files Modified
+
 - `app/store/authStore.ts` - Memory-only storage
 - `app/hooks/useAuthInit.ts` - Check for refresh token cookie, fetch user profile
 - `app/hooks/useAuth.ts` - Updated for new store
@@ -28,6 +30,7 @@ All frontend code is complete and working correctly.
 Your `/auth/refresh-token` endpoint is returning 401 because it requires authentication.
 
 **Error:**
+
 ```
 401 Unauthorized
 "Full authentication is required to access this resource"
@@ -38,11 +41,13 @@ Your `/auth/refresh-token` endpoint is returning 401 because it requires authent
 Make `/auth/refresh-token` endpoint **public** (no authentication required).
 
 **In Spring Security config:**
+
 ```java
 .antMatchers("/api/v1/auth/refresh-token").permitAll()
 ```
 
 **Remove from endpoint:**
+
 ```java
 @PostMapping("/refresh-token")
 // ← Remove @Secured or @PreAuthorize
@@ -98,14 +103,14 @@ curl -X POST http://localhost:8080/api/v1/auth/refresh-token \
 
 ## Documentation
 
-| Document | Purpose |
-|----------|---------|
-| `FIX_401_REFRESH_ENDPOINT.md` | Quick fix for 401 error |
+| Document                       | Purpose                         |
+| ------------------------------ | ------------------------------- |
+| `FIX_401_REFRESH_ENDPOINT.md`  | Quick fix for 401 error         |
 | `BACKEND_REFRESH_TOKEN_FIX.md` | Complete backend implementation |
-| `AUTH_README.md` | Main documentation |
-| `AUTHENTICATION_REFACTOR.md` | Detailed explanation |
-| `BACKEND_AUTH_SETUP.md` | Full backend setup guide |
-| `TEST_REFRESH_TOKEN.md` | Testing guide |
+| `AUTH_README.md`               | Main documentation              |
+| `AUTHENTICATION_REFACTOR.md`   | Detailed explanation            |
+| `BACKEND_AUTH_SETUP.md`        | Full backend setup guide        |
+| `TEST_REFRESH_TOKEN.md`        | Testing guide                   |
 
 ## Next Steps
 
@@ -117,10 +122,13 @@ curl -X POST http://localhost:8080/api/v1/auth/refresh-token \
 
 ```javascript
 // After fixing backend, run:
-import { authApi } from '~/api/auth';
-authApi.refreshToken()
-  .then(r => console.log('✅ Success:', r))
-  .catch(e => console.error('❌ Error:', e.response?.status, e.response?.data));
+import { authApi } from "~/api/auth";
+authApi
+  .refreshToken()
+  .then((r) => console.log("✅ Success:", r))
+  .catch((e) =>
+    console.error("❌ Error:", e.response?.status, e.response?.data),
+  );
 
 // Should return: { accessToken: "eyJhbGc..." }
 ```

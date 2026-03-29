@@ -3,6 +3,7 @@
 ## Overview
 
 This authentication system uses industry best practices:
+
 - **Access Token**: Stored in memory (Zustand state) - NOT in localStorage
 - **Refresh Token**: Stored in HttpOnly Secure Cookie - JavaScript cannot access
 - **User Info**: Fetched from `/user/profile` endpoint, stored in memory
@@ -11,12 +12,12 @@ This authentication system uses industry best practices:
 
 ### Security Benefits
 
-| Threat | Old Way | New Way |
-|--------|---------|---------|
-| XSS Attack | Token stolen from localStorage | Token safe in memory |
-| CSRF Attack | Weak protection | Strong (HttpOnly cookie) |
-| Token Exposure | Visible in DevTools | Not visible to JavaScript |
-| Refresh Token | Vulnerable to XSS | Protected by HttpOnly flag |
+| Threat         | Old Way                        | New Way                    |
+| -------------- | ------------------------------ | -------------------------- |
+| XSS Attack     | Token stolen from localStorage | Token safe in memory       |
+| CSRF Attack    | Weak protection                | Strong (HttpOnly cookie)   |
+| Token Exposure | Visible in DevTools            | Not visible to JavaScript  |
+| Refresh Token  | Vulnerable to XSS              | Protected by HttpOnly flag |
 
 ### How It Works
 
@@ -84,13 +85,13 @@ export function MyComponent() {
 ### Checking Auth State
 
 ```typescript
-import { useAuthStore } from '~/store/authStore';
+import { useAuthStore } from "~/store/authStore";
 
 // In component
 const { user, token, isAuthenticated } = useAuthStore();
 
 // In console
-import { useAuthStore } from '~/store/authStore';
+import { useAuthStore } from "~/store/authStore";
 useAuthStore.getState();
 ```
 
@@ -99,6 +100,7 @@ useAuthStore.getState();
 ### Required Endpoints
 
 #### 1. Login
+
 ```
 POST /auth/login
 Body: { email, password }
@@ -107,6 +109,7 @@ Cookie: refreshToken (HttpOnly)
 ```
 
 #### 2. Refresh Token
+
 ```
 POST /auth/refresh-token
 Body: (empty)
@@ -115,6 +118,7 @@ Cookie: refreshToken (HttpOnly, optional rotation)
 ```
 
 #### 3. Get Profile
+
 ```
 GET /user/profile
 Headers: Authorization: Bearer {accessToken}
@@ -122,6 +126,7 @@ Response: { id, username, email, roles, avatar, ... }
 ```
 
 #### 4. Logout
+
 ```
 POST /auth/logout
 Headers: Authorization: Bearer {accessToken}
@@ -131,53 +136,55 @@ Cookie: refreshToken (cleared)
 ### Backend Setup (Express.js)
 
 ```typescript
-import express from 'express';
-import cors from 'cors';
-import cookieParser from 'cookie-parser';
-import jwt from 'jsonwebtoken';
+import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import jwt from "jsonwebtoken";
 
 const app = express();
 
 // Middleware - ORDER MATTERS
-app.use(cors({
-  origin: 'http://localhost:5173',
-  credentials: true,  // ← CRITICAL
-}));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true, // ← CRITICAL
+  }),
+);
 app.use(express.json());
-app.use(cookieParser());  // ← Must be before routes
+app.use(cookieParser()); // ← Must be before routes
 
 // Login endpoint
-app.post('/api/v1/auth/login', async (req, res) => {
+app.post("/api/v1/auth/login", async (req, res) => {
   const { email, password } = req.body;
-  
+
   // Validate credentials...
   const user = await User.findOne({ email });
-  if (!user || !await user.comparePassword(password)) {
-    return res.status(401).json({ message: 'Invalid credentials' });
+  if (!user || !(await user.comparePassword(password))) {
+    return res.status(401).json({ message: "Invalid credentials" });
   }
-  
+
   // Generate tokens
   const accessToken = jwt.sign(
     { id: user.id, email: user.email },
     process.env.JWT_SECRET,
-    { expiresIn: '15m' }
+    { expiresIn: "15m" },
   );
-  
+
   const refreshToken = jwt.sign(
-    { id: user.id, type: 'refresh' },
+    { id: user.id, type: "refresh" },
     process.env.REFRESH_TOKEN_SECRET,
-    { expiresIn: '7d' }
+    { expiresIn: "7d" },
   );
-  
+
   // Set refresh token cookie
-  res.cookie('refreshToken', refreshToken, {
+  res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
-    path: '/',
-    maxAge: 7 * 24 * 60 * 60 * 1000
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    path: "/",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
   });
-  
+
   // Return access token in response
   res.json({
     accessToken,
@@ -186,72 +193,72 @@ app.post('/api/v1/auth/login', async (req, res) => {
       username: user.username,
       email: user.email,
       roles: user.roles,
-      avatar: user.avatar
-    }
+      avatar: user.avatar,
+    },
   });
 });
 
 // Refresh token endpoint
-app.post('/api/v1/auth/refresh-token', (req, res) => {
+app.post("/api/v1/auth/refresh-token", (req, res) => {
   const refreshToken = req.cookies.refreshToken;
-  
+
   if (!refreshToken) {
-    return res.status(401).json({ message: 'No refresh token' });
+    return res.status(401).json({ message: "No refresh token" });
   }
-  
+
   try {
     const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-    
+
     const newAccessToken = jwt.sign(
       { id: decoded.id, email: decoded.email },
       process.env.JWT_SECRET,
-      { expiresIn: '15m' }
+      { expiresIn: "15m" },
     );
-    
+
     res.json({ accessToken: newAccessToken });
   } catch (error) {
-    res.status(401).json({ message: 'Invalid refresh token' });
+    res.status(401).json({ message: "Invalid refresh token" });
   }
 });
 
 // Get profile endpoint
-app.get('/api/v1/user/profile', verifyAccessToken, async (req, res) => {
+app.get("/api/v1/user/profile", verifyAccessToken, async (req, res) => {
   const user = await User.findById(req.user.id);
   res.json({
     id: user.id,
     username: user.username,
     email: user.email,
     roles: user.roles,
-    avatar: user.avatar
+    avatar: user.avatar,
   });
 });
 
 // Logout endpoint
-app.post('/api/v1/auth/logout', verifyAccessToken, (req, res) => {
-  res.clearCookie('refreshToken', {
+app.post("/api/v1/auth/logout", verifyAccessToken, (req, res) => {
+  res.clearCookie("refreshToken", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
-    path: '/'
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    path: "/",
   });
-  res.json({ message: 'Logged out' });
+  res.json({ message: "Logged out" });
 });
 
 // Middleware to verify access token
 function verifyAccessToken(req, res, next) {
   const authHeader = req.headers.authorization;
-  const token = authHeader?.split(' ')[1];
-  
+  const token = authHeader?.split(" ")[1];
+
   if (!token) {
-    return res.status(401).json({ message: 'No token' });
+    return res.status(401).json({ message: "No token" });
   }
-  
+
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
     next();
   } catch (error) {
-    res.status(401).json({ message: 'Invalid token' });
+    res.status(401).json({ message: "Invalid token" });
   }
 }
 
@@ -264,30 +271,33 @@ app.listen(8080);
 
 ```javascript
 // Check token is in memory, not localStorage
-import { useAuthStore } from '~/store/authStore';
+import { useAuthStore } from "~/store/authStore";
 const state = useAuthStore.getState();
-console.log('Token:', state.token);
-console.log('User:', state.user);
-console.log('localStorage token:', localStorage.getItem('token'));  // Should be null
+console.log("Token:", state.token);
+console.log("User:", state.user);
+console.log("localStorage token:", localStorage.getItem("token")); // Should be null
 
 // Check cookie exists
-console.log('Cookies:', document.cookie);  // Should show refreshToken
+console.log("Cookies:", document.cookie); // Should show refreshToken
 
 // Test refresh manually
-import { authApi } from '~/api/auth';
-authApi.refreshToken()
-  .then(r => console.log('✅ Refresh successful:', r))
-  .catch(e => console.error('❌ Refresh failed:', e.response?.status));
+import { authApi } from "~/api/auth";
+authApi
+  .refreshToken()
+  .then((r) => console.log("✅ Refresh successful:", r))
+  .catch((e) => console.error("❌ Refresh failed:", e.response?.status));
 ```
 
 ### DevTools Network Tab
 
 1. **Login request** → Response Headers should have:
+
    ```
    Set-Cookie: refreshToken=...; HttpOnly; Secure; SameSite=Strict
    ```
 
 2. **Any API request** → Request Headers should have:
+
    ```
    Authorization: Bearer {accessToken}
    Cookie: refreshToken=...
@@ -307,16 +317,18 @@ See `docs/TEST_REFRESH_TOKEN.md` for complete testing guide.
 ### 401 on Refresh Token Endpoint
 
 **Most Common Causes:**
+
 1. CORS not allowing credentials
 2. Cookie parser middleware not loaded
 3. Refresh token cookie not being set
 4. Refresh token expired
 
 **Quick Fix:**
+
 ```typescript
 // Backend
-app.use(cors({ credentials: true }));  // ← Add this
-app.use(cookieParser());  // ← Add this before routes
+app.use(cors({ credentials: true })); // ← Add this
+app.use(cookieParser()); // ← Add this before routes
 ```
 
 See `docs/QUICK_FIX_401.md` for detailed troubleshooting.
@@ -335,25 +347,27 @@ See `docs/QUICK_FIX_401.md` for detailed troubleshooting.
 
 ## Documentation
 
-| Document | Purpose |
-|----------|---------|
-| `AUTHENTICATION_REFACTOR.md` | Detailed explanation of changes |
-| `BACKEND_AUTH_SETUP.md` | Complete backend implementation guide |
-| `AUTH_MIGRATION_SUMMARY.md` | Summary of what changed |
-| `QUICK_FIX_401.md` | Quick reference for common issues |
-| `TEST_REFRESH_TOKEN.md` | Testing and debugging guide |
-| `REFRESH_TOKEN_401_FIX.md` | Detailed 401 troubleshooting |
-| `IMPLEMENTATION_CHECKLIST.md` | Implementation checklist |
+| Document                      | Purpose                               |
+| ----------------------------- | ------------------------------------- |
+| `AUTHENTICATION_REFACTOR.md`  | Detailed explanation of changes       |
+| `BACKEND_AUTH_SETUP.md`       | Complete backend implementation guide |
+| `AUTH_MIGRATION_SUMMARY.md`   | Summary of what changed               |
+| `QUICK_FIX_401.md`            | Quick reference for common issues     |
+| `TEST_REFRESH_TOKEN.md`       | Testing and debugging guide           |
+| `REFRESH_TOKEN_401_FIX.md`    | Detailed 401 troubleshooting          |
+| `IMPLEMENTATION_CHECKLIST.md` | Implementation checklist              |
 
 ## Environment Variables
 
 ### Frontend (.env)
+
 ```
 VITE_API_BASE_URL=http://localhost:8080/api/v1
 VITE_WS_URL=http://localhost:8080/ws
 ```
 
 ### Backend (.env)
+
 ```
 JWT_SECRET=your-secret-key
 REFRESH_TOKEN_SECRET=your-refresh-secret
@@ -384,6 +398,7 @@ FRONTEND_URL=http://localhost:5173
 ## Support
 
 For issues or questions:
+
 1. Check relevant documentation file
 2. Run test script from `docs/TEST_REFRESH_TOKEN.md`
 3. Check browser DevTools Network tab

@@ -1,198 +1,197 @@
-import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { Link, useNavigate } from "react-router";
-
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import { commentsApi } from "~/api/comments";
 import { useAuthStore } from "~/store/authStore";
-import { Button } from "../ui/button";
 import type { Comment as CommentType } from "~/types";
 
+// ─── Types ────────────────────────────────────────────────────────────────────
+
 interface CommentFormProps {
-  postId: string;
-  parentCommentId?: string | null;
-  onCancel?: () => void;
-  onCommentAdded?: (comment: CommentType) => void;
-  placeholder?: string;
+	postId: string;
+	parentCommentId?: string | null;
+	onCancel?: () => void;
+	onCommentAdded?: (comment: CommentType) => void;
+	placeholder?: string;
 }
 
+// ─── localStorage helpers ─────────────────────────────────────────────────────
+
+// ✅ js-cache-storage: Wrap localStorage reads/writes in helpers so the
+//    JSON parse/stringify and try/catch aren't scattered across the component.
+const PENDING_KEY = "pendingComment";
+
+interface PendingPayload {
+	content: string;
+	postId: string;
+	parentCommentId?: string | null;
+	timestamp: number;
+}
+
+const readPending = (): PendingPayload | null => {
+	try {
+		const raw = localStorage.getItem(PENDING_KEY);
+		return raw ? (JSON.parse(raw) as PendingPayload) : null;
+	} catch {
+		localStorage.removeItem(PENDING_KEY);
+		return null;
+	}
+};
+
+const writePending = (payload: PendingPayload) => {
+	localStorage.setItem(PENDING_KEY, JSON.stringify(payload));
+};
+
+const clearPending = () => localStorage.removeItem(PENDING_KEY);
+
+const PENDING_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
 export const CommentForm = ({
-  postId,
-  parentCommentId,
-  onCancel,
-  onCommentAdded,
-  placeholder = "Viết bình luận...",
+	postId,
+	parentCommentId = null,
+	onCancel,
+	onCommentAdded,
+	placeholder = "Viết bình luận...",
 }: CommentFormProps) => {
-  const [content, setContent] = useState("");
-  const [pendingComment, setPendingComment] = useState<string | null>(null);
-  const { user, isAuthenticated } = useAuthStore();
-  const navigate = useNavigate();
+	const [content, setContent] = useState("");
+	const [hasPending, setHasPending] = useState(false);
+	const { user, isAuthenticated } = useAuthStore();
+	const navigate = useNavigate();
 
-  const createCommentMutation = useMutation({
-    mutationFn: (data: { content: string; parentCommentId?: string | null }) =>
-      commentsApi.createComment(postId, data),
-    onSuccess: (response) => {
-    
+	// Restore pending comment after login
+	useEffect(() => {
+		if (!isAuthenticated) return;
+		const pending = readPending();
+		if (
+			pending &&
+			pending.postId === postId &&
+			pending.parentCommentId === parentCommentId &&
+			Date.now() - pending.timestamp < PENDING_TTL_MS
+		) {
+			setContent(pending.content);
+			setHasPending(true);
+		} else {
+			clearPending();
+		}
+	}, [isAuthenticated, postId, parentCommentId]);
 
-      // Handle different response formats
-      let newComment: CommentType = response;
-      if (response && typeof response === 'object') {
-        // If response has data property, use it
-        if ('data' in response && response.data) {
-          newComment = response.data as CommentType;
-        }
-        // If response is already the comment object, use it directly
-        else if ('id' in response && 'content' in response) {
-          newComment = response as CommentType;
-        }
-      }
+	const mutation = useMutation({
+		mutationFn: (text: string) =>
+			commentsApi.createComment(postId, { content: text, parentCommentId }),
+		onSuccess: (newComment) => {
+			setContent("");
+			setHasPending(false);
+			clearPending();
+			onCancel?.();
 
-      setContent("");
-      setPendingComment(null);
-      onCancel?.();
+			onCommentAdded?.(newComment);
+		},
+	});
 
-      // Only call onCommentAdded if we have a valid comment object
-      if (newComment && newComment.id) {
-        // Add a small delay to prevent race condition with WebSocket
-        setTimeout(() => {
-          onCommentAdded?.(newComment);
-        }, 100);
-      } else {
-        console.warn('Invalid comment response format:', response);
-        // Optionally refresh the page or show a success message
-        window.location.reload();
-      }
+	const handleSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
+		const trimmed = content.trim();
+		if (!trimmed) return;
 
-      // Clear pending comment from localStorage
-      localStorage.removeItem('pendingComment');
-    },
-    onError: (error) => {
-      console.error('Create comment error:', error);
-      // Show user-friendly error message
-    }
-  });
+		if (!isAuthenticated) {
+			writePending({
+				content: trimmed,
+				postId,
+				parentCommentId,
+				timestamp: Date.now(),
+			});
+			navigate("/login", {
+				state: {
+					message: "Vui lòng đăng nhập để bình luận",
+					returnUrl: window.location.pathname,
+				},
+			});
+			return;
+		}
 
-  // Check for pending comment when user becomes authenticated
-  useEffect(() => {
-    if (isAuthenticated && !pendingComment) {
-      const stored = localStorage.getItem('pendingComment');
-      if (stored) {
-        try {
-          const pendingData = JSON.parse(stored);
-          // Check if it's for this post and not too old (5 minutes)
-          if (pendingData.postId === postId &&
-            pendingData.parentCommentId === parentCommentId &&
-            Date.now() - pendingData.timestamp < 5 * 60 * 1000) {
-            setContent(pendingData.content);
-            setPendingComment(pendingData.content);
-          } else {
-            // Remove old pending comment
-            localStorage.removeItem('pendingComment');
-          }
-        } catch (error) {
-          console.error('Error parsing pending comment:', error);
-          localStorage.removeItem('pendingComment');
-        }
-      }
-    }
-  }, [isAuthenticated, postId, parentCommentId, pendingComment]);
+		mutation.mutate(trimmed);
+	};
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!content.trim()) return;
+	const charLimit = 2000;
+	const charCount = content.length;
+	const nearLimit = charCount > charLimit * 0.85;
 
-    // Nếu chưa đăng nhập, lưu comment và redirect đến login
-    if (!isAuthenticated) {
-      setPendingComment(content.trim());
-      // Lưu vào localStorage để restore sau khi login
-      localStorage.setItem('pendingComment', JSON.stringify({
-        content: content.trim(),
-        postId,
-        parentCommentId,
-        timestamp: Date.now()
-      }));
-      navigate('/login', {
-        state: {
-          message: 'Vui lòng đăng nhập để bình luận',
-          returnUrl: window.location.pathname
-        }
-      });
-      return;
-    }
+	return (
+		<div className="space-y-2">
+			{/* Pending notice */}
+			{hasPending && (
+				<p className="text-[11px] text-amber-500 dark:text-amber-400 flex items-center gap-1">
+					<span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+					Đã khôi phục bình luận đang chờ gửi
+				</p>
+			)}
 
-    // Debug: Check token before submitting
-    const { token } = useAuthStore.getState();
-    console.log('🔍 Submitting comment with:', {
-      isAuthenticated,
-      hasToken: !!token,
-      user: user?.username,
-      postId,
-      parentCommentId,
-      content: content.trim()
-    });
+			{/* Error */}
+			{mutation.error && (
+				<p className="text-[11px] text-red-500">{mutation.error.message}</p>
+			)}
 
-    createCommentMutation.mutate({
-      content: content.trim(),
-      parentCommentId,
-    });
-  };
+			<form onSubmit={handleSubmit} className="group">
+				<div className="relative rounded-xl border border-border bg-card transition-all duration-200 focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/10">
+					<textarea
+						value={content}
+						onChange={(e) => setContent(e.target.value.slice(0, charLimit))}
+						placeholder={
+							isAuthenticated
+								? placeholder
+								: `${placeholder} — bạn sẽ được chuyển sang trang đăng nhập khi gửi`
+						}
+						rows={3}
+						maxLength={charLimit}
+						disabled={mutation.isPending}
+						className="w-full px-4 pt-3 pb-10 bg-transparent text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none disabled:opacity-50 rounded-xl"
+					/>
 
-  return (
-    <div className="space-y-2">
-      {/* Thông báo lỗi gọn */}
-      {createCommentMutation.error && (
-        <p className="text-xs text-red-500">
-          Lỗi khi gửi bình luận: {createCommentMutation.error.message}
-        </p>
-      )}
+					{/* Footer bar inside textarea wrapper */}
+					<div className="absolute bottom-0 inset-x-0 flex items-center justify-between px-3 pb-2">
+						<span
+							className={`text-[11px] tabular-nums transition-colors ${nearLimit ? "text-amber-500" : "text-muted-foreground/50"}`}
+						>
+							{charCount}/{charLimit}
+						</span>
 
-      {/* Thông tin lưu tạm bình luận */}
-      {pendingComment && (
-        <p className="text-xs text-amber-600">
-          Đã lưu tạm bình luận, hoàn tất đăng nhập để gửi.
-        </p>
-      )}
+						<div className="flex items-center gap-2">
+							{onCancel && (
+								<button
+									type="button"
+									onClick={onCancel}
+									className="px-3 py-1 text-xs rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+								>
+									Hủy
+								</button>
+							)}
+							<button
+								type="submit"
+								disabled={!content.trim() || mutation.isPending}
+								className="px-3 py-1 text-xs font-medium rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+							>
+								{mutation.isPending
+									? "Đang gửi…"
+									: isAuthenticated
+										? "Gửi"
+										: "Đăng nhập & gửi"}
+							</button>
+						</div>
+					</div>
+				</div>
 
-      <form onSubmit={handleSubmit} className="space-y-2">
-        <textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder={
-            isAuthenticated
-              ? placeholder
-              : `${placeholder} (bạn sẽ được chuyển sang trang đăng nhập khi gửi)`
-          }
-          rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-black dark:text-white text-sm"
-          disabled={createCommentMutation.isPending}
-        />
-
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-500">
-            {isAuthenticated && user
-              ? `Đăng nhập với tư cách ${user.username}`
-              : "Chưa đăng nhập"}
-          </span>
-
-          <div className="flex gap-2">
-            {onCancel && (
-              <Button type="button" variant="ghost" size="sm" onClick={onCancel}>
-                Hủy
-              </Button>
-            )}
-            <Button
-              type="submit"
-              size="sm"
-              disabled={!content.trim() || createCommentMutation.isPending}
-            >
-              {createCommentMutation.isPending
-                ? "Đang gửi..."
-                : isAuthenticated
-                  ? "Bình luận"
-                  : "Đăng nhập & gửi"}
-            </Button>
-          </div>
-        </div>
-      </form>
-    </div>
-  );
+				{/* Auth hint */}
+				{isAuthenticated && user && (
+					<p className="mt-1.5 text-[11px] text-muted-foreground/60">
+						Đang đăng nhập với tư cách{" "}
+						<span className="font-medium text-muted-foreground">
+							{user.username}
+						</span>
+					</p>
+				)}
+			</form>
+		</div>
+	);
 };

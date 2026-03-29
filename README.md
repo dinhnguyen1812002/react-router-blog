@@ -17,17 +17,20 @@ Frontend cho Blog Platform được xây dựng với React Router v7, TypeScrip
 ## Cài đặt
 
 1. Cài đặt dependencies:
+
 ```bash
 npm install
 npm run install-deps
 ```
 
 2. Chạy development server:
+
 ```bash
 npm run dev
 ```
 
 3. Build cho production:
+
 ```bash
 npm run build
 npm start
@@ -52,6 +55,7 @@ app/
 ## API Integration
 
 Frontend kết nối với Spring Boot backend qua:
+
 - Base URL: `http://localhost:8080/api/v1`
 - Authentication: Cookie-based với JWT
 - File uploads: Multipart form data

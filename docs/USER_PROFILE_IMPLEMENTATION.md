@@ -5,6 +5,7 @@ This document provides implementation details for the user profile management sy
 ## Overview
 
 The user profile management system consists of:
+
 - **Profile Display Page**: Read-only view of user profile information
 - **Profile Update Page**: Editable form for updating profile information
 - **Reusable Components**: Shared components for consistent UI/UX
@@ -33,24 +34,28 @@ npm install @uiw/react-md-editor
 ### Reusable Profile Components
 
 #### ProfileHeader
+
 - **Location**: `app/components/profile/ProfileHeader.tsx`
 - **Purpose**: Displays user avatar, name, role badges, and action buttons
 - **Features**: Clean, borderless design following user preferences
 
 #### ProfileStats
+
 - **Location**: `app/components/profile/ProfileStats.tsx`
 - **Purpose**: Shows user statistics (posts, saved posts, comments)
 - **Features**: Icon-based display with consistent styling
 
 #### SocialLinks
+
 - **Location**: `app/components/profile/SocialLinks.tsx`
 - **Purpose**: Renders social media links with appropriate icons
 - **Features**: Support for LinkedIn, Twitter, Instagram, GitHub, Facebook
 
 #### MarkdownRenderer
+
 - **Location**: `app/components/profile/MarkdownRenderer.tsx`
 - **Purpose**: Safely renders markdown content with XSS prevention
-- **Features**: 
+- **Features**:
   - DOMPurify sanitization
   - Placeholder processing ({{latest_posts}}, {{post_count}})
   - Fallback rendering when dependencies are missing
@@ -59,6 +64,7 @@ npm install @uiw/react-md-editor
 ### Pages
 
 #### Profile Display Page
+
 - **Route**: `/dashboard/profile`
 - **File**: `app/routes/dashboard/profile/index.tsx`
 - **Features**:
@@ -68,6 +74,7 @@ npm install @uiw/react-md-editor
   - Clean, borderless design
 
 #### Profile Update Page
+
 - **Route**: `/dashboard/profile/edit`
 - **File**: `app/routes/dashboard/profile/edit.tsx`
 - **Features**:
@@ -79,6 +86,7 @@ npm install @uiw/react-md-editor
 ## Security Features
 
 ### Markdown Processing
+
 - **File**: `app/utils/markdown.ts`
 - **Features**:
   - XSS prevention using DOMPurify
@@ -87,6 +95,7 @@ npm install @uiw/react-md-editor
   - Safe placeholder processing
 
 ### Input Validation
+
 - Bio: Maximum 500 characters
 - Custom Profile Markdown: Maximum 10,000 characters
 - Social Media URLs: Valid URL format validation
@@ -95,11 +104,13 @@ npm install @uiw/react-md-editor
 ## API Integration
 
 ### Profile API Service
+
 - **File**: `app/api/user.ts`
 - **New Endpoint**: `updateCustomProfile(markdownContent: string)`
 - **Backend Endpoint**: `PUT /api/v1/users/profile/custom`
 
 ### Request Format
+
 ```json
 {
   "markdownContent": "# Welcome to my profile!\n\nI'm a developer..."
@@ -107,6 +118,7 @@ npm install @uiw/react-md-editor
 ```
 
 ### Response Format
+
 ```json
 {
   "id": "user-id",
@@ -122,29 +134,34 @@ npm install @uiw/react-md-editor
 ## Placeholder System
 
 ### Supported Placeholders
+
 - `{{latest_posts}}`: Displays list of 5 most recent posts
 - `{{post_count}}`: Shows total number of posts
 - `{{user_bio}}`: Displays user bio
 - `{{social_links}}`: Shows social media links
 
 ### Example Usage
+
 ```markdown
 # Welcome to my profile!
 
 I'm a passionate developer who loves open source projects.
 
 ## My Latest Posts
+
 {{latest_posts}}
 
 **Total Posts:** {{post_count}}
 
 ## Connect with me
+
 {{social_links}}
 ```
 
 ## Routing Configuration
 
 Updated `app/routes.ts` to include:
+
 ```typescript
 route("profile", "routes/dashboard/profile/index.tsx"),
 route("profile/edit", "routes/dashboard/profile/edit.tsx"),
@@ -153,12 +170,14 @@ route("profile/edit", "routes/dashboard/profile/edit.tsx"),
 ## Design Principles
 
 ### Clean, Borderless Design
+
 - No card styling for sidebar components
 - Consistent spacing and typography
 - Dark mode support
 - Responsive design
 
 ### Reusable Components
+
 - TypeScript best practices
 - Consistent prop interfaces
 - Error handling and loading states
@@ -167,6 +186,7 @@ route("profile/edit", "routes/dashboard/profile/edit.tsx"),
 ## Usage Examples
 
 ### Basic Profile Display
+
 ```tsx
 import { ProfileHeader, ProfileStats, SocialLinks } from '~/components/profile';
 
@@ -176,18 +196,17 @@ import { ProfileHeader, ProfileStats, SocialLinks } from '~/components/profile';
 ```
 
 ### Secure Markdown Rendering
-```tsx
-import { MarkdownRenderer } from '~/components/profile/MarkdownRenderer';
 
-<MarkdownRenderer 
-  content={user.customProfileMarkdown} 
-  userData={user}
-/>
+```tsx
+import { MarkdownRenderer } from "~/components/profile/MarkdownRenderer";
+
+<MarkdownRenderer content={user.customProfileMarkdown} userData={user} />;
 ```
 
 ### Form Validation
+
 ```tsx
-import { validateMarkdownContent } from '~/utils/markdown';
+import { validateMarkdownContent } from "~/utils/markdown";
 
 const validation = validateMarkdownContent(content);
 if (!validation.isValid) {
@@ -199,12 +218,14 @@ if (!validation.isValid) {
 ## Testing
 
 ### Unit Tests
+
 - Component rendering tests
 - Form validation tests
 - Markdown processing tests
 - Security validation tests
 
 ### Integration Tests
+
 - API integration tests
 - Route navigation tests
 - User interaction tests
@@ -212,13 +233,17 @@ if (!validation.isValid) {
 ## Troubleshooting
 
 ### Missing Dependencies
+
 If markdown dependencies are not installed, the system will:
+
 - Fall back to basic markdown rendering
 - Display warning messages in console
 - Continue to function with reduced features
 
 ### XSS Prevention
+
 All user-generated content is automatically sanitized:
+
 - Script tags are removed
 - Dangerous attributes are stripped
 - External links are made safe

@@ -1,234 +1,244 @@
-import { useState, useEffect } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader } from '~/components/ui/Card';
-import { Button } from '~/components/ui/button';
-import { Input } from '~/components/ui/input';
-import { useAuthStore } from '~/store/authStore';
-import { authApi } from '~/api/auth';
-
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  Bell,
-  Shield,
-  Palette,
-  Download,
-  Trash2,
-  AlertTriangle,
-  User,
-  Save,
-  Eye,
-  EyeOff,
-  Check,
-  X
-} from 'lucide-react';
+	AlertTriangle,
+	Bell,
+	Check,
+	Download,
+	Eye,
+	EyeOff,
+	Palette,
+	Save,
+	Shield,
+	Trash2,
+	User,
+	X,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import { authApi } from "~/api/auth";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardHeader } from "~/components/ui/Card";
+import { Input } from "~/components/ui/input";
+import { useAuthStore } from "~/store/authStore";
 
 export default function SettingsPage() {
-  const { user, logout } = useAuthStore();
+	const { user, logout } = useAuthStore();
 
-  const queryClient = useQueryClient();
-  
-  const [activeTab, setActiveTab] = useState<'profile' | 'account' | 'notifications' | 'appearance' | 'data'>('profile');
-  const [showPassword, setShowPassword] = useState(false);
-  const [saveSuccess, setSaveSuccess] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
-  const [themeColor, setThemeColor] = useState<string>('blue'); // Thêm state cho màu sắc chủ đề
-  
-  const [profileData, setProfileData] = useState({
-    username: user?.username || '',
-    email: user?.email || '',
-    // bio: user?.bio || '',
-    // avatar: user?.avatar || '',
-    // socialMediaLinks: user?.socialMediaLinks || {},
-   
-  });
+	const queryClient = useQueryClient();
 
-  const [passwordData, setPasswordData] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
-  });
+	const [activeTab, setActiveTab] = useState<
+		"profile" | "account" | "notifications" | "appearance" | "data"
+	>("profile");
+	const [showPassword, setShowPassword] = useState(false);
+	const [saveSuccess, setSaveSuccess] = useState(false);
+	const [saveError, setSaveError] = useState<string | null>(null);
+	const [themeColor, setThemeColor] = useState<string>("blue"); // Thêm state cho màu sắc chủ đề
 
-  const [notificationSettings, setNotificationSettings] = useState({
-    emailNotifications: true,
-    commentNotifications: true,
-    likeNotifications: true,
-    followNotifications: true,
-    newsletterSubscription: false,
-    weeklyDigest: true,
-    mentionNotifications: true
-  });
-  const handleColorChange = (color: string) => {
-    setThemeColor(color);
-    // Lưu màu sắc vào localStorage
-    localStorage.setItem('theme-color', color);
-    // Áp dụng màu sắc cho ứng dụng
-    applyThemeColor(color);
-  };
+	const [profileData, setProfileData] = useState({
+		username: user?.username || "",
+		email: user?.email || "",
+		// bio: user?.bio || '',
+		// avatar: user?.avatar || '',
+		// socialMediaLinks: user?.socialMediaLinks || {},
+	});
 
-  // Hàm áp dụng màu sắc cho ứng dụng
-  const applyThemeColor = (color: string) => {
-    const root = document.documentElement;
-    
-    // Xóa tất cả các class màu sắc hiện tại
-    root.classList.remove('theme-blue', 'theme-purple', 
-                          'theme-green', 'theme-red', 
-                          'theme-orange', 'theme-pink', 
-                          'theme-indigo', 'theme-yellow');
-    
-    // Thêm class màu sắc mới
-    root.classList.add(`theme-${color}`);
-  };
-useEffect(() => {
-    const savedColor = localStorage.getItem('theme-color') || 'blue';
-    setThemeColor(savedColor);
-    applyThemeColor(savedColor);
-  }, []);
+	const [passwordData, setPasswordData] = useState({
+		currentPassword: "",
+		newPassword: "",
+		confirmPassword: "",
+	});
 
-  // Update profile mutation
-  // const updateProfileMutation = useMutation({
-  //   mutationFn: (data: any) => authApi.updateProfile(data),
-  //   onSuccess: (response) => {
-  //     setUser(response.user);
-  //     queryClient.invalidateQueries({ queryKey: ['user-profile'] });
-  //     showSuccessMessage();
-  //   },
-  //   onError: (error: any) => {
-  //     setSaveError(error.message || 'Có lỗi xảy ra khi cập nhật hồ sơ');
-  //     setTimeout(() => setSaveError(null), 5000);
-  //   }
-  // });
+	const [notificationSettings, setNotificationSettings] = useState({
+		emailNotifications: true,
+		commentNotifications: true,
+		likeNotifications: true,
+		followNotifications: true,
+		newsletterSubscription: false,
+		weeklyDigest: true,
+		mentionNotifications: true,
+	});
+	const handleColorChange = (color: string) => {
+		setThemeColor(color);
+		// Lưu màu sắc vào localStorage
+		localStorage.setItem("theme-color", color);
+		// Áp dụng màu sắc cho ứng dụng
+		applyThemeColor(color);
+	};
 
-  // Change password mutation
-  const changePasswordMutation = useMutation({
-    mutationFn: (data: any) => authApi.changePassword(data),
-    onSuccess: () => {
-      setPasswordData({
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: ''
-      });
-      showSuccessMessage();
-    }, 
-    onError: (error: any) => {
-      setSaveError(error.message || 'Có lỗi xảy ra khi đổi mật khẩu');
-      setTimeout(() => setSaveError(null), 5000);
-    }
-  });
+	// Hàm áp dụng màu sắc cho ứng dụng
+	const applyThemeColor = (color: string) => {
+		const root = document.documentElement;
 
-  const showSuccessMessage = () => {
-    setSaveSuccess(true);
-    setTimeout(() => setSaveSuccess(false), 3000);
-  };
+		// Xóa tất cả các class màu sắc hiện tại
+		root.classList.remove(
+			"theme-blue",
+			"theme-purple",
+			"theme-green",
+			"theme-red",
+			"theme-orange",
+			"theme-pink",
+			"theme-indigo",
+			"theme-yellow",
+		);
 
-  // const handleProfileSubmit = (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   updateProfileMutation.mutate(profileData);
-  // };
+		// Thêm class màu sắc mới
+		root.classList.add(`theme-${color}`);
+	};
+	useEffect(() => {
+		const savedColor = localStorage.getItem("theme-color") || "blue";
+		setThemeColor(savedColor);
+		applyThemeColor(savedColor);
+	}, []);
 
-  const handlePasswordSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setSaveError('Mật khẩu mới và xác nhận mật khẩu không khớp');
-      setTimeout(() => setSaveError(null), 5000);
-      return;
-    }
-    changePasswordMutation.mutate({
-      currentPassword: passwordData.currentPassword,
-      newPassword: passwordData.newPassword
-    });
-  };
+	// Update profile mutation
+	// const updateProfileMutation = useMutation({
+	//   mutationFn: (data: any) => authApi.updateProfile(data),
+	//   onSuccess: (response) => {
+	//     setUser(response.user);
+	//     queryClient.invalidateQueries({ queryKey: ['user-profile'] });
+	//     showSuccessMessage();
+	//   },
+	//   onError: (error: any) => {
+	//     setSaveError(error.message || 'Có lỗi xảy ra khi cập nhật hồ sơ');
+	//     setTimeout(() => setSaveError(null), 5000);
+	//   }
+	// });
 
-  const handleNotificationSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // API call to update notification settings
-    showSuccessMessage();
-  };
+	// Change password mutation
+	const changePasswordMutation = useMutation({
+		mutationFn: (data: any) => authApi.changePassword(data),
+		onSuccess: () => {
+			setPasswordData({
+				currentPassword: "",
+				newPassword: "",
+				confirmPassword: "",
+			});
+			showSuccessMessage();
+		},
+		onError: (error: any) => {
+			setSaveError(error.message || "Có lỗi xảy ra khi đổi mật khẩu");
+			setTimeout(() => setSaveError(null), 5000);
+		},
+	});
 
-  const handleDeleteAccount = () => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa tài khoản? Hành động này không thể hoàn tác.')) {
-      // API call to delete account
-      logout();
-    }
-  };
+	const showSuccessMessage = () => {
+		setSaveSuccess(true);
+		setTimeout(() => setSaveSuccess(false), 3000);
+	};
 
-  return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-          Cài đặt
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">
-          Quản lý tài khoản và tùy chỉnh trải nghiệm của bạn
-        </p>
-      </div>
+	// const handleProfileSubmit = (e: React.FormEvent) => {
+	//   e.preventDefault();
+	//   updateProfileMutation.mutate(profileData);
+	// };
 
-      {/* Settings Navigation */}
-      <div className="flex overflow-x-auto pb-2 -mx-4 px-4 sm:px-0 sm:mx-0 space-x-2">
-        <Button
-          variant={activeTab === 'profile' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setActiveTab('profile')}
-          className="flex items-center whitespace-nowrap"
-        >
-          <User className="w-4 h-4 mr-2" />
-          Hồ sơ cá nhân
-        </Button>
-        <Button
-          variant={activeTab === 'account' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setActiveTab('account')}
-          className="flex items-center whitespace-nowrap"
-        >
-          <Shield className="w-4 h-4 mr-2" />
-          Bảo mật
-        </Button>
-        <Button
-          variant={activeTab === 'notifications' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setActiveTab('notifications')}
-          className="flex items-center whitespace-nowrap"
-        >
-          <Bell className="w-4 h-4 mr-2" />
-          Thông báo
-        </Button>
-        <Button
-          variant={activeTab === 'appearance' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setActiveTab('appearance')}
-          className="flex items-center whitespace-nowrap"
-        >
-          <Palette className="w-4 h-4 mr-2" />
-          Giao diện
-        </Button>
-        <Button
-          variant={activeTab === 'data' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setActiveTab('data')}
-          className="flex items-center whitespace-nowrap"
-        >
-          <Download className="w-4 h-4 mr-2" />
-          Dữ liệu
-        </Button>
-      </div>
+	const handlePasswordSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
+		if (passwordData.newPassword !== passwordData.confirmPassword) {
+			setSaveError("Mật khẩu mới và xác nhận mật khẩu không khớp");
+			setTimeout(() => setSaveError(null), 5000);
+			return;
+		}
+		changePasswordMutation.mutate({
+			currentPassword: passwordData.currentPassword,
+			newPassword: passwordData.newPassword,
+		});
+	};
 
-      {/* Success Message */}
-      {saveSuccess && (
-        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-300 rounded-md p-4 flex items-center">
-          <Check className="w-5 h-5 mr-2" />
-          <span>Lưu thành công!</span>
-        </div>
-      )}
+	const handleNotificationSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
+		// API call to update notification settings
+		showSuccessMessage();
+	};
 
-      {/* Error Message */}
-      {saveError && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-300 rounded-md p-4 flex items-center">
-          <X className="w-5 h-5 mr-2" />
-          <span>{saveError}</span>
-        </div>
-      )}
+	const handleDeleteAccount = () => {
+		if (
+			window.confirm(
+				"Bạn có chắc chắn muốn xóa tài khoản? Hành động này không thể hoàn tác.",
+			)
+		) {
+			// API call to delete account
+			logout();
+		}
+	};
 
-      {/* Profile Settings */}
-      {/* {activeTab === 'profile' && (
+	return (
+		<div className="space-y-6">
+			{/* Header */}
+			<div>
+				<h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+					Cài đặt
+				</h1>
+				<p className="text-gray-600 dark:text-gray-400 mt-1">
+					Quản lý tài khoản và tùy chỉnh trải nghiệm của bạn
+				</p>
+			</div>
+
+			{/* Settings Navigation */}
+			<div className="flex overflow-x-auto pb-2 -mx-4 px-4 sm:px-0 sm:mx-0 space-x-2">
+				<Button
+					variant={activeTab === "profile" ? "default" : "outline"}
+					size="sm"
+					onClick={() => setActiveTab("profile")}
+					className="flex items-center whitespace-nowrap"
+				>
+					<User className="w-4 h-4 mr-2" />
+					Hồ sơ cá nhân
+				</Button>
+				<Button
+					variant={activeTab === "account" ? "default" : "outline"}
+					size="sm"
+					onClick={() => setActiveTab("account")}
+					className="flex items-center whitespace-nowrap"
+				>
+					<Shield className="w-4 h-4 mr-2" />
+					Bảo mật
+				</Button>
+				<Button
+					variant={activeTab === "notifications" ? "default" : "outline"}
+					size="sm"
+					onClick={() => setActiveTab("notifications")}
+					className="flex items-center whitespace-nowrap"
+				>
+					<Bell className="w-4 h-4 mr-2" />
+					Thông báo
+				</Button>
+				<Button
+					variant={activeTab === "appearance" ? "default" : "outline"}
+					size="sm"
+					onClick={() => setActiveTab("appearance")}
+					className="flex items-center whitespace-nowrap"
+				>
+					<Palette className="w-4 h-4 mr-2" />
+					Giao diện
+				</Button>
+				<Button
+					variant={activeTab === "data" ? "default" : "outline"}
+					size="sm"
+					onClick={() => setActiveTab("data")}
+					className="flex items-center whitespace-nowrap"
+				>
+					<Download className="w-4 h-4 mr-2" />
+					Dữ liệu
+				</Button>
+			</div>
+
+			{/* Success Message */}
+			{saveSuccess && (
+				<div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-300 rounded-md p-4 flex items-center">
+					<Check className="w-5 h-5 mr-2" />
+					<span>Lưu thành công!</span>
+				</div>
+			)}
+
+			{/* Error Message */}
+			{saveError && (
+				<div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-300 rounded-md p-4 flex items-center">
+					<X className="w-5 h-5 mr-2" />
+					<span>{saveError}</span>
+				</div>
+			)}
+
+			{/* Profile Settings */}
+			{/* {activeTab === 'profile' && (
         <form onSubmit={handleProfileSubmit}>
           <Card>
             <CardHeader>
@@ -349,353 +359,436 @@ useEffect(() => {
         </form>
       )} */}
 
-      {/* Account Settings */}
-      {activeTab === 'account' && (
-        <div className="space-y-6">
-          {/* Change Password */}
-          <form onSubmit={handlePasswordSubmit}>
-            <Card>
-              <CardHeader>
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                  Đổi mật khẩu
-                </h2>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Current Password */}
-                <div>
-                  <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Mật khẩu hiện tại
-                  </label>
-                  <div className="relative">
-                    <Input
-                      id="currentPassword"
-                      type={showPassword ? "text" : "password"}
-                      value={passwordData.currentPassword}
-                      onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})}
-                      className="w-full pr-10"
-                    />
-                    <button
-                      type="button"
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </div>
+			{/* Account Settings */}
+			{activeTab === "account" && (
+				<div className="space-y-6">
+					{/* Change Password */}
+					<form onSubmit={handlePasswordSubmit}>
+						<Card>
+							<CardHeader>
+								<h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+									Đổi mật khẩu
+								</h2>
+							</CardHeader>
+							<CardContent className="space-y-6">
+								{/* Current Password */}
+								<div>
+									<label
+										htmlFor="currentPassword"
+										className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+									>
+										Mật khẩu hiện tại
+									</label>
+									<div className="relative">
+										<Input
+											id="currentPassword"
+											type={showPassword ? "text" : "password"}
+											value={passwordData.currentPassword}
+											onChange={(e) =>
+												setPasswordData({
+													...passwordData,
+													currentPassword: e.target.value,
+												})
+											}
+											className="w-full pr-10"
+										/>
+										<button
+											type="button"
+											className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+											onClick={() => setShowPassword(!showPassword)}
+										>
+											{showPassword ? (
+												<EyeOff className="w-4 h-4" />
+											) : (
+												<Eye className="w-4 h-4" />
+											)}
+										</button>
+									</div>
+								</div>
 
-                {/* New Password */}
-                <div>
-                  <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Mật khẩu mới
-                  </label>
-                  <Input
-                    id="newPassword"
-                    type="password"
-                    value={passwordData.newPassword}
-                    onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
-                    className="w-full"
-                  />
-                </div>
+								{/* New Password */}
+								<div>
+									<label
+										htmlFor="newPassword"
+										className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+									>
+										Mật khẩu mới
+									</label>
+									<Input
+										id="newPassword"
+										type="password"
+										value={passwordData.newPassword}
+										onChange={(e) =>
+											setPasswordData({
+												...passwordData,
+												newPassword: e.target.value,
+											})
+										}
+										className="w-full"
+									/>
+								</div>
 
-                {/* Confirm Password */}
-                <div>
-                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Xác nhận mật khẩu mới
-                  </label>
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    value={passwordData.confirmPassword}
-                    onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
-                    className="w-full"
-                  />
-                </div>
+								{/* Confirm Password */}
+								<div>
+									<label
+										htmlFor="confirmPassword"
+										className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+									>
+										Xác nhận mật khẩu mới
+									</label>
+									<Input
+										id="confirmPassword"
+										type="password"
+										value={passwordData.confirmPassword}
+										onChange={(e) =>
+											setPasswordData({
+												...passwordData,
+												confirmPassword: e.target.value,
+											})
+										}
+										className="w-full"
+									/>
+								</div>
 
-                <div className="pt-4 flex justify-end">
-                  <Button type="submit" disabled={changePasswordMutation.isPending}>
-                    {changePasswordMutation.isPending ? (
-                      <span className="flex items-center">
-                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Đang lưu...
-                      </span>
-                    ) : (
-                      <span className="flex items-center">
-                        <Save className="w-4 h-4 mr-2" />
-                        Cập nhật mật khẩu
-                      </span>
-                    )}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </form>
+								<div className="pt-4 flex justify-end">
+									<Button
+										type="submit"
+										disabled={changePasswordMutation.isPending}
+									>
+										{changePasswordMutation.isPending ? (
+											<span className="flex items-center">
+												<svg
+													className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+													xmlns="http://www.w3.org/2000/svg"
+													fill="none"
+													viewBox="0 0 24 24"
+												>
+													<circle
+														className="opacity-25"
+														cx="12"
+														cy="12"
+														r="10"
+														stroke="currentColor"
+														strokeWidth="4"
+													></circle>
+													<path
+														className="opacity-75"
+														fill="currentColor"
+														d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+													></path>
+												</svg>
+												Đang lưu...
+											</span>
+										) : (
+											<span className="flex items-center">
+												<Save className="w-4 h-4 mr-2" />
+												Cập nhật mật khẩu
+											</span>
+										)}
+									</Button>
+								</div>
+							</CardContent>
+						</Card>
+					</form>
 
-          {/* Danger Zone */}
-          <Card className="border-red-200 dark:border-red-800">
-            <CardHeader>
-              <h2 className="text-xl font-semibold text-red-600 dark:text-red-400 flex items-center">
-                <AlertTriangle className="w-5 h-5 mr-2" />
-                Vùng nguy hiểm
-              </h2>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-1">
-                    Xóa tài khoản
-                  </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                    Khi xóa tài khoản, tất cả dữ liệu của bạn sẽ bị xóa vĩnh viễn. Hành động này không thể hoàn tác.
-                  </p>
-                  <Button 
-                    variant="destructive" 
-                    size="sm"
-                    onClick={handleDeleteAccount}
-                  >
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Xóa tài khoản
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+					{/* Danger Zone */}
+					<Card className="border-red-200 dark:border-red-800">
+						<CardHeader>
+							<h2 className="text-xl font-semibold text-red-600 dark:text-red-400 flex items-center">
+								<AlertTriangle className="w-5 h-5 mr-2" />
+								Vùng nguy hiểm
+							</h2>
+						</CardHeader>
+						<CardContent>
+							<div className="space-y-4">
+								<div>
+									<h3 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-1">
+										Xóa tài khoản
+									</h3>
+									<p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+										Khi xóa tài khoản, tất cả dữ liệu của bạn sẽ bị xóa vĩnh
+										viễn. Hành động này không thể hoàn tác.
+									</p>
+									<Button
+										variant="destructive"
+										size="sm"
+										onClick={handleDeleteAccount}
+									>
+										<Trash2 className="w-4 h-4 mr-2" />
+										Xóa tài khoản
+									</Button>
+								</div>
+							</div>
+						</CardContent>
+					</Card>
+				</div>
+			)}
 
-      {/* Notification Settings */}
-      {activeTab === 'notifications' && (
-        <form onSubmit={handleNotificationSubmit}>
-          <Card>
-            <CardHeader>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                Cài đặt thông báo
-              </h2>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-4">
-                {/* Email Notifications */}
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-base font-medium text-gray-900 dark:text-gray-100">
-                      Thông báo qua email
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Nhận thông báo qua email
-                    </p>
-                  </div>
-                  <div className="relative inline-block w-12 h-6 transition duration-200 ease-in-out rounded-full">
-                    <input
-                      type="checkbox"
-                      id="emailNotifications"
-                      className="absolute w-0 h-0 opacity-0"
-                      checked={notificationSettings.emailNotifications}
-                      onChange={(e) => setNotificationSettings({...notificationSettings, emailNotifications: e.target.checked})}
-                    />
-                    <label
-                      htmlFor="emailNotifications"
-                      className={`absolute inset-0 cursor-pointer rounded-full ${notificationSettings.emailNotifications ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'}`}
-                    >
-                      <span
-                        className={`absolute inset-y-0 left-0 flex items-center justify-center w-6 h-6 bg-white rounded-full shadow transform transition-transform duration-200 ease-in-out ${notificationSettings.emailNotifications ? 'translate-x-6' : 'translate-x-0'}`}
-                      />
-                    </label>
-                  </div>
-                </div>
+			{/* Notification Settings */}
+			{activeTab === "notifications" && (
+				<form onSubmit={handleNotificationSubmit}>
+					<Card>
+						<CardHeader>
+							<h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+								Cài đặt thông báo
+							</h2>
+						</CardHeader>
+						<CardContent className="space-y-6">
+							<div className="space-y-4">
+								{/* Email Notifications */}
+								<div className="flex items-center justify-between">
+									<div>
+										<h3 className="text-base font-medium text-gray-900 dark:text-gray-100">
+											Thông báo qua email
+										</h3>
+										<p className="text-sm text-gray-600 dark:text-gray-400">
+											Nhận thông báo qua email
+										</p>
+									</div>
+									<div className="relative inline-block w-12 h-6 transition duration-200 ease-in-out rounded-full">
+										<input
+											type="checkbox"
+											id="emailNotifications"
+											className="absolute w-0 h-0 opacity-0"
+											checked={notificationSettings.emailNotifications}
+											onChange={(e) =>
+												setNotificationSettings({
+													...notificationSettings,
+													emailNotifications: e.target.checked,
+												})
+											}
+										/>
+										<label
+											htmlFor="emailNotifications"
+											className={`absolute inset-0 cursor-pointer rounded-full ${notificationSettings.emailNotifications ? "bg-blue-500" : "bg-gray-300 dark:bg-gray-600"}`}
+										>
+											<span
+												className={`absolute inset-y-0 left-0 flex items-center justify-center w-6 h-6 bg-white rounded-full shadow transform transition-transform duration-200 ease-in-out ${notificationSettings.emailNotifications ? "translate-x-6" : "translate-x-0"}`}
+											/>
+										</label>
+									</div>
+								</div>
 
-                {/* Comment Notifications */}
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-base font-medium text-gray-900 dark:text-gray-100">
-                      Thông báo bình luận
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Nhận thông báo khi có người bình luận bài viết của bạn
-                    </p>
-                  </div>
-                  <div className="relative inline-block w-12 h-6 transition duration-200 ease-in-out rounded-full">
-                    <input
-                      type="checkbox"
-                      id="commentNotifications"
-                      className="absolute w-0 h-0 opacity-0"
-                      checked={notificationSettings.commentNotifications}
-                      onChange={(e) => setNotificationSettings({...notificationSettings, commentNotifications: e.target.checked})}
-                    />
-                    <label
-                      htmlFor="commentNotifications"
-                      className={`absolute inset-0 cursor-pointer rounded-full ${notificationSettings.commentNotifications ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'}`}
-                    >
-                      <span
-                        className={`absolute inset-y-0 left-0 flex items-center justify-center w-6 h-6 bg-white rounded-full shadow transform transition-transform duration-200 ease-in-out ${notificationSettings.commentNotifications ? 'translate-x-6' : 'translate-x-0'}`}
-                      />
-                    </label>
-                  </div>
-                </div>
+								{/* Comment Notifications */}
+								<div className="flex items-center justify-between">
+									<div>
+										<h3 className="text-base font-medium text-gray-900 dark:text-gray-100">
+											Thông báo bình luận
+										</h3>
+										<p className="text-sm text-gray-600 dark:text-gray-400">
+											Nhận thông báo khi có người bình luận bài viết của bạn
+										</p>
+									</div>
+									<div className="relative inline-block w-12 h-6 transition duration-200 ease-in-out rounded-full">
+										<input
+											type="checkbox"
+											id="commentNotifications"
+											className="absolute w-0 h-0 opacity-0"
+											checked={notificationSettings.commentNotifications}
+											onChange={(e) =>
+												setNotificationSettings({
+													...notificationSettings,
+													commentNotifications: e.target.checked,
+												})
+											}
+										/>
+										<label
+											htmlFor="commentNotifications"
+											className={`absolute inset-0 cursor-pointer rounded-full ${notificationSettings.commentNotifications ? "bg-blue-500" : "bg-gray-300 dark:bg-gray-600"}`}
+										>
+											<span
+												className={`absolute inset-y-0 left-0 flex items-center justify-center w-6 h-6 bg-white rounded-full shadow transform transition-transform duration-200 ease-in-out ${notificationSettings.commentNotifications ? "translate-x-6" : "translate-x-0"}`}
+											/>
+										</label>
+									</div>
+								</div>
 
-                {/* Like Notifications */}
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-base font-medium text-gray-900 dark:text-gray-100">
-                      Thông báo lượt thích
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Nhận thông báo khi có người thích bài viết của bạn
-                    </p>
-                  </div>
-                  <div className="relative inline-block w-12 h-6 transition duration-200 ease-in-out rounded-full">
-                    <input
-                      type="checkbox"
-                      id="likeNotifications"
-                      className="absolute w-0 h-0 opacity-0"
-                      checked={notificationSettings.likeNotifications}
-                      onChange={(e) => setNotificationSettings({...notificationSettings, likeNotifications: e.target.checked})}
-                    />
-                    <label
-                      htmlFor="likeNotifications"
-                      className={`absolute inset-0 cursor-pointer rounded-full ${notificationSettings.likeNotifications ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'}`}
-                    >
-                      <span
-                        className={`absolute inset-y-0 left-0 flex items-center justify-center w-6 h-6 bg-white rounded-full shadow transform transition-transform duration-200 ease-in-out ${notificationSettings.likeNotifications ? 'translate-x-6' : 'translate-x-0'}`}
-                      />
-                    </label>
-                  </div>
-                </div>
+								{/* Like Notifications */}
+								<div className="flex items-center justify-between">
+									<div>
+										<h3 className="text-base font-medium text-gray-900 dark:text-gray-100">
+											Thông báo lượt thích
+										</h3>
+										<p className="text-sm text-gray-600 dark:text-gray-400">
+											Nhận thông báo khi có người thích bài viết của bạn
+										</p>
+									</div>
+									<div className="relative inline-block w-12 h-6 transition duration-200 ease-in-out rounded-full">
+										<input
+											type="checkbox"
+											id="likeNotifications"
+											className="absolute w-0 h-0 opacity-0"
+											checked={notificationSettings.likeNotifications}
+											onChange={(e) =>
+												setNotificationSettings({
+													...notificationSettings,
+													likeNotifications: e.target.checked,
+												})
+											}
+										/>
+										<label
+											htmlFor="likeNotifications"
+											className={`absolute inset-0 cursor-pointer rounded-full ${notificationSettings.likeNotifications ? "bg-blue-500" : "bg-gray-300 dark:bg-gray-600"}`}
+										>
+											<span
+												className={`absolute inset-y-0 left-0 flex items-center justify-center w-6 h-6 bg-white rounded-full shadow transform transition-transform duration-200 ease-in-out ${notificationSettings.likeNotifications ? "translate-x-6" : "translate-x-0"}`}
+											/>
+										</label>
+									</div>
+								</div>
 
-                {/* Follow Notifications */}
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-base font-medium text-gray-900 dark:text-gray-100">
-                      Thông báo theo dõi
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Nhận thông báo khi có người theo dõi bạn
-                    </p>
-                  </div>
-                  <div className="relative inline-block w-12 h-6 transition duration-200 ease-in-out rounded-full">
-                    <input
-                      type="checkbox"
-                      id="followNotifications"
-                      className="absolute w-0 h-0 opacity-0"
-                      checked={notificationSettings.followNotifications}
-                      onChange={(e) => setNotificationSettings({...notificationSettings, followNotifications: e.target.checked})}
-                    />
-                    <label
-                      htmlFor="followNotifications"
-                      className={`absolute inset-0 cursor-pointer rounded-full ${notificationSettings.followNotifications ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'}`}
-                    >
-                      <span
-                        className={`absolute inset-y-0 left-0 flex items-center justify-center w-6 h-6 bg-white rounded-full shadow transform transition-transform duration-200 ease-in-out ${notificationSettings.followNotifications ? 'translate-x-6' : 'translate-x-0'}`}
-                      />
-                    </label>
-                  </div>
-                </div>
+								{/* Follow Notifications */}
+								<div className="flex items-center justify-between">
+									<div>
+										<h3 className="text-base font-medium text-gray-900 dark:text-gray-100">
+											Thông báo theo dõi
+										</h3>
+										<p className="text-sm text-gray-600 dark:text-gray-400">
+											Nhận thông báo khi có người theo dõi bạn
+										</p>
+									</div>
+									<div className="relative inline-block w-12 h-6 transition duration-200 ease-in-out rounded-full">
+										<input
+											type="checkbox"
+											id="followNotifications"
+											className="absolute w-0 h-0 opacity-0"
+											checked={notificationSettings.followNotifications}
+											onChange={(e) =>
+												setNotificationSettings({
+													...notificationSettings,
+													followNotifications: e.target.checked,
+												})
+											}
+										/>
+										<label
+											htmlFor="followNotifications"
+											className={`absolute inset-0 cursor-pointer rounded-full ${notificationSettings.followNotifications ? "bg-blue-500" : "bg-gray-300 dark:bg-gray-600"}`}
+										>
+											<span
+												className={`absolute inset-y-0 left-0 flex items-center justify-center w-6 h-6 bg-white rounded-full shadow transform transition-transform duration-200 ease-in-out ${notificationSettings.followNotifications ? "translate-x-6" : "translate-x-0"}`}
+											/>
+										</label>
+									</div>
+								</div>
 
-                {/* Mention Notifications */}
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-base font-medium text-gray-900 dark:text-gray-100">
-                      Thông báo nhắc đến
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Nhận thông báo khi có người nhắc đến bạn trong bình luận
-                    </p>
-                  </div>
-                  <div className="relative inline-block w-12 h-6 transition duration-200 ease-in-out rounded-full">
-                    <input
-                      type="checkbox"
-                      id="mentionNotifications"
-                      className="absolute w-0 h-0 opacity-0"
-                      checked={notificationSettings.mentionNotifications}
-                      onChange={(e) => setNotificationSettings({...notificationSettings, mentionNotifications: e.target.checked})}
-                    />
-                    <label
-                      htmlFor="mentionNotifications"
-                      className={`absolute inset-0 cursor-pointer rounded-full ${notificationSettings.mentionNotifications ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'}`}
-                    >
-                      <span
-                        className={`absolute inset-y-0 left-0 flex items-center justify-center w-6 h-6 bg-white rounded-full shadow transform transition-transform duration-200 ease-in-out ${notificationSettings.mentionNotifications ? 'translate-x-6' : 'translate-x-0'}`}
-                      />
-                    </label>
-                  </div>
-                </div>
+								{/* Mention Notifications */}
+								<div className="flex items-center justify-between">
+									<div>
+										<h3 className="text-base font-medium text-gray-900 dark:text-gray-100">
+											Thông báo nhắc đến
+										</h3>
+										<p className="text-sm text-gray-600 dark:text-gray-400">
+											Nhận thông báo khi có người nhắc đến bạn trong bình luận
+										</p>
+									</div>
+									<div className="relative inline-block w-12 h-6 transition duration-200 ease-in-out rounded-full">
+										<input
+											type="checkbox"
+											id="mentionNotifications"
+											className="absolute w-0 h-0 opacity-0"
+											checked={notificationSettings.mentionNotifications}
+											onChange={(e) =>
+												setNotificationSettings({
+													...notificationSettings,
+													mentionNotifications: e.target.checked,
+												})
+											}
+										/>
+										<label
+											htmlFor="mentionNotifications"
+											className={`absolute inset-0 cursor-pointer rounded-full ${notificationSettings.mentionNotifications ? "bg-blue-500" : "bg-gray-300 dark:bg-gray-600"}`}
+										>
+											<span
+												className={`absolute inset-y-0 left-0 flex items-center justify-center w-6 h-6 bg-white rounded-full shadow transform transition-transform duration-200 ease-in-out ${notificationSettings.mentionNotifications ? "translate-x-6" : "translate-x-0"}`}
+											/>
+										</label>
+									</div>
+								</div>
 
-                {/* Weekly Digest */}
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-base font-medium text-gray-900 dark:text-gray-100">
-                      Tóm tắt hàng tuần
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Nhận email tóm tắt hoạt động hàng tuần
-                    </p>
-                  </div>
-                  <div className="relative inline-block w-12 h-6 transition duration-200 ease-in-out rounded-full">
-                    <input
-                      type="checkbox"
-                      id="weeklyDigest"
-                      className="absolute w-0 h-0 opacity-0"
-                      checked={notificationSettings.weeklyDigest}
-                      onChange={(e) => setNotificationSettings({...notificationSettings, weeklyDigest: e.target.checked})}
-                    />
-                    <label
-                      htmlFor="weeklyDigest"
-                      className={`absolute inset-0 cursor-pointer rounded-full ${notificationSettings.weeklyDigest ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'}`}
-                    >
-                      <span
-                        className={`absolute inset-y-0 left-0 flex items-center justify-center w-6 h-6 bg-white rounded-full shadow transform transition-transform duration-200 ease-in-out ${notificationSettings.weeklyDigest ? 'translate-x-6' : 'translate-x-0'}`}
-                      />
-                    </label>
-                  </div>
-                </div>
+								{/* Weekly Digest */}
+								<div className="flex items-center justify-between">
+									<div>
+										<h3 className="text-base font-medium text-gray-900 dark:text-gray-100">
+											Tóm tắt hàng tuần
+										</h3>
+										<p className="text-sm text-gray-600 dark:text-gray-400">
+											Nhận email tóm tắt hoạt động hàng tuần
+										</p>
+									</div>
+									<div className="relative inline-block w-12 h-6 transition duration-200 ease-in-out rounded-full">
+										<input
+											type="checkbox"
+											id="weeklyDigest"
+											className="absolute w-0 h-0 opacity-0"
+											checked={notificationSettings.weeklyDigest}
+											onChange={(e) =>
+												setNotificationSettings({
+													...notificationSettings,
+													weeklyDigest: e.target.checked,
+												})
+											}
+										/>
+										<label
+											htmlFor="weeklyDigest"
+											className={`absolute inset-0 cursor-pointer rounded-full ${notificationSettings.weeklyDigest ? "bg-blue-500" : "bg-gray-300 dark:bg-gray-600"}`}
+										>
+											<span
+												className={`absolute inset-y-0 left-0 flex items-center justify-center w-6 h-6 bg-white rounded-full shadow transform transition-transform duration-200 ease-in-out ${notificationSettings.weeklyDigest ? "translate-x-6" : "translate-x-0"}`}
+											/>
+										</label>
+									</div>
+								</div>
 
-                {/* Newsletter */}
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-base font-medium text-gray-900 dark:text-gray-100">
-                      Bản tin
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Đăng ký nhận bản tin từ BlogPlatform
-                    </p>
-                  </div>
-                  <div className="relative inline-block w-12 h-6 transition duration-200 ease-in-out rounded-full">
-                    <input
-                      type="checkbox"
-                      id="newsletterSubscription"
-                      className="absolute w-0 h-0 opacity-0"
-                      checked={notificationSettings.newsletterSubscription}
-                      onChange={(e) => setNotificationSettings({...notificationSettings, newsletterSubscription: e.target.checked})}
-                    />
-                    <label
-                      htmlFor="newsletterSubscription"
-                      className={`absolute inset-0 cursor-pointer rounded-full ${notificationSettings.newsletterSubscription ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'}`}
-                    >
-                      <span
-                        className={`absolute inset-y-0 left-0 flex items-center justify-center w-6 h-6 bg-white 
+								{/* Newsletter */}
+								<div className="flex items-center justify-between">
+									<div>
+										<h3 className="text-base font-medium text-gray-900 dark:text-gray-100">
+											Bản tin
+										</h3>
+										<p className="text-sm text-gray-600 dark:text-gray-400">
+											Đăng ký nhận bản tin từ BlogPlatform
+										</p>
+									</div>
+									<div className="relative inline-block w-12 h-6 transition duration-200 ease-in-out rounded-full">
+										<input
+											type="checkbox"
+											id="newsletterSubscription"
+											className="absolute w-0 h-0 opacity-0"
+											checked={notificationSettings.newsletterSubscription}
+											onChange={(e) =>
+												setNotificationSettings({
+													...notificationSettings,
+													newsletterSubscription: e.target.checked,
+												})
+											}
+										/>
+										<label
+											htmlFor="newsletterSubscription"
+											className={`absolute inset-0 cursor-pointer rounded-full ${notificationSettings.newsletterSubscription ? "bg-blue-500" : "bg-gray-300 dark:bg-gray-600"}`}
+										>
+											<span
+												className={`absolute inset-y-0 left-0 flex items-center justify-center w-6 h-6 bg-white 
                           rounded-full shadow transform transition-transform duration-200 ease-in-out 
-                          ${notificationSettings.newsletterSubscription ? 'translate-x-6' : 'translate-x-0'}`}
-                      />
-                    </label>
-                  </div>
-                </div>
-              </div>
+                          ${notificationSettings.newsletterSubscription ? "translate-x-6" : "translate-x-0"}`}
+											/>
+										</label>
+									</div>
+								</div>
+							</div>
 
-              <div className="pt-4 flex justify-end">
-                <Button type="submit">
-                  <Save className="w-4 h-4 mr-2" />
-                  Lưu thay đổi
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </form>
-      )}
+							<div className="pt-4 flex justify-end">
+								<Button type="submit">
+									<Save className="w-4 h-4 mr-2" />
+									Lưu thay đổi
+								</Button>
+							</div>
+						</CardContent>
+					</Card>
+				</form>
+			)}
 
-      {/* Appearance Settings */}
-      {/* {activeTab === 'appearance' && (
+			{/* Appearance Settings */}
+			{/* {activeTab === 'appearance' && (
         <Card>
           <CardHeader>
             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
@@ -834,55 +927,55 @@ useEffect(() => {
         </Card>
       )} */}
 
-      {/* Data Settings */}
-      {activeTab === 'data' && (
-        <Card>
-          <CardHeader>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-              Quản lý dữ liệu
-            </h2>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div>
-              <h3 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-2">
-                Xuất dữ liệu
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                Tải xuống tất cả dữ liệu của bạn dưới dạng file JSON
-              </p>
-              <Button variant="outline" size="sm">
-                <Download className="w-4 h-4 mr-2" />
-                Xuất dữ liệu
-              </Button>
-            </div>
+			{/* Data Settings */}
+			{activeTab === "data" && (
+				<Card>
+					<CardHeader>
+						<h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+							Quản lý dữ liệu
+						</h2>
+					</CardHeader>
+					<CardContent className="space-y-6">
+						<div>
+							<h3 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-2">
+								Xuất dữ liệu
+							</h3>
+							<p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+								Tải xuống tất cả dữ liệu của bạn dưới dạng file JSON
+							</p>
+							<Button variant="outline" size="sm">
+								<Download className="w-4 h-4 mr-2" />
+								Xuất dữ liệu
+							</Button>
+						</div>
 
-            <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-              <h3 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-2">
-                Lịch sử hoạt động
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                Xem lịch sử hoạt động của tài khoản
-              </p>
-              <Button variant="outline" size="sm">
-                Xem lịch sử hoạt động
-              </Button>
-            </div>
+						<div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+							<h3 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-2">
+								Lịch sử hoạt động
+							</h3>
+							<p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+								Xem lịch sử hoạt động của tài khoản
+							</p>
+							<Button variant="outline" size="sm">
+								Xem lịch sử hoạt động
+							</Button>
+						</div>
 
-            <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-              <h3 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-2">
-                Xóa dữ liệu
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                Xóa tất cả dữ liệu cá nhân của bạn khỏi hệ thống
-              </p>
-              <Button variant="destructive" size="sm">
-                <Trash2 className="w-4 h-4 mr-2" />
-                Xóa dữ liệu
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-    </div>
-  );
+						<div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+							<h3 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-2">
+								Xóa dữ liệu
+							</h3>
+							<p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+								Xóa tất cả dữ liệu cá nhân của bạn khỏi hệ thống
+							</p>
+							<Button variant="destructive" size="sm">
+								<Trash2 className="w-4 h-4 mr-2" />
+								Xóa dữ liệu
+							</Button>
+						</div>
+					</CardContent>
+				</Card>
+			)}
+		</div>
+	);
 }

@@ -1,237 +1,120 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
-import { env } from "./env";
 
-// =============================================
-// Axios Instance Configuration
-// =============================================
+// ─── Instance ─────────────────────────────────────────────────────────────────
+
 const axiosInstance = axios.create({
-  baseURL: env.API_BASE_URL,
-  timeout: env.API_TIMEOUT,
-  withCredentials: true, // Required for cookies (refreshToken)
-  headers: {
-    "Content-Type": "application/json"
-  },
+	baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1",
+	timeout: parseInt(import.meta.env.VITE_API_TIMEOUT || "10000"),
+	withCredentials: true,
+	headers: { "Content-Type": "application/json" },
 });
 
-// Store reference to avoid circular imports
 let authStore: any = null;
 
-// Initialize store reference
-export const initializeAxiosAuth = (store: any) => {
-  authStore = store;
+export const initializeAxiosAuth = (store: any): void => {
+	authStore = store;
 };
 
-// =============================================
-// Request Interceptor: Attach Access Token
-// =============================================
+const AUTH_SKIP_PATHS = new Set([
+	"/auth/refresh-token",
+	"/auth/login",
+	"/auth/logout",
+	"/auth/register",
+	"/auth/oauth/login",
+	"/auth/forgot-password",
+	"/auth/reset-password",
+]);
+
+const REFRESH_PATH = "/auth/refresh-token";
+
+const isRefreshTokenRequest = (
+	config: InternalAxiosRequestConfig | undefined,
+): boolean => config?.url?.includes(REFRESH_PATH) ?? false;
+
+const shouldRetryRequest = (
+	config: InternalAxiosRequestConfig | undefined,
+): boolean => {
+	if (!config?.url) return false;
+	// ✅ js-set-map-lookups: O(1) Set.has() instead of Array.some() + includes()
+	return !AUTH_SKIP_PATHS.has(config.url);
+};
+
+// ─── Token refresh queue ──────────────────────────────────────────────────────
+let refreshInFlight: Promise<string> | null = null;
+
+const getOrStartRefresh = (): Promise<string> => {
+	if (refreshInFlight) return refreshInFlight;
+
+	refreshInFlight = (async (): Promise<string> => {
+		if (!authStore) throw new Error("Auth store not initialized");
+		const newToken: string | null = await authStore
+			.getState()
+			.refreshAccessToken();
+		if (!newToken) throw new Error("Token refresh returned null");
+		return newToken;
+	})();
+
+	return refreshInFlight;
+};
+
+// ─── Request Interceptor ──────────────────────────────────────────────────────
 axiosInstance.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    if (!authStore) return config;
-    
-    const { token } = authStore.getState();
+	(config) => {
+		if (!authStore || isRefreshTokenRequest(config)) return config;
 
-    // Don't attach Authorization header for refresh token requests
-    // (backend chỉ cần refresh token cookie)
-    if (isRefreshTokenRequest(config)) {
-      return config;
-    }
+		const token: string | null = authStore.getState().token;
+		if (token) config.headers.Authorization = `Bearer ${token}`;
 
-    // Attach access token to Authorization header for other requests
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-
-    return config;
-  },
-  (error) => {
-    console.error("Request Error:", error);
-    return Promise.reject(error);
-  }
+		return config;
+	},
+	(error) => Promise.reject(error),
 );
 
-// =============================================
-// Response Interceptor: Handle 401 & Token Refresh
-// =============================================
+type RetryableConfig = InternalAxiosRequestConfig & { _retry?: boolean };
 
-// Global refresh state management
-let isRefreshing = false;
-let refreshPromise: Promise<string> | null = null;
-
-// Queue for failed requests during token refresh
-interface QueueItem {
-  resolve: (token: string) => void;
-  reject: (error: any) => void;
-}
-let failedQueue: QueueItem[] = [];
-
-/**
- * Process all queued requests after token refresh
- */
-const processQueue = (error: any = null, token: string | null = null): void => {
-  failedQueue.forEach((promise) => {
-    if (error) {
-      promise.reject(error);
-    } else if (token) {
-      promise.resolve(token);
-    }
-  });
-
-  failedQueue = [];
-};
-
-/**
- * Check if request should be retried after 401
- */
-const shouldRetryRequest = (config: InternalAxiosRequestConfig | undefined): boolean => {
-  if (!config?.url) return false;
-
-  // Don't retry auth-related requests
-  const AUTH_PATHS = [
-    "/auth/refresh-token",
-    "/auth/login",
-    "/auth/logout",
-    "/auth/register",
-    "/auth/oauth/login",
-    "/auth/forgot-password",
-    "/auth/reset-password",
-  ];
-
-  return !AUTH_PATHS.some((path) => config.url?.includes(path));
-};
-
-/**
- * Check if request is refresh token request
- */
-const isRefreshTokenRequest = (config: InternalAxiosRequestConfig | undefined): boolean => {
-  return config?.url?.includes('/auth/refresh-token') || false;
-};
-
-/**
- * Refresh access token using the refresh token cookie
- */
-const refreshAccessToken = async (): Promise<string> => {
-  if (!authStore) throw new Error("Auth store not initialized");
-  
-  const { refreshAccessToken: storeRefresh } = authStore.getState();
-
-  try {
-    const newToken = await storeRefresh();
-
-    if (!newToken) {
-      throw new Error("Failed to refresh token");
-    }
-
-    return newToken;
-  } catch (error) {
-    console.error("Token refresh failed in interceptor:", error);
-    throw error;
-  }
-};
-
-// Response interceptor
 axiosInstance.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+	(response) => response,
 
-  async (error: AxiosError) => {
-    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+	async (error: AxiosError) => {
+		const originalRequest = error.config as RetryableConfig | undefined;
+		const status = error.response?.status;
 
-    // Handle 401 Unauthorized
-    if (error.response?.status === 401) {
+		if (status === 401) {
+			if (!shouldRetryRequest(originalRequest) || originalRequest?._retry) {
+				authStore?.getState().logout();
+				return Promise.reject(error);
+			}
 
-      // Check if request should be retried
-      if (!shouldRetryRequest(originalRequest)) {
-        return Promise.reject(error);
-      }
+			originalRequest!._retry = true;
 
-      // Check if already retried
-      if (originalRequest._retry) {
-        if (authStore) authStore.getState().logout();
-        return Promise.reject(error);
-      }
+			try {
+				const newToken = await getOrStartRefresh();
+				originalRequest!.headers.Authorization = `Bearer ${newToken}`;
+				return axiosInstance(originalRequest!);
+			} catch (refreshError) {
+				authStore?.getState().logout();
+				return Promise.reject(refreshError);
+			}
+		}
 
-      // Mark request as retried
-      originalRequest._retry = true;
+		// ── 403 Forbidden ───────────────────────────────────────────────────────
+		if (status === 403 && originalRequest?.url?.includes(REFRESH_PATH)) {
+			const { user, isAuthenticated } = authStore?.getState() ?? {};
+			if (user || isAuthenticated) authStore?.getState().logout();
+		}
 
-      // If refresh is already in progress, queue this request
-      if (isRefreshing && refreshPromise) {
-        return new Promise((resolve, reject) => {
-          failedQueue.push({
-            resolve: (token: string) => {
-              originalRequest.headers.Authorization = `Bearer ${token}`;
-              resolve(axiosInstance(originalRequest));
-            },
-            reject: (err: any) => {
-              reject(err);
-            },
-          });
-        });
-      }
+		// ── Dev logging ─────────────────────────────────────────────────────────
+		if (process.env.NODE_ENV === "development") {
+			console.error("API Error:", {
+				status,
+				url: error.config?.url,
+				method: error.config?.method,
+				message: (error.response?.data as any)?.message ?? error.message,
+			});
+		}
 
-      // Start token refresh
-      isRefreshing = true;
-      // Create refresh promise
-      refreshPromise = refreshAccessToken();
-
-      try {
-        const newToken = await refreshPromise;
-
-        // Process all queued requests with new token
-        processQueue(null, newToken);
-
-        // Retry original request with new token
-        originalRequest.headers.Authorization = `Bearer ${newToken}`;
-        return axiosInstance(originalRequest);
-
-      } catch (refreshError) {
-        console.error("Token refresh failed, logging out user");
-
-        // Process queue with error
-        processQueue(refreshError, null);
-
-        // Logout user
-        if (authStore) authStore.getState().logout();
-
-        return Promise.reject(refreshError);
-
-      } finally {
-        // Reset refresh state
-        isRefreshing = false;
-        refreshPromise = null;
-      }
-    }
-
-    // Handle 403 Forbidden
-    if (error.response?.status === 403) {
-      const url = error.config?.url || '';
-
-      // If refresh token endpoint returns 403, logout immediately
-      if (url.includes('/auth/refresh-token') && authStore) {
-        const { user, isAuthenticated } = authStore.getState();
-
-        // During app initialization it's normal to probe refresh-token without an authenticated user.
-        // Only force-logout if we actually have an authenticated session.
-        if (user || isAuthenticated) {
-          console.error("Refresh token invalid or expired, logging out");
-          authStore.getState().logout();
-        }
-      }
-    }
-
-    // Development error logging
-    if (process.env.NODE_ENV === "development") {
-      console.error("API Error:", {
-        status: error.response?.status,
-        url: error.config?.url,
-        method: error.config?.method,
-        message: (error.response?.data as any)?.message || error.message,
-        data: error.response?.data,
-      });
-    }
-
-    return Promise.reject(error);
-  }
+		return Promise.reject(error);
+	},
 );
 
 export default axiosInstance;

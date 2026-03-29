@@ -7,6 +7,7 @@ Tài liệu này hướng dẫn cách tích hợp sidebar navigation vào tất 
 ## Cấu trúc Dashboard
 
 ### Layout Hierarchy
+
 ```
 DashboardWrapper
 └── DashboardLayout
@@ -19,16 +20,19 @@ DashboardWrapper
 ### Components
 
 #### 1. **DashboardWrapper**
+
 - Wrapper component đơn giản để wrap tất cả các trang dashboard
 - Import và sử dụng DashboardLayout
 
 #### 2. **DashboardLayout**
+
 - Layout chính cho dashboard
 - Quản lý sidebar state (open/close, collapsed)
 - Xử lý keyboard shortcuts
 - Responsive design
 
 #### 3. **DashboardSidebar**
+
 - Sidebar navigation với đầy đủ tính năng
 - Search, categories, badges, shortcuts
 - User info và theme toggle
@@ -75,11 +79,13 @@ DashboardWrapper
 ## Cách tích hợp vào trang mới
 
 ### 1. **Import DashboardWrapper**
+
 ```typescript
-import { DashboardWrapper } from '~/components/layout/DashboardWrapper';
+import { DashboardWrapper } from "~/components/layout/DashboardWrapper";
 ```
 
 ### 2. **Wrap component content**
+
 ```typescript
 export default function NewDashboardPage() {
   return (
@@ -95,6 +101,7 @@ export default function NewDashboardPage() {
 ```
 
 ### 3. **Thêm route vào routes.ts**
+
 ```typescript
 route("dashboard/new-page", "routes/dashboard.new-page.tsx"),
 ```
@@ -102,6 +109,7 @@ route("dashboard/new-page", "routes/dashboard.new-page.tsx"),
 ## Routing Configuration
 
 ### Routes đã được định nghĩa
+
 ```typescript
 // Dashboard routes
 route("dashboard", "routes/dashboard._index.tsx"), // Dashboard overview
@@ -114,6 +122,7 @@ route("dashboard/settings", "routes/dashboard.settings.tsx"), // Settings
 ```
 
 ### URL Structure
+
 - `/dashboard` - Tổng quan
 - `/dashboard/my-posts` - Bài viết của tôi
 - `/dashboard/bookmarks` - Bài viết đã lưu
@@ -125,6 +134,7 @@ route("dashboard/settings", "routes/dashboard.settings.tsx"), // Settings
 ## Sidebar Navigation
 
 ### Menu Items
+
 1. **Tổng quan** (`/dashboard`) - ⌘1
 2. **Viết bài mới** (`/dashboard/posts/new`) - ⌘N
 3. **Bài viết của tôi** (`/dashboard/my-posts`) - ⌘2
@@ -134,6 +144,7 @@ route("dashboard/settings", "routes/dashboard.settings.tsx"), // Settings
 7. **Cài đặt** (`/dashboard/settings`) - ⌘6
 
 ### Categories
+
 - **Chính**: Dashboard tổng quan
 - **Nội dung**: Quản lý bài viết, viết bài mới, bookmarks
 - **Thống kê**: Analytics và báo cáo
@@ -142,6 +153,7 @@ route("dashboard/settings", "routes/dashboard.settings.tsx"), // Settings
 ## Keyboard Shortcuts
 
 ### Navigation
+
 - `⌘1` - Tổng quan
 - `⌘2` - Bài viết của tôi
 - `⌘3` - Bài viết đã lưu
@@ -151,6 +163,7 @@ route("dashboard/settings", "routes/dashboard.settings.tsx"), // Settings
 - `⌘N` - Viết bài mới
 
 ### UI Controls
+
 - `⌘B` - Thu gọn sidebar
 - `⌘K` - Tìm kiếm
 - `⌘?` - Hiển thị phím tắt
@@ -158,16 +171,19 @@ route("dashboard/settings", "routes/dashboard.settings.tsx"), // Settings
 ## Responsive Behavior
 
 ### Desktop (lg+)
+
 - Sidebar luôn hiển thị
 - Có thể collapse/expand
 - Full navigation với labels
 
 ### Tablet (md)
+
 - Sidebar có thể ẩn/hiện
 - Responsive layout
 - Touch-friendly controls
 
 ### Mobile (sm-)
+
 - Sidebar overlay
 - Hamburger menu
 - Mobile-optimized navigation
@@ -175,11 +191,13 @@ route("dashboard/settings", "routes/dashboard.settings.tsx"), // Settings
 ## State Management
 
 ### Sidebar State
+
 - `sidebarOpen`: Mobile sidebar visibility
 - `sidebarCollapsed`: Desktop sidebar collapse state
 - Persistent trong localStorage
 
 ### Theme State
+
 - Dark/light mode toggle
 - Persistent theme preference
 - System theme detection
@@ -187,16 +205,19 @@ route("dashboard/settings", "routes/dashboard.settings.tsx"), // Settings
 ## Performance Optimizations
 
 ### Code Splitting
+
 - Lazy loading cho các trang dashboard
 - Component-level code splitting
 - Route-based chunking
 
 ### Caching
+
 - Query caching với React Query
 - Sidebar state persistence
 - Theme preference caching
 
 ### Bundle Optimization
+
 - Tree shaking cho unused components
 - Icon optimization
 - CSS purging
@@ -204,16 +225,19 @@ route("dashboard/settings", "routes/dashboard.settings.tsx"), // Settings
 ## Testing
 
 ### Unit Tests
+
 - Component testing cho DashboardWrapper
 - Sidebar functionality testing
 - Keyboard shortcuts testing
 
 ### Integration Tests
+
 - Navigation flow testing
 - State persistence testing
 - Responsive behavior testing
 
 ### E2E Tests
+
 - Full dashboard workflow
 - Cross-browser compatibility
 - Mobile responsiveness
@@ -243,6 +267,7 @@ route("dashboard/settings", "routes/dashboard.settings.tsx"), // Settings
    - Verify viewport settings
 
 ### Debug Tips
+
 - Use React DevTools
 - Check browser console
 - Verify component props
@@ -252,6 +277,7 @@ route("dashboard/settings", "routes/dashboard.settings.tsx"), // Settings
 ## Future Enhancements
 
 ### Planned Features
+
 - [ ] Drag and drop menu reordering
 - [ ] Custom menu categories
 - [ ] Menu item pinning
@@ -261,6 +287,7 @@ route("dashboard/settings", "routes/dashboard.settings.tsx"), // Settings
 - [ ] Menu item shortcuts customization
 
 ### Performance Improvements
+
 - [ ] Virtual scrolling for large menus
 - [ ] Image optimization
 - [ ] Bundle size reduction
@@ -279,9 +306,10 @@ Khi thêm trang dashboard mới:
 7. **Add tests** cho component mới
 
 ### Code Standards
+
 - Use TypeScript
 - Follow component naming conventions
 - Implement proper error handling
 - Add loading states
 - Ensure accessibility compliance
-- Test cross-browser compatibility 
+- Test cross-browser compatibility
