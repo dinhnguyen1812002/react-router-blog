@@ -15,6 +15,7 @@ export default [
 		route("bookmarks", "routes/dashboard/bookmarks.tsx"),
 		route("my-posts", "routes/dashboard/my-posts.tsx"), // Thêm route mới cho My Posts
 		route("settings", "routes/dashboard/settings.tsx"),
+		route("api-keys", "routes/dashboard/api-keys.tsx"),
 
 		// route("posts/new", "routes/dashboard/posts/.tsx"),
 		// route("posts/edit/:id", "routes/dashboard/posts/edit.tsx"), //Route edit post

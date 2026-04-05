@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { z } from "zod";
+import { AuthDivider } from "~/components/auth/AuthDivider";
 import { OAuthButtons } from "~/components/auth/OAuthButtons";
 import { useAuth } from "~/hooks/useAuth";
 import type { Route } from "../+types/root";
@@ -91,21 +92,6 @@ function Banner({
 				{message}
 			</p>
 		</motion.div>
-	);
-}
-
-function Divider({ label }: { label: string }) {
-	return (
-		<div className="relative my-8">
-			<div className="absolute inset-0 flex items-center">
-				<div className="w-full border-t border-slate-200 dark:border-slate-700" />
-			</div>
-			<div className="relative flex justify-center text-sm">
-				<span className="px-4 bg-slate-50 dark:bg-slate-900 text-slate-500 dark:text-slate-400">
-					{label}
-				</span>
-			</div>
-		</div>
 	);
 }
 
@@ -433,14 +419,15 @@ export default function LoginPage() {
 					</form>
 
 					{/* OAuth */}
-					<Divider label="Or continue with" />
+					<AuthDivider label="Or continue with" />
 					<OAuthButtons
+						layout="icon-grid"
 						onSuccess={handleOAuthSuccess}
 						onError={handleOAuthError}
 					/>
 
 					{/* Register CTA */}
-					<Divider label="Don't have an account?" />
+					<AuthDivider label="Don't have an account?" />
 					<Link
 						to="/register"
 						className="block mt-4 w-full text-center bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold py-3 px-4 rounded-lg border-2 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 transition-all duration-200"

@@ -2,7 +2,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	AlertCircle,
 	Check,
-	CheckCircle2,
 	Eye,
 	EyeOff,
 	Loader2,
@@ -15,9 +14,10 @@ import {
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { z } from "zod";
+import { AuthDivider } from "~/components/auth/AuthDivider";
 import { OAuthButtons } from "~/components/auth/OAuthButtons";
 import { useAuth } from "~/hooks/useAuth";
 import type { Route } from "../+types/root";
@@ -187,10 +187,6 @@ export default function RegisterPage() {
 		}
 	};
 
-	const onSwitchToLogin = () => {
-		navigate("/login");
-	};
-
 	const handleOAuthSuccess = (user: any) => {
 		toast.success("Registration successful! Welcome to our community.");
 	};
@@ -277,27 +273,27 @@ export default function RegisterPage() {
 			</div>
 
 			{/* Right Side - Register Form */}
-			<div className="w-full lg:w-1/2 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8 sm:py-12 overflow-y-auto">
+			<div className="w-full lg:w-1/2 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8 sm:py-10 overflow-y-auto">
 				<motion.div
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.5 }}
-					className="w-full max-w-md"
+					className="w-full max-w-lg"
 				>
 					{/* Mobile Logo */}
-					<div className="mb-8 lg:hidden text-center">
-						<div className="inline-flex items-center justify-center w-14 h-14 bg-slate-900 dark:bg-white rounded-xl mb-4">
+					<div className="mb-6 lg:hidden text-center">
+						<div className="inline-flex items-center justify-center w-14 h-14 bg-slate-900 dark:bg-white rounded-xl mb-3">
 							<UserPlus className="w-7 h-7 text-white dark:text-slate-900" />
 						</div>
 					</div>
 
 					{/* Header */}
-					<div className="mb-8">
-						<h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-2">
+					<div className="mb-6 text-center sm:text-left">
+						<h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-1.5">
 							Create Account
 						</h1>
-						<p className="text-slate-600 dark:text-slate-400">
-							Join us today and get started
+						<p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">
+							Join the community — it only takes a minute
 						</p>
 					</div>
 
@@ -323,7 +319,7 @@ export default function RegisterPage() {
 					{/* Register Form */}
 					<form
 						onSubmit={handleSubmit(onSubmit)}
-						className="space-y-5"
+						className="space-y-4"
 						noValidate
 					>
 						{/* Full Name Field */}
@@ -492,7 +488,7 @@ export default function RegisterPage() {
 									</div>
 
 									{/* Password Requirements */}
-									<div className="mt-3 space-y-1">
+									<div className="mt-3 grid grid-cols-1 gap-x-6 gap-y-1 sm:grid-cols-2">
 										{passwordRequirements.map((req) => (
 											<div
 												key={req.label}
@@ -671,47 +667,22 @@ export default function RegisterPage() {
 						</button>
 					</form>
 
-					{/* OAuth Section */}
-					<div className="mt-8">
-						<div className="relative">
-							<div className="absolute inset-0 flex items-center">
-								<div className="w-full border-t border-slate-200 dark:border-slate-700"></div>
-							</div>
-							<div className="relative flex justify-center text-sm">
-								<span className="px-4 bg-slate-50 dark:bg-slate-900 text-slate-500 dark:text-slate-400">
-									Or continue with
-								</span>
-							</div>
-						</div>
+					<AuthDivider label="Or continue with" />
+					<OAuthButtons
+						layout="icon-grid"
+						onSuccess={handleOAuthSuccess}
+						onError={handleOAuthError}
+					/>
 
-						<div className="mt-6">
-							<OAuthButtons
-								onSuccess={handleOAuthSuccess}
-								onError={handleOAuthError}
-							/>
-						</div>
-					</div>
-
-					{/* Switch to Login */}
-					<div className="mt-8">
-						<div className="relative">
-							<div className="absolute inset-0 flex items-center">
-								<div className="w-full border-t border-slate-200 dark:border-slate-700"></div>
-							</div>
-							<div className="relative flex justify-center text-sm">
-								<span className="px-4 bg-slate-50 dark:bg-slate-900 text-slate-500 dark:text-slate-400">
-									Already have an account?
-								</span>
-							</div>
-						</div>
-						<button
-							type="button"
-							onClick={onSwitchToLogin}
-							className="mt-4 w-full bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold py-3 px-4 rounded-lg border-2 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 transition-all duration-200"
+					<p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
+						Already have an account?{" "}
+						<Link
+							to="/login"
+							className="font-semibold text-slate-900 underline-offset-4 hover:underline dark:text-white"
 						>
-							Sign in instead
-						</button>
-					</div>
+							Sign in
+						</Link>
+					</p>
 				</motion.div>
 			</div>
 		</div>

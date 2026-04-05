@@ -4,6 +4,7 @@ import {
 	BookOpen,
 	FileText,
 	Home,
+	KeyRound,
 	LogOut,
 	PanelRight,
 	PlusCircle,
@@ -46,6 +47,7 @@ export function Sidebar({
 		{ name: "Bài viết đã lưu", path: "/dashboard/bookmarks", icon: Bookmark },
 		{ name: "Thống kê", path: "/dashboard/analytics", icon: BarChart3 },
 		{ name: "Hồ sơ", path: "/dashboard/profile", icon: User },
+		{ name: "Khóa API", path: "/dashboard/api-keys", icon: KeyRound },
 		{ name: "Cài đặt", path: "/dashboard/settings", icon: Settings },
 	];
 

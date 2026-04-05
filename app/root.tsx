@@ -78,7 +78,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<ScrollProgress />
 				<QueryClientProvider client={queryClient}>
 					<WebSocketProvider>
-						<Toaster position="top-right" theme={theme as any} />
+						<Toaster position="bottom-right" theme={theme as any}  expand={true}/>
 
 						{children}
 					</WebSocketProvider>

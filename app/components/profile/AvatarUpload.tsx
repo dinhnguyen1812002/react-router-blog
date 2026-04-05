@@ -59,7 +59,7 @@ export const AvatarUpload = ({
 			const response = await profileApi.uploadAvatar(file);
 			onAvatarChange(response.url);
 			setPreview(response.url);
-			toast.success("Avatar uploaded successfully!");
+			toast.success("Avatar upgti loaded successfully!");
 		} catch (error: any) {
 			console.error("Upload error:", error);
 			toast.error("Upload Failed", {
@@ -93,11 +93,7 @@ export const AvatarUpload = ({
 					</AvatarFallback>
 				</Avatar>
 
-				{/* <img
-          src={preview }
-          alt="Profile"
-          className="h-32 w-32 rounded-full border-4 border-border object-cover shadow-[var(--shadow-medium)]"
-        /> */}
+		
 
 				{uploading && (
 					<div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full">
