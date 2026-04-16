@@ -42,3 +42,29 @@ export interface TestimonialItem {
 	handle: string;
 	avatar: string;
 }
+
+export interface ApiResponse<T> {
+	data: T;
+	message?: string;
+	status?: number;
+}
+
+export interface PaginatedResponse<T> {
+	content: T[];
+	pageable: {
+		pageNumber: number;
+		pageSize: number;
+		sort: {
+			sorted: boolean;
+			unsorted: boolean;
+			empty: boolean;
+		};
+	};
+	totalElements: number;
+	totalPages: number;
+	last: boolean;
+	first: boolean;
+	numberOfElements: number;
+	size: number;
+	number: number;
+}

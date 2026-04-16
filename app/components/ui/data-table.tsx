@@ -36,6 +36,7 @@ interface DataTableProps<TData, TValue> {
 	searchKey?: string;
 	searchPlaceholder?: string;
 	showPagination?: boolean;
+	filterControls?: React.ReactNode;
 }
 
 export function DataTable<TData, TValue>({
@@ -44,6 +45,7 @@ export function DataTable<TData, TValue>({
 	searchKey,
 	searchPlaceholder = "Search...",
 	showPagination = false,
+	filterControls,
 }: DataTableProps<TData, TValue>) {
 	const [sorting, setSorting] = React.useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -74,7 +76,7 @@ export function DataTable<TData, TValue>({
 
 	return (
 		<div className="w-full">
-			<div className="flex items-center py-4">
+			<div className="flex items-center gap-3 py-4">
 				{searchKey && (
 					<Input
 						placeholder={searchPlaceholder}
@@ -87,6 +89,7 @@ export function DataTable<TData, TValue>({
 						className="max-w-sm"
 					/>
 				)}
+				{filterControls && <>{filterControls}</>}
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<Button variant="outline" className="ml-auto">

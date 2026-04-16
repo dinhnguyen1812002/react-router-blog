@@ -61,6 +61,7 @@ export default [
 		route("tags", "routes/admin/tags.tsx"),
 		route("newsletter", "routes/admin/newsletter.tsx"),
 		route("settings", "routes/admin/settings.tsx"),
+		route("reports", "routes/admin/reports.tsx"),
 	]),
 
 	// User profile and settings

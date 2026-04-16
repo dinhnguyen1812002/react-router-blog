@@ -21,6 +21,7 @@ import ReadingProgressBar, {
 import { PostDetailSkeleton } from "~/components/skeleton/PostDetailSkeleton";
 import { cn, formatDateSimple, formatNumber } from "~/lib/utils";
 import { resolveAvatarUrl } from "~/utils/image";
+import { ReportButton } from "~/components/article";
 
 export default function PostDetailPage() {
 	const { slug } = useParams();
@@ -224,7 +225,15 @@ export default function PostDetailPage() {
 								</div>
 							)}
 
-							<PostActions post={post} layout="horizontal" />
+							<div className="flex items-center gap-3">
+								<ReportButton
+									postId={post.id}
+									postTitle={post.title}
+									variant="ghost"
+									size="sm"
+								/>
+								<PostActions post={post} layout="horizontal" />
+							</div>
 						</div>
 
 						{/* Author Section */}

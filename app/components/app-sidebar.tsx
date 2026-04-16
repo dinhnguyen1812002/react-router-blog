@@ -89,10 +89,10 @@ const data = {
 					title: "Tags",
 					url: "/admin/tags",
 				},
-				// {
-				//   title: "Quantum",
-				//   url: "#",
-				// },
+				{
+					title: "Reports",
+					url: "/admin/reports",
+				},
 			],
 		},
 
