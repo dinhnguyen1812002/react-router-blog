@@ -81,6 +81,33 @@ export const postsApi = {
 		}
 	},
 
+	getRelatedPosts: async (postId: string): Promise<ApiResponse<Post[]>> => {
+		try {
+			const response = await axiosInstance.get(`/post/${postId}/related`);
+
+			if (response.data?.data) {
+				return response.data;
+			}
+			if (Array.isArray(response.data)) {
+				return {
+					data: response.data,
+					message: "Success",
+					success: true,
+					slug: null,
+				};
+			}
+			return {
+				data: [],
+				message: "Success",
+				success: true,
+				slug: null,
+			};
+		} catch (error) {
+			console.error("Related Posts API Error:", error);
+			throw error;
+		}
+	},
+
 	getPostBySlug: async (slug: string): Promise<ApiResponse<Post>> => {
 		try {
 			const response = await axiosInstance.get(`/post/${slug}`);

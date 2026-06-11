@@ -4,8 +4,6 @@
  * Unified create and edit post page.
  * - Create: /dashboard/article
  * - Edit: /dashboard/article/:id/edit
- *
- * Features: TipTap editor, SavePostDialog with Zod validation, toast feedback.
  */
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -14,7 +12,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
 import { authorApi, type CreateAuthorPostRequest } from "~/api/author";
-import { SavePostDialog } from "~/components/article/save-post-dialog";
+import { SavePublishModal } from "~/components/editor/SavePublishModal";
 import { SimpleEditor } from "~/components/tiptap-templates/simple/simple-editor";
 import { Button } from "~/components/ui";
 import type { PostFormMetadata } from "~/schemas/post";
@@ -147,7 +145,7 @@ export default function ArticlePage() {
 				<SimpleEditor value={editorContent} onChange={setEditorContent} />
 			</main>
 
-			<SavePostDialog
+			<SavePublishModal
 				open={isSaveDialogOpen}
 				onOpenChange={setIsSaveDialogOpen}
 				onSave={handleSave}

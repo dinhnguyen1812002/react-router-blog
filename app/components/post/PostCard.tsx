@@ -213,7 +213,7 @@ const DefaultPostCard = memo(function DefaultPostCard({
 					</div>
 				</div>
 
-				<div className="p-5">
+				<div className="p-2">
 					<h3 className="font-display font-bold text-lg text-foreground line-clamp-2 mb-2 group-hover:text-primary transition-colors duration-300">
 						{post.title}
 					</h3>

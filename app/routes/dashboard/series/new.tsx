@@ -1,76 +1,74 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Loader2, Save } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
-import { z } from "zod";
 import { seriesApi } from "~/api/series";
+import {
+	createSeriesSchema,
+	toCreateSeriesPayload,
+	type CreateSeriesFormValues,
+} from "~/components/series/series-schemas";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader } from "~/components/ui/Card";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
-
-const seriesSchema = z.object({
-	title: z
-		.string()
-		.min(1, "Tiêu đề là bắt buộc")
-		.max(200, "Tiêu đề không được quá 200 ký tự"),
-	description: z
-		.string()
-		.min(1, "Mô tả là bắt buộc")
-		.max(500, "Mô tả không được quá 500 ký tự"),
-});
-
-type SeriesForm = z.infer<typeof seriesSchema>;
+import { slugifyText } from "~/utils/slugify";
 
 export default function NewSeriesPage() {
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const slugManuallyEdited = useRef(false);
 
 	const {
 		register,
 		handleSubmit,
 		formState: { errors },
-	} = useForm<SeriesForm>({
-		resolver: zodResolver(seriesSchema),
+		setValue,
+		watch,
+	} = useForm<CreateSeriesFormValues>({
+		resolver: zodResolver(createSeriesSchema),
+		defaultValues: {
+			title: "",
+			slug: "",
+			description: "",
+			thumbnail: "",
+			isActive: true,
+			isCompleted: false,
+		},
 	});
 
 	const createSeriesMutation = useMutation({
 		mutationFn: seriesApi.createSeries,
-		onSuccess: (data) => {
+		onSuccess: (result) => {
 			queryClient.invalidateQueries({ queryKey: ["user-series"] });
 			toast.success("Tạo series thành công!");
-			navigate(`/dashboard/series`);
+			if (result.data?.id) {
+				navigate(`/dashboard/series/${result.data.id}/manage`);
+			} else {
+				navigate("/dashboard/series");
+			}
 		},
-		onError: (error) => {
-			toast.error("Có lỗi xảy ra khi tạo series");
-			console.error("Create series error:", error);
-		},
+		onError: () => toast.error("Có lỗi xảy ra khi tạo series"),
 	});
 
-	const onSubmit = async (data: SeriesForm) => {
+	const onSubmit = async (data: CreateSeriesFormValues) => {
 		try {
 			setIsSubmitting(true);
-			await createSeriesMutation.mutateAsync({
-				...data,
-				slug: data.title
-					.toLowerCase()
-					.replace(/[^a-z0-9]+/g, "-")
-					.replace(/(^-|-$)+/g, ""),
-			});
-		} catch (error) {
-			console.error("Error creating series:", error);
+			await createSeriesMutation.mutateAsync(toCreateSeriesPayload(data));
 		} finally {
 			setIsSubmitting(false);
 		}
 	};
 
+	const isActive = watch("isActive");
+	const isCompleted = watch("isCompleted");
+
 	return (
 		<div className="max-w-2xl mx-auto space-y-6">
-			{/* Header */}
 			<div className="flex items-center gap-4">
 				<Button
 					variant="ghost"
@@ -81,67 +79,88 @@ export default function NewSeriesPage() {
 					Quay lại
 				</Button>
 				<div>
-					<h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 ">
-						Tạo Series Mới
-					</h1>
-					<p className="text-gray-600 dark:text-gray-400 mt-1">
-						Tạo một series mới để tổ chức các bài viết của bạn
+					<h1 className="text-2xl font-bold text-foreground">Tạo Series Mới</h1>
+					<p className="text-muted-foreground mt-1">
+						Tạo series mới để tổ chức các bài viết
 					</p>
 				</div>
 			</div>
 
-			{/* Form */}
 			<Card>
 				<CardHeader>
-					<h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-						Thông tin Series
-					</h2>
+					<h2 className="text-lg font-semibold">Thông tin Series</h2>
 				</CardHeader>
 				<CardContent>
 					<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 						<div className="space-y-2">
-							<label
-								htmlFor="title"
-								className="text-sm font-medium text-gray-700 dark:text-gray-300"
-							>
-								Tiêu đề Series *
-							</label>
+							<label className="text-sm font-medium">Tiêu đề *</label>
 							<Input
-								id="title"
-								{...register("title")}
-								placeholder="Nhập tiêu đề series..."
-								className={
-									errors.title ? "border-red-500 dark:border-red-400" : ""
-								}
+								{...register("title", {
+									onChange: (e) => {
+										if (!slugManuallyEdited.current) {
+											setValue("slug", slugifyText(e.target.value), {
+												shouldValidate: true,
+											});
+										}
+									},
+								})}
+								className={errors.title ? "border-destructive" : ""}
 							/>
 							{errors.title && (
-								<p className="text-sm text-red-500 dark:text-red-400">
-									{errors.title.message}
+								<p className="text-sm text-destructive">{errors.title.message}</p>
+							)}
+						</div>
+
+						<div className="space-y-2">
+							<label className="text-sm font-medium">Slug *</label>
+							<Input
+								{...register("slug", {
+									onChange: () => {
+										slugManuallyEdited.current = true;
+									},
+								})}
+								className={errors.slug ? "border-destructive" : ""}
+							/>
+							<p className="text-xs text-muted-foreground">
+								Tự động từ tiêu đề (5–250 ký tự, duy nhất).
+							</p>
+							{errors.slug && (
+								<p className="text-sm text-destructive">{errors.slug.message}</p>
+							)}
+						</div>
+
+						<div className="space-y-2">
+							<label className="text-sm font-medium">Mô tả *</label>
+							<Textarea rows={4} {...register("description")} />
+							{errors.description && (
+								<p className="text-sm text-destructive">
+									{errors.description.message}
 								</p>
 							)}
 						</div>
 
 						<div className="space-y-2">
-							<label
-								htmlFor="description"
-								className="text-sm font-medium text-gray-700 dark:text-gray-300"
-							>
-								Mô tả Series *
+							<label className="text-sm font-medium">Thumbnail (URL)</label>
+							<Input {...register("thumbnail")} placeholder="https://..." />
+						</div>
+
+						<div className="flex flex-wrap gap-4">
+							<label className="flex items-center gap-2">
+								<input
+									type="checkbox"
+									checked={isActive}
+									onChange={(e) => setValue("isActive", e.target.checked)}
+								/>
+								<span className="text-sm">Đang hoạt động</span>
 							</label>
-							<Textarea
-								id="description"
-								{...register("description")}
-								placeholder="Nhập mô tả series..."
-								rows={4}
-								className={
-									errors.description ? "border-red-500 dark:border-red-400" : ""
-								}
-							/>
-							{errors.description && (
-								<p className="text-sm text-red-500 dark:text-red-400">
-									{errors.description.message}
-								</p>
-							)}
+							<label className="flex items-center gap-2">
+								<input
+									type="checkbox"
+									checked={isCompleted}
+									onChange={(e) => setValue("isCompleted", e.target.checked)}
+								/>
+								<span className="text-sm">Đã hoàn thành</span>
+							</label>
 						</div>
 
 						<div className="flex gap-3 pt-4">

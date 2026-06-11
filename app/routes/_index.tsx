@@ -369,10 +369,10 @@ export default function HomePage() {
 										{tag.name}
 									</span>
 									{/* {tag.postCount && (
-                    <Badge variant="secondary" className="text-xs">
-                      {tag.postCount}
-                    </Badge>
-                  )} */}
+										<Badge variant="secondary" className="text-xs">
+										{tag.postCount}
+										</Badge>
+									)} */}
 								</Link>
 							))}
 						</div>

@@ -5,25 +5,16 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
-import { z } from "zod";
 import { seriesApi } from "~/api/series";
+import {
+	toUpdateSeriesPayload,
+	updateSeriesSchema,
+	type UpdateSeriesFormValues,
+} from "~/components/series/series-schemas";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader } from "~/components/ui/Card";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
-
-const seriesSchema = z.object({
-	title: z
-		.string()
-		.min(1, "Tiêu đề là bắt buộc")
-		.max(200, "Tiêu đề không được quá 200 ký tự"),
-	description: z
-		.string()
-		.min(1, "Mô tả là bắt buộc")
-		.max(500, "Mô tả không được quá 500 ký tự"),
-});
-
-type SeriesForm = z.infer<typeof seriesSchema>;
 
 export default function EditSeriesPage() {
 	const navigate = useNavigate();
@@ -36,33 +27,30 @@ export default function EditSeriesPage() {
 		handleSubmit,
 		formState: { errors },
 		reset,
-	} = useForm<SeriesForm>({
-		resolver: zodResolver(seriesSchema),
+		setValue,
+		watch,
+	} = useForm<UpdateSeriesFormValues>({
+		resolver: zodResolver(updateSeriesSchema),
 	});
 
-	// Get series data
 	const { data: seriesData, isLoading } = useQuery({
-		queryKey: ["series", id],
+		queryKey: ["series-detail", id],
 		queryFn: () => seriesApi.getSeriesById(id!),
 		enabled: !!id,
 	});
 
-	// Update series mutation
 	const updateSeriesMutation = useMutation({
-		mutationFn: (data: SeriesForm) => seriesApi.updateSeries(id!, data),
+		mutationFn: (data: UpdateSeriesFormValues) =>
+			seriesApi.updateSeries(id!, toUpdateSeriesPayload(data)),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["user-series"] });
-			queryClient.invalidateQueries({ queryKey: ["series", id] });
+			queryClient.invalidateQueries({ queryKey: ["series-detail", id] });
 			toast.success("Cập nhật series thành công!");
-			navigate("/dashboard/series");
+			navigate(`/dashboard/series/${id}/manage`);
 		},
-		onError: (error) => {
-			toast.error("Có lỗi xảy ra khi cập nhật series");
-			console.error("Update series error:", error);
-		},
+		onError: () => toast.error("Có lỗi xảy ra khi cập nhật series"),
 	});
 
-	// Delete series mutation
 	const deleteSeriesMutation = useMutation({
 		mutationFn: () => seriesApi.deleteSeries(id!),
 		onSuccess: () => {
@@ -70,107 +58,88 @@ export default function EditSeriesPage() {
 			toast.success("Xóa series thành công!");
 			navigate("/dashboard/series");
 		},
-		onError: (error) => {
-			toast.error("Có lỗi xảy ra khi xóa series");
-			console.error("Delete series error:", error);
-		},
+		onError: () => toast.error("Có lỗi xảy ra khi xóa series"),
 	});
 
-	// Reset form when series data is loaded
 	useEffect(() => {
 		if (seriesData?.data) {
+			const s = seriesData.data;
 			reset({
-				title: seriesData.data.title,
-				description: seriesData.data.description,
+				title: s.title,
+				description: s.description,
+				thumbnail: s.thumbnail ?? "",
+				isActive: s.isActive ?? true,
+				isCompleted: s.isCompleted ?? false,
 			});
 		}
 	}, [seriesData, reset]);
 
-	const onSubmit = async (data: SeriesForm) => {
+	const onSubmit = async (data: UpdateSeriesFormValues) => {
 		try {
 			setIsSubmitting(true);
 			await updateSeriesMutation.mutateAsync(data);
-		} catch (error) {
-			console.error("Error updating series:", error);
 		} finally {
 			setIsSubmitting(false);
 		}
 	};
 
-	const handleDelete = async () => {
-		if (
-			confirm(
-				"Bạn có chắc chắn muốn xóa series này? Hành động này không thể hoàn tác.",
-			)
-		) {
-			await deleteSeriesMutation.mutateAsync();
-		}
-	};
+	const isActive = watch("isActive");
+	const isCompleted = watch("isCompleted");
 
 	if (isLoading) {
 		return (
-			<div className="max-w-2xl mx-auto space-y-6">
-				<div className="animate-pulse space-y-4">
-					<div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
-					<div className="h-64 bg-gray-200 dark:bg-gray-700 rounded"></div>
-				</div>
+			<div className="max-w-2xl mx-auto animate-pulse space-y-4">
+				<div className="h-8 bg-muted rounded w-1/3" />
+				<div className="h-64 bg-muted rounded" />
 			</div>
 		);
 	}
 
 	if (!seriesData?.data) {
 		return (
-			<div className="max-w-2xl mx-auto space-y-6">
-				<div className="text-center">
-					<h1 className="text-2xl font-bold text-red-600 mb-4">
-						Không tìm thấy series
-					</h1>
-					<p className="text-gray-600 dark:text-gray-400 mb-4">
-						Series bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.
-					</p>
-					<Button onClick={() => navigate("/dashboard/series")}>
-						Quay lại danh sách
-					</Button>
-				</div>
+			<div className="max-w-2xl mx-auto text-center py-12">
+				<h1 className="text-2xl font-bold text-destructive mb-4">
+					Không tìm thấy series
+				</h1>
+				<Button onClick={() => navigate("/dashboard/series")}>
+					Quay lại danh sách
+				</Button>
 			</div>
 		);
 	}
 
+	const series = seriesData.data;
+
 	return (
 		<div className="max-w-2xl mx-auto space-y-6">
-			{/* Header */}
 			<div className="flex items-center gap-4">
 				<Button
 					variant="ghost"
 					size="sm"
-					onClick={() => navigate("/dashboard/series")}
+					onClick={() => navigate(`/dashboard/series/${id}/manage`)}
 				>
 					<ArrowLeft className="h-4 w-4 mr-2" />
 					Quay lại
 				</Button>
 				<div className="flex-1">
-					<h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-						Chỉnh sửa Series
-					</h1>
-					<p className="text-gray-600 dark:text-gray-400 mt-1">
-						Cập nhật thông tin series của bạn
+					<h1 className="text-2xl font-bold text-foreground">Chỉnh sửa Series</h1>
+					<p className="text-muted-foreground mt-1 text-sm">
+						Slug: <code>{series.slug}</code>
 					</p>
 				</div>
 				<Button
 					variant="destructive"
 					size="sm"
-					onClick={handleDelete}
+					onClick={() => {
+						if (confirm("Xóa series này?")) deleteSeriesMutation.mutate();
+					}}
 					disabled={deleteSeriesMutation.isPending}
 				>
-					{deleteSeriesMutation.isPending && (
-						<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-					)}
 					<Trash2 className="h-4 w-4 mr-2" />
 					Xóa
 				</Button>
 			</div>
 
-			{/* Form */}
 			<Card>
 				<CardHeader>
 					<h2 className="text-lg font-semibold">Thông tin Series</h2>
@@ -178,44 +147,55 @@ export default function EditSeriesPage() {
 				<CardContent>
 					<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 						<div className="space-y-2">
-							<label htmlFor="title" className="text-sm font-medium">
-								Tiêu đề Series *
-							</label>
+							<label className="text-sm font-medium">Tiêu đề *</label>
 							<Input
-								id="title"
 								{...register("title")}
-								placeholder="Nhập tiêu đề series..."
-								className={errors.title ? "border-red-500" : ""}
+								className={errors.title ? "border-destructive" : ""}
 							/>
 							{errors.title && (
-								<p className="text-sm text-red-500">{errors.title.message}</p>
+								<p className="text-sm text-destructive">{errors.title.message}</p>
 							)}
 						</div>
 
 						<div className="space-y-2">
-							<label htmlFor="description" className="text-sm font-medium">
-								Mô tả Series *
-							</label>
-							<Textarea
-								id="description"
-								{...register("description")}
-								placeholder="Nhập mô tả series..."
-								rows={4}
-								className={errors.description ? "border-red-500" : ""}
-							/>
+							<label className="text-sm font-medium">Mô tả *</label>
+							<Textarea rows={4} {...register("description")} />
 							{errors.description && (
-								<p className="text-sm text-red-500">
+								<p className="text-sm text-destructive">
 									{errors.description.message}
 								</p>
 							)}
+						</div>
+
+						<div className="space-y-2">
+							<label className="text-sm font-medium">Thumbnail (URL)</label>
+							<Input {...register("thumbnail")} placeholder="https://..." />
+						</div>
+
+						<div className="flex flex-wrap gap-4">
+							<label className="flex items-center gap-2">
+								<input
+									type="checkbox"
+									checked={isActive}
+									onChange={(e) => setValue("isActive", e.target.checked)}
+								/>
+								<span className="text-sm">Đang hoạt động</span>
+							</label>
+							<label className="flex items-center gap-2">
+								<input
+									type="checkbox"
+									checked={isCompleted}
+									onChange={(e) => setValue("isCompleted", e.target.checked)}
+								/>
+								<span className="text-sm">Đã hoàn thành</span>
+							</label>
 						</div>
 
 						<div className="flex gap-3 pt-4">
 							<Button
 								type="button"
 								variant="outline"
-								onClick={() => navigate("/dashboard/series")}
-								disabled={isSubmitting}
+								onClick={() => navigate(`/dashboard/series/${id}/manage`)}
 							>
 								Hủy
 							</Button>

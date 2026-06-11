@@ -7,6 +7,7 @@ interface SeriesListProps {
 	onEdit?: (series: Series) => void;
 	onDelete?: (series: Series) => void;
 	onAddPost?: (series: Series) => void;
+	onManage?: (series: Series) => void;
 	loading?: boolean;
 }
 
@@ -16,6 +17,7 @@ export const SeriesList = ({
 	onEdit,
 	onDelete,
 	onAddPost,
+	onManage,
 	loading = false,
 }: SeriesListProps) => {
 	if (loading) {
@@ -68,6 +70,7 @@ export const SeriesList = ({
 					onEdit={onEdit}
 					onDelete={onDelete}
 					onAddPost={onAddPost}
+					onManage={onManage}
 				/>
 			))}
 		</div>

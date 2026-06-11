@@ -32,7 +32,7 @@ export const seriesApi = {
 	},
 
 	getSeriesBySlug: async (slug: string): Promise<ApiResponse<Series>> => {
-		const response = await apiClient.get(`/series/slug/${slug}`);
+		const response = await apiClient.get(`/series/detail/${slug}`);
 		return response.data;
 	},
 

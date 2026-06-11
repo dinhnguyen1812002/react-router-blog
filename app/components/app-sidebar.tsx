@@ -82,6 +82,10 @@ const data = {
 					url: "/admin/posts",
 				},
 				{
+					title: "Series",
+					url: "/dashboard/series",
+				},
+				{
 					title: "Category",
 					url: "/admin/categories",
 				},

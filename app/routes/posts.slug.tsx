@@ -18,6 +18,7 @@ import { ProgressiveContentLoader } from "~/components/post/ProgressiveContentLo
 import ReadingProgressBar, {
 	calculateReadingTime,
 } from "~/components/post/ReadingProgressBar";
+import { RelatedPostsSection } from "~/components/post/RelatedPostsSection";
 import { PostDetailSkeleton } from "~/components/skeleton/PostDetailSkeleton";
 import { cn, formatDateSimple, formatNumber } from "~/lib/utils";
 import { resolveAvatarUrl } from "~/utils/image";
@@ -117,11 +118,8 @@ export default function PostDetailPage() {
 					</div>
 				</nav>
 
-				{/* Article */}
-				<article
-					ref={articleRef}
-					className="container max-w-5xl mx-auto px-4 pb-24 pt-12 sm:px-6"
-				>
+				<div className="container max-w-5xl mx-auto px-4 pb-24 pt-12 sm:px-6">
+					<article ref={articleRef}>
 					<header className="mb-12">
 						{post.categories && post.categories.length > 0 && (
 							<div className="flex flex-wrap gap-2 mb-6">
@@ -159,7 +157,7 @@ export default function PostDetailPage() {
 							</p>
 						)}
 
-						<div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 font-mono">
+						<div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
 							<span className="flex items-center gap-2">
 								{authorAvatar ? (
 									<img
@@ -176,6 +174,16 @@ export default function PostDetailPage() {
 							<span>{formatDate(post.createdAt)}</span>
 							<span>/</span>
 							<span>{readingTime} min read</span>
+
+							<div className="flex items-center gap-3">
+								<ReportButton
+									postId={post.id}
+									postTitle={post.title}
+									variant="ghost"
+									size="sm"
+								/>
+								<PostActions post={post} layout="horizontal" />
+							</div>
 						</div>
 					</header>
 
@@ -213,10 +221,7 @@ export default function PostDetailPage() {
 											to={`/articles?tag=${tag.slug}`}
 											// className="text-sm font-mono text-gray-500 hover:text-black dark:hover:text-white transition-colors "
 
-											className={cn(
-												"text-sm font-mono dark:hover:text-white transition-colors",
-												{},
-											)}
+											className="text-sm dark:hover:text-white transition-colors"
 											style={{ color: tag.color || "inherit" }}
 										>
 											#{tag.name}
@@ -225,7 +230,7 @@ export default function PostDetailPage() {
 								</div>
 							)}
 
-							<div className="flex items-center gap-3">
+							{/* <div className="flex items-center gap-3">
 								<ReportButton
 									postId={post.id}
 									postTitle={post.title}
@@ -233,7 +238,7 @@ export default function PostDetailPage() {
 									size="sm"
 								/>
 								<PostActions post={post} layout="horizontal" />
-							</div>
+							</div> */}
 						</div>
 
 						{/* Author Section */}
@@ -261,11 +266,14 @@ export default function PostDetailPage() {
 							</div>
 						</div>
 
+						{/* Related posts — above comments */}
+						<RelatedPostsSection postId={post.id} />
+
 						{/* Comments */}
 						<section>
 							<div className="flex items-center gap-4 mb-8">
 								<h2 className="text-2xl font-serif">Bình luận</h2>
-								<div className="flex items-center gap-2 text-sm text-gray-500 font-mono">
+								<div className="flex items-center gap-2 text-sm text-gray-500">
 									<MessageSquareText className="w-4 h-4" />[
 									{formatNumber(post.commentCount || 0)}]
 								</div>
@@ -277,6 +285,7 @@ export default function PostDetailPage() {
 						</section>
 					</footer>
 				</article>
+				</div>
 			</div>
 		</MainLayout>
 	);

@@ -1,7 +1,6 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bell } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
-import { type Notification as APINotification, notify } from "~/api/notifi";
+import { useCallback, useState } from "react";
+import { useNavigate } from "react-router";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import {
@@ -11,144 +10,59 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from "~/components/ui/sheet";
+import { useNotifications } from "~/hooks/useNotifications";
+import type { UINotification } from "~/types/notification";
 import { NotificationList } from "./NotificationList";
 
-// Transform API Notification to UI Notification format
-export interface Notification {
-	id: string;
-	title: string;
-	message: string;
-	type: "info" | "success" | "warning" | "error";
-	timestamp: string;
-	read: boolean;
-}
+// Re-export for backward compatibility
+export type { UINotification as Notification } from "~/types/notification";
 
+/**
+ * NotificationCenter Component
+ *
+ * Displays notification bell with unread count badge.
+ * Opens a sheet with notification list on click.
+ * Uses WebSocket for real-time notifications.
+ */
 export const NotificationCenter = () => {
 	const [isOpen, setIsOpen] = useState(false);
-	const queryClient = useQueryClient();
+	const navigate = useNavigate();
 
-	// Fetch notifications with caching and automatic refetching
+	// Use the custom hook for notifications (includes WebSocket real-time)
 	const {
-		data: notificationsData = [],
+		notifications,
+		unreadCount,
 		isLoading,
-		error,
-		refetch: refetchNotifications,
-	} = useQuery<APINotification[]>({
-		queryKey: ["notifications"],
-		queryFn: () => notify.getNotify(),
-		refetchOnWindowFocus: true,
-		refetchInterval: 30 * 1000, // Refetch every 30 seconds
-		staleTime: 5 * 60 * 1000, // 5 minutes
-		gcTime: 10 * 60 * 1000, // 10 minutes
-	});
+		markAsRead,
+		markAllAsRead,
+		refetch,
+	} = useNotifications();
 
-	// Transform API notifications to UI format
-	const notifications: Notification[] = useMemo(() => {
-		return notificationsData
-			.map((n) => ({
-				id: n.notificationId,
-				title: n.title,
-				message: n.message,
-				type: (n.type?.toLowerCase() || "info") as
-					| "info"
-					| "success"
-					| "warning"
-					| "error",
-				timestamp: n.createdAt,
-				read: n.isRead,
-			}))
-			.sort((a, b) => {
-				// Sắp xếp: unread trước, sau đó mới nhất trước
-				if (a.read !== b.read) {
-					return a.read ? 1 : -1;
-				}
-				return (
-					new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-				);
-			});
-	}, [notificationsData]);
+	/**
+	 * Handle notification click - navigate to post and mark as read
+	 */
+	const handleNotificationClick = useCallback(
+		(notification: UINotification) => {
+			// Mark as read if unread
+			if (!notification.read) {
+				markAsRead(notification.id);
+			}
 
-	// Memoize unread count
-	const unreadCount = useMemo(
-		() => notifications.filter((n) => !n.read).length,
-		[notifications],
+			// Navigate to post if postId is available
+			if (notification.postId) {
+				setIsOpen(false);
+				navigate(`/posts/${notification.postId}`);
+			}
+		},
+		[markAsRead, navigate],
 	);
 
-	// Mark notification as read mutation with optimistic updates
-	const { mutate: markAsRead } = useMutation({
-		mutationFn: notify.markAsRead,
-		onMutate: async (notificationId) => {
-			await queryClient.cancelQueries({ queryKey: ["notifications"] });
-			const previousNotifications = queryClient.getQueryData<APINotification[]>(
-				["notifications"],
-			);
-
-			if (previousNotifications) {
-				queryClient.setQueryData<APINotification[]>(
-					["notifications"],
-					previousNotifications.map((notification) =>
-						notification.notificationId === notificationId
-							? { ...notification, isRead: true }
-							: notification,
-					),
-				);
-			}
-
-			return { previousNotifications };
-		},
-		onError: (err, notificationId, context) => {
-			if (context?.previousNotifications) {
-				queryClient.setQueryData(
-					["notifications"],
-					context.previousNotifications,
-				);
-			}
-			console.error("Failed to mark notification as read:", err);
-		},
-		onSettled: () => {
-			queryClient.invalidateQueries({ queryKey: ["notifications"] });
-		},
-	});
-
-	// Mark all notifications as read mutation
-	const { mutate: markAllAsRead } = useMutation({
-		mutationFn: notify.markAllAsRead,
-		onSuccess: () => {
-			// Invalidate và refetch để cập nhật UI
-			queryClient.invalidateQueries({ queryKey: ["notifications"] });
-		},
-		onError: (error) => {
-			console.error("Failed to mark all notifications as read:", error);
-		},
-	});
-
-	// Handle mark all as read
-	const handleMarkAllAsRead = useCallback(() => {
-		const unreadNotifications = notifications.filter((n) => !n.read);
-		if (unreadNotifications.length === 0) return;
-
-		markAllAsRead();
-	}, [notifications, markAllAsRead]);
-
-	// Handle clearing all notifications
+	/**
+	 * Handle clear all - refetch to get latest state
+	 */
 	const handleClearAll = useCallback(() => {
-		// Implement clear all logic if needed
-		// For now, just refetch to get latest state
-		refetchNotifications();
-	}, [refetchNotifications]);
-
-	// Memoize notification list to prevent unnecessary re-renders
-	const notificationList = useMemo(
-		() => (
-			<NotificationList
-				notifications={notifications}
-				onMarkAsRead={markAsRead}
-				onMarkAllAsRead={handleMarkAllAsRead}
-				onClearAll={handleClearAll}
-			/>
-		),
-		[notifications, markAsRead, handleMarkAllAsRead, handleClearAll],
-	);
+		refetch();
+	}, [refetch]);
 
 	return (
 		<Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -177,7 +91,13 @@ export const NotificationCenter = () => {
 				<SheetHeader className="hidden">
 					<SheetTitle>Thông báo</SheetTitle>
 				</SheetHeader>
-				{notificationList}
+				<NotificationList
+					notifications={notifications}
+					onMarkAsRead={markAsRead}
+					onMarkAllAsRead={markAllAsRead}
+					onClearAll={handleClearAll}
+					onNotificationClick={handleNotificationClick}
+				/>
 			</SheetContent>
 		</Sheet>
 	);

@@ -249,7 +249,7 @@ export default function ReportsContent() {
 							<DropdownMenuItem
 								className="text-xs"
 								onClick={() =>
-									window.open(`/posts/${report.postSlug}`, "_blank")
+									window.open(`/articles/${report.postSlug}`, "_blank")
 								}
 							>
 								<FileText className="h-3 w-3 mr-2" />

@@ -5,13 +5,15 @@ import {
 	ArrowUpDown,
 	Edit2,
 	Eye,
+	FileText,
+	Heart,
 	MoreHorizontal,
 	Plus,
 	Search,
 	Trash2,
 	TrendingUp,
 } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { type AdminPostListItem, adminPostsApi } from "~/api/admin-posts";
 import { FeaturedToggle } from "~/components/admin/FeaturedToggle";
@@ -35,34 +37,72 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "~/components/ui/select";
+import type { Category } from "~/types";
+
+// ─── Stat Card ───────────────────────────────────────────────────────────────
+
+interface StatCardProps {
+	label: string;
+	value: string | number;
+	icon: React.ReactNode;
+	colorClass: string;
+}
+
+function StatCard({ label, value, icon, colorClass }: StatCardProps) {
+	return (
+		<div className="bg-card border border-border/50 rounded-lg p-4">
+			<div className="flex items-center justify-between">
+				<div>
+					<p className="text-xs font-medium text-muted-foreground">{label}</p>
+					<p className="text-2xl font-bold text-foreground mt-1">{value}</p>
+				</div>
+				<div className={`h-10 w-10 rounded-lg flex items-center justify-center ${colorClass}`}>
+					{icon}
+				</div>
+			</div>
+		</div>
+	);
+}
+
+// ─── Skeleton ────────────────────────────────────────────────────────────────
+
+function TableSkeleton() {
+	return (
+		<div className="bg-card border border-border/50 rounded-lg p-8">
+			<div className="space-y-4">
+				{Array.from({ length: 5 }, (_, i) => (
+					<div key={i} className="flex items-center space-x-4">
+						<div className="h-4 bg-muted rounded w-1/4 animate-pulse" />
+						<div className="h-4 bg-muted rounded w-1/6 animate-pulse" />
+						<div className="h-4 bg-muted rounded w-1/6 animate-pulse" />
+						<div className="h-4 bg-muted rounded w-1/6 animate-pulse" />
+					</div>
+				))}
+			</div>
+		</div>
+	);
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function ArticlesContent() {
 	const [page, setPage] = useState(0);
 	const [size, setSize] = useState(10);
 	const [search, setSearch] = useState("");
-	const [categoryFilter, setCategoryFilter] = useState<string>("all");
-	const [featuredFilter, setFeaturedFilter] = useState<string>("all");
+	const [categoryFilter, setCategoryFilter] = useState("all");
+	const [featuredFilter, setFeaturedFilter] = useState("all");
 
 	const queryClient = useQueryClient();
 
+	// ── Queries ──────────────────────────────────────────────────────────────
+
 	const { data: postsData, isLoading } = useQuery({
-		queryKey: [
-			"admin-posts",
-			page,
-			size,
-			search,
-			categoryFilter,
-			featuredFilter,
-		],
+		queryKey: ["admin-posts", page, size, categoryFilter, featuredFilter],
 		queryFn: () =>
 			adminPostsApi.getAdminPosts({
 				page,
 				size,
-				search: search || undefined,
-				categoryId:
-					categoryFilter && categoryFilter !== "all"
-						? categoryFilter
-						: undefined,
+				categoryId: categoryFilter !== "all" ? categoryFilter : undefined,
 				featured:
 					featuredFilter === "true"
 						? true
@@ -70,12 +110,19 @@ export default function ArticlesContent() {
 							? false
 							: undefined,
 			}),
+		placeholderData: (prev) => prev,
 	});
 
-	const { data: categoriesData } = useQuery({
+	// FIX: API trả về array trực tiếp, không có wrapper `.data`
+	// Nếu API trả về { data: [...] } thì dùng: categoriesData?.data
+	// Nếu API trả về [...] trực tiếp thì dùng: categoriesData
+	const { data: categoriesData } = useQuery<Category[]>({
 		queryKey: ["categories"],
 		queryFn: () => adminPostsApi.getCategories(),
+		staleTime: 5 * 60 * 1000, // categories ít thay đổi, cache 5 phút
 	});
+
+	// ── Mutations ─────────────────────────────────────────────────────────────
 
 	const deletePostMutation = useMutation({
 		mutationFn: (postId: string) => adminPostsApi.deletePost(postId),
@@ -88,32 +135,54 @@ export default function ArticlesContent() {
 		},
 	});
 
-	const totalViews =
-		postsData?.content?.reduce((sum, post) => sum + (post.viewCount || 0), 0) ||
-		0;
-	const totalLikes =
-		postsData?.content?.reduce((sum, post) => sum + (post.likeCount || 0), 0) ||
-		0;
-	const publishedCount =
-		postsData?.content?.filter((post) => post.visibility === "PUBLISHED")
-			.length || 0;
+	// ── Derived stats ─────────────────────────────────────────────────────────
+
+	const posts = postsData?.content ?? [];
+
+	const filteredPosts = useMemo(() => {
+		if (!search.trim()) return posts;
+		const q = search.toLowerCase();
+		return posts.filter(
+			(p) =>
+				p.title?.toLowerCase().includes(q) ||
+				p.slug?.toLowerCase().includes(q),
+		);
+	}, [posts, search]);
+	const totalViews = posts.reduce((sum, p) => sum + (p.viewCount || 0), 0);
+	const totalLikes = posts.reduce((sum, p) => sum + (p.likeCount || 0), 0);
+	const publishedCount = posts.filter((p) => p.visibility === "PUBLISHED").length;
+
+	// ── Handlers ──────────────────────────────────────────────────────────────
+
+	const handleDelete = useCallback(
+		(post: AdminPostListItem) => {
+			if (confirm(`Bạn có chắc chắn muốn xóa "${post.title}"?`)) {
+				deletePostMutation.mutate(post.id);
+			}
+		},
+		[deletePostMutation],
+	);
+
+	const handlePageChange = useCallback(
+		(newPage: number) => {
+			setPage(Math.max(0, Math.min(postsData?.totalPages ?? 1 - 1, newPage)));
+		},
+		[postsData?.totalPages],
+	);
+
+	// ── Columns ───────────────────────────────────────────────────────────────
 
 	const columns: ColumnDef<AdminPostListItem>[] = [
 		{
 			accessorKey: "author",
 			header: "Tác giả",
 			cell: ({ row }) => {
-				const author = row.original.author;
-				const username = author?.username ?? "Unknown";
-				const avatarSrc = author?.avatar ?? "/placeholder.svg";
-
+				const { username = "Unknown", avatar } = row.original.author ?? {};
 				return (
 					<div className="flex items-center gap-2">
 						<Avatar className="h-8 w-8">
-							<AvatarImage src={avatarSrc} alt={username} />
-							<AvatarFallback>
-								{username.charAt(0).toUpperCase()}
-							</AvatarFallback>
+							<AvatarImage src={avatar ?? "/placeholder.svg"} alt={username} />
+							<AvatarFallback>{username.charAt(0).toUpperCase()}</AvatarFallback>
 						</Avatar>
 						<span className="text-sm font-medium">{username}</span>
 					</div>
@@ -122,26 +191,22 @@ export default function ArticlesContent() {
 		},
 		{
 			accessorKey: "title",
-			header: ({ column }) => {
-				return (
-					<Button
-						variant="ghost"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-						className="hover:bg-transparent"
-					>
-						Tiêu đề
-						<ArrowUpDown className="ml-2 h-4 w-4" />
-					</Button>
-				);
-			},
+			header: ({ column }) => (
+				<Button
+					variant="ghost"
+					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					className="hover:bg-transparent"
+				>
+					Tiêu đề
+					<ArrowUpDown className="ml-2 h-4 w-4" />
+				</Button>
+			),
 			cell: ({ row }) => {
-				const post = row.original;
+				const { title, slug } = row.original;
 				return (
 					<div className="max-w-[300px]">
-						<div className="font-semibold text-sm truncate">{post.title}</div>
-						<div className="text-xs text-muted-foreground truncate">
-							/{post.slug}
-						</div>
+						<div className="font-semibold text-sm truncate">{title}</div>
+						<div className="text-xs text-muted-foreground truncate">/{slug}</div>
 					</div>
 				);
 			},
@@ -151,11 +216,14 @@ export default function ArticlesContent() {
 			header: "Danh mục",
 			cell: ({ row }) => {
 				const categories = row.original.categories;
-				return categories && categories.length > 0 ? (
+				if (!categories?.length) {
+					return <span className="text-xs text-muted-foreground">Không có</span>;
+				}
+				return (
 					<div className="flex flex-wrap gap-1">
-						{categories.slice(0, 2).map((category) => (
-							<Badge key={category.id} variant="secondary" className="text-xs">
-								{category.category}
+						{categories.slice(0, 2).map((cat) => (
+							<Badge key={cat.id} variant="secondary" className="text-xs">
+								{cat.category}
 							</Badge>
 						))}
 						{categories.length > 2 && (
@@ -164,67 +232,48 @@ export default function ArticlesContent() {
 							</Badge>
 						)}
 					</div>
-				) : (
-					<span className="text-xs text-muted-foreground">Không có</span>
 				);
 			},
 		},
-
 		{
 			accessorKey: "likeCount",
-			header: ({ column }) => {
-				return (
-					<Button
-						variant="ghost"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-						className="hover:bg-transparent"
-					>
-						Thích
-						<ArrowUpDown className="ml-2 h-4 w-4" />
-					</Button>
-				);
-			},
-			cell: ({ row }) => {
-				return (
-					<div className="text-sm font-medium text-center">
-						{row.original.likeCount}
-					</div>
-				);
-			},
+			header: ({ column }) => (
+				<Button
+					variant="ghost"
+					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					className="hover:bg-transparent"
+				>
+					Thích
+					<ArrowUpDown className="ml-2 h-4 w-4" />
+				</Button>
+			),
+			cell: ({ row }) => (
+				<div className="text-sm font-medium text-center">{row.original.likeCount}</div>
+			),
 		},
 		{
 			accessorKey: "viewCount",
-			header: ({ column }) => {
-				return (
-					<Button
-						variant="ghost"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-						className="hover:bg-transparent"
-					>
-						Xem
-						<ArrowUpDown className="ml-2 h-4 w-4" />
-					</Button>
-				);
-			},
-			cell: ({ row }) => {
-				return (
-					<div className="text-sm font-medium text-center">
-						{row.original.viewCount}
-					</div>
-				);
-			},
+			header: ({ column }) => (
+				<Button
+					variant="ghost"
+					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					className="hover:bg-transparent"
+				>
+					Xem
+					<ArrowUpDown className="ml-2 h-4 w-4" />
+				</Button>
+			),
+			cell: ({ row }) => (
+				<div className="text-sm font-medium text-center">{row.original.viewCount}</div>
+			),
 		},
 		{
 			accessorKey: "visibility",
 			header: "Trạng thái",
 			cell: ({ row }) => {
 				const isPublished = row.original.visibility === "PUBLISHED";
-
 				return (
-					<Badge
-						variant={isPublished ? "outline" : "secondary"}
-						className="text-xs"
-					>
+					<Badge variant={isPublished ? "outline" : "secondary"} className="text-xs">
 						{isPublished ? "Published" : "Draft"}
 					</Badge>
 				);
@@ -233,41 +282,33 @@ export default function ArticlesContent() {
 		{
 			accessorKey: "featured",
 			header: "Nổi bật",
-			cell: ({ row }) => {
-				const post = row.original;
-				return (
-					<FeaturedToggle postId={post.id} initialFeatured={post.featured} />
-				);
-			},
+			cell: ({ row }) => (
+				<FeaturedToggle postId={row.original.id} initialFeatured={row.original.featured} />
+			),
 		},
 		{
 			accessorKey: "createdAt",
-			header: ({ column }) => {
-				return (
-					<Button
-						variant="ghost"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-						className="hover:bg-transparent"
-					>
-						Ngày tạo
-						<ArrowUpDown className="ml-2 h-4 w-4" />
-					</Button>
-				);
-			},
-			cell: ({ row }) => {
-				return (
-					<div className="text-xs">
-						{format(new Date(row.original.createdAt), "dd/MM/yyyy")}
-					</div>
-				);
-			},
+			header: ({ column }) => (
+				<Button
+					variant="ghost"
+					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+					className="hover:bg-transparent"
+				>
+					Ngày tạo
+					<ArrowUpDown className="ml-2 h-4 w-4" />
+				</Button>
+			),
+			cell: ({ row }) => (
+				<div className="text-xs">
+					{format(new Date(row.original.createdAt), "dd/MM/yyyy")}
+				</div>
+			),
 		},
 		{
 			id: "actions",
 			header: "",
 			cell: ({ row }) => {
 				const post = row.original;
-
 				return (
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
@@ -292,11 +333,8 @@ export default function ArticlesContent() {
 							<DropdownMenuSeparator />
 							<DropdownMenuItem
 								className="text-xs text-destructive focus:text-destructive"
-								onClick={() => {
-									if (confirm("Bạn có chắc chắn muốn xóa bài viết này?")) {
-										deletePostMutation.mutate(post.id);
-									}
-								}}
+								onClick={() => handleDelete(post)}
+								disabled={deletePostMutation.isPending}
 							>
 								<Trash2 className="h-3 w-3 mr-2" />
 								Xóa
@@ -308,9 +346,11 @@ export default function ArticlesContent() {
 		},
 	];
 
+	// ── Render ────────────────────────────────────────────────────────────────
+
 	return (
 		<div className="min-h-screen bg-background">
-			{/* Header Section */}
+			{/* Header */}
 			<div className="border-b border-border/50 bg-card/50 backdrop-blur-sm">
 				<div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
 					<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -330,165 +370,109 @@ export default function ArticlesContent() {
 				</div>
 			</div>
 
-			{/* Stats Section */}
+			{/* Stats */}
 			<div className="border-b border-border/50">
 				<div className="container mx-auto px-4 sm:px-6 py-6">
 					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-						{/* Total Articles */}
-						<div className="bg-card border border-border/50 rounded-lg p-4">
-							<div className="flex items-center justify-between">
-								<div>
-									<p className="text-xs font-medium text-muted-foreground">
-										Tổng bài viết
-									</p>
-									<p className="text-2xl font-bold text-foreground mt-1">
-										{postsData?.totalElements || 0}
-									</p>
-								</div>
-								<div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-									<TrendingUp className="h-5 w-5 text-primary" />
-								</div>
-							</div>
-						</div>
-
-						{/* Published */}
-						<div className="bg-card border border-border/50 rounded-lg p-4">
-							<div className="flex items-center justify-between">
-								<div>
-									<p className="text-xs font-medium text-muted-foreground">
-										Công khai
-									</p>
-									<p className="text-2xl font-bold text-foreground mt-1">
-										{publishedCount}
-									</p>
-								</div>
-								<div className="h-10 w-10 rounded-lg bg-green-500/10 flex items-center justify-center">
-									<Eye className="h-5 w-5 text-green-600" />
-								</div>
-							</div>
-						</div>
-
-						{/* Total Views */}
-						<div className="bg-card border border-border/50 rounded-lg p-4">
-							<div className="flex items-center justify-between">
-								<div>
-									<p className="text-xs font-medium text-muted-foreground">
-										Tổng lượt xem
-									</p>
-									<p className="text-2xl font-bold text-foreground mt-1">
-										{totalViews.toLocaleString()}
-									</p>
-								</div>
-								<div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
-									<Eye className="h-5 w-5 text-blue-600" />
-								</div>
-							</div>
-						</div>
-
-						{/* Total Likes */}
-						<div className="bg-card border border-border/50 rounded-lg p-4">
-							<div className="flex items-center justify-between">
-								<div>
-									<p className="text-xs font-medium text-muted-foreground">
-										Tổng lượt thích
-									</p>
-									<p className="text-2xl font-bold text-foreground mt-1">
-										{totalLikes.toLocaleString()}
-									</p>
-								</div>
-								<div className="h-10 w-10 rounded-lg bg-pink-500/10 flex items-center justify-center">
-									<TrendingUp className="h-5 w-5 text-pink-600" />
-								</div>
-							</div>
-						</div>
+						<StatCard
+							label="Tổng bài viết"
+							value={postsData?.totalElements ?? 0}
+							icon={<FileText className="h-5 w-5 text-primary" />}
+							colorClass="bg-primary/10"
+						/>
+						<StatCard
+							label="Công khai"
+							value={publishedCount}
+							icon={<Eye className="h-5 w-5 text-green-600" />}
+							colorClass="bg-green-500/10"
+						/>
+						<StatCard
+							label="Tổng lượt xem"
+							value={totalViews.toLocaleString()}
+							icon={<TrendingUp className="h-5 w-5 text-blue-600" />}
+							colorClass="bg-blue-500/10"
+						/>
+						<StatCard
+							label="Tổng lượt thích"
+							value={totalLikes.toLocaleString()}
+							icon={<Heart className="h-5 w-5 text-pink-600" />}
+							colorClass="bg-pink-500/10"
+						/>
 					</div>
 				</div>
 			</div>
 
-			{/* Filters Section */}
+			{/* Filters */}
 			<div className="border-b border-border/50">
-				<div className="container mx-auto px-4 sm:px-6 py-6">
-					<div className="flex flex-row gap-4 items-center">
-						<div className="relative flex-1 max-w-sm">
-							<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+				<div className="container mx-auto px-4 sm:px-6 py-4">
+					<div className="flex flex-wrap gap-3 items-center">
+						<div className="relative flex-1 min-w-[200px] max-w-sm">
+							<Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
 							<Input
-								placeholder="Tìm kiếm bài viết theo tiêu đề hoặc slug..."
+								placeholder="Tìm kiếm theo tiêu đề hoặc slug..."
 								value={search}
-								onChange={(e) => setSearch(e.target.value)}
+								onChange={(e) => {
+									setSearch(e.target.value);
+								}}
 								className="pl-10"
 							/>
 						</div>
 
-						<div className="flex gap-3">
-							<Select value={categoryFilter} onValueChange={setCategoryFilter}>
-								<SelectTrigger className="w-48">
-									<SelectValue placeholder="Chọn danh mục" />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value="all">Tất cả danh mục</SelectItem>
-									{categoriesData?.data?.map((category: any) => (
-										<SelectItem
-											key={category.id}
-											value={category.id.toString()}
-										>
-											{category.category}
-										</SelectItem>
-									))}
-								</SelectContent>
-							</Select>
+						{/* FIX: Sử dụng categoriesData trực tiếp (không qua .data)
+						    Nếu API của bạn trả về { data: [...] } thì đổi thành categoriesData?.data */}
+						<Select value={categoryFilter} onValueChange={(v) => { setCategoryFilter(v); setPage(0); }}>
+							<SelectTrigger className="w-44">
+								<SelectValue placeholder="Chọn danh mục" />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="all">Tất cả danh mục</SelectItem>
+								{categoriesData?.map((category: Category) => (
+									<SelectItem key={category.id} value={category.id.toString()}>
+										{category.category}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
 
-							<Select value={featuredFilter} onValueChange={setFeaturedFilter}>
-								<SelectTrigger className="w-48">
-									<SelectValue placeholder="Lọc nổi bật" />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value="all">Tất cả</SelectItem>
-									<SelectItem value="true">Nổi bật</SelectItem>
-									<SelectItem value="false">Không nổi bật</SelectItem>
-								</SelectContent>
-							</Select>
+						<Select value={featuredFilter} onValueChange={(v) => { setFeaturedFilter(v); setPage(0); }}>
+							<SelectTrigger className="w-40">
+								<SelectValue placeholder="Lọc nổi bật" />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="all">Tất cả</SelectItem>
+								<SelectItem value="true">Nổi bật</SelectItem>
+								<SelectItem value="false">Không nổi bật</SelectItem>
+							</SelectContent>
+						</Select>
 
-							<Select
-								value={size.toString()}
-								onValueChange={(value) => setSize(Number(value))}
-							>
-								<SelectTrigger className="w-48">
-									<SelectValue />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value="10">10 mục</SelectItem>
-									<SelectItem value="20">20 mục</SelectItem>
-									<SelectItem value="50">50 mục</SelectItem>
-									<SelectItem value="100">100 mục</SelectItem>
-								</SelectContent>
-							</Select>
-						</div>
+						<Select
+							value={size.toString()}
+							onValueChange={(v) => { setSize(Number(v)); setPage(0); }}
+						>
+							<SelectTrigger className="w-28">
+								<SelectValue />
+							</SelectTrigger>
+							<SelectContent>
+								{[10, 20, 50, 100].map((n) => (
+									<SelectItem key={n} value={n.toString()}>
+										{n} mục
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
 					</div>
 				</div>
 			</div>
 
-			{/* Table Section */}
+			{/* Table */}
 			<div className="container mx-auto px-4 sm:px-6 py-6">
 				{isLoading ? (
-					<div className="bg-card border border-border/50 rounded-lg p-8">
-						<div className="space-y-4">
-							{Array.from({ length: 5 }).map((_, i) => (
-								<div key={i} className="flex items-center space-x-4">
-									<div className="h-4 bg-muted rounded w-1/4 animate-pulse"></div>
-									<div className="h-4 bg-muted rounded w-1/6 animate-pulse"></div>
-									<div className="h-4 bg-muted rounded w-1/6 animate-pulse"></div>
-									<div className="h-4 bg-muted rounded w-1/6 animate-pulse"></div>
-								</div>
-							))}
-						</div>
-					</div>
+					<TableSkeleton />
 				) : (
 					<div className="bg-card border border-border/50 rounded-lg overflow-hidden">
 						<DataTable
 							columns={columns}
-							data={postsData?.content || []}
-							searchKey="title"
-							searchPlaceholder="Tìm kiếm theo tiêu đề..."
+							data={filteredPosts}
 						/>
 					</div>
 				)}
@@ -496,15 +480,14 @@ export default function ArticlesContent() {
 				{/* Pagination */}
 				{postsData && !isLoading && (
 					<div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-						<div className="text-sm text-muted-foreground">
-							Hiển thị {postsData.content.length} trong{" "}
-							{postsData.totalElements} bài viết
-						</div>
+						<p className="text-sm text-muted-foreground">
+							Hiển thị {posts.length} trong {postsData.totalElements} bài viết
+						</p>
 						<div className="flex items-center gap-2 flex-wrap justify-center">
 							<Button
 								variant="outline"
 								size="sm"
-								onClick={() => setPage(Math.max(0, page - 1))}
+								onClick={() => handlePageChange(page - 1)}
 								disabled={page === 0}
 							>
 								Trước
@@ -513,7 +496,7 @@ export default function ArticlesContent() {
 								<span className="text-xs text-muted-foreground">Trang</span>
 								<Select
 									value={(page + 1).toString()}
-									onValueChange={(value) => setPage(Number(value) - 1)}
+									onValueChange={(v) => handlePageChange(Number(v) - 1)}
 								>
 									<SelectTrigger className="w-16">
 										<SelectValue />
@@ -533,9 +516,7 @@ export default function ArticlesContent() {
 							<Button
 								variant="outline"
 								size="sm"
-								onClick={() =>
-									setPage(Math.min(postsData.totalPages - 1, page + 1))
-								}
+								onClick={() => handlePageChange(page + 1)}
 								disabled={page >= postsData.totalPages - 1}
 							>
 								Sau

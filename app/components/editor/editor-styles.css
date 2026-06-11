@@ -1,0 +1,7 @@
+.editor-content-area .is-editor-empty:first-child::before {
+	content: "Bắt đầu viết nội dung bài viết...";
+	color: hsl(var(--muted-foreground) / 0.5);
+	float: left;
+	height: 0;
+	pointer-events: none;
+}

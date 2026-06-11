@@ -81,7 +81,7 @@ export function DataTable<TData, TValue>({
 					<Input
 						placeholder={searchPlaceholder}
 						value={
-							(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""
+							(table.getColumn(searchKey)?.getFilterValue() as string) || ""
 						}
 						onChange={(event) =>
 							table.getColumn(searchKey)?.setFilterValue(event.target.value)

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Check, Loader2, Search, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { postsApi } from "~/api/posts";
+import { authorApi } from "~/api/author";
 import { Button } from "~/components/ui/button";
 import {
 	Dialog,
@@ -11,7 +11,8 @@ import {
 	DialogTitle,
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
-import type { Post, Series } from "~/types";
+import type { Series } from "~/types";
+import { getSeriesPostId } from "~/utils/series";
 
 interface AddPostToSeriesModalProps {
 	isOpen: boolean;
@@ -32,17 +33,19 @@ export const AddPostToSeriesModal = ({
 	const [selectedPosts, setSelectedPosts] = useState<string[]>([]);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
-	// Get user's posts for selection
 	const { data: userPosts, isLoading: isLoadingPosts } = useQuery({
-		queryKey: ["user-posts", searchTerm],
-		queryFn: () => postsApi.getPosts({ page: 0, size: 50, search: searchTerm }),
+		queryKey: ["author-posts-for-series", searchTerm],
+		queryFn: () =>
+			authorApi.getMyPosts(0, 50, searchTerm || undefined, undefined, undefined, "desc"),
 		enabled: isOpen,
 	});
 
-	// Filter out posts that are already in the series
 	const availablePosts =
-		userPosts?.content?.filter(
-			(post) => !series?.posts?.some((seriesPost) => seriesPost.id === post.id),
+		userPosts?.posts?.filter(
+			(post) =>
+				!series?.posts?.some(
+					(seriesPost) => getSeriesPostId(seriesPost) === post.id,
+				),
 		) || [];
 
 	const handlePostSelect = (postId: string) => {

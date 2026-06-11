@@ -209,7 +209,7 @@ export function ReportsList() {
 											size="sm"
 											onClick={() => {
 												// Navigate to post
-												window.open(`/posts/${report.postSlug}`, "_blank");
+												window.open(`/articles/${report.postSlug}`, "_blank");
 											}}
 										>
 											<ExternalLink className="size-4 mr-2" />

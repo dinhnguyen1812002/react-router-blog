@@ -1,15 +1,10 @@
 import type { AxiosError } from "axios";
-import { markIcons } from "~/components/tiptap-ui/mark-button";
 import axiosInstance from "~/config/axios";
-
-export interface Notification {
-	notificationId: string;
-	title: string;
-	isRead: boolean;
-	message: string;
-	type: string;
-	createdAt: string;
-}
+import type {
+	MarkAsReadResponse,
+	Notification,
+	NotificationListResponse,
+} from "~/types/notification";
 
 export const notify = {
 	/**
@@ -38,8 +33,8 @@ export const notify = {
 	 * Backend endpoint: PUT /api/v1/notifications/{id}/read
 	 * @returns Updated notification object
 	 */
-	markAsRead: async (notificationId: string): Promise<Notification> => {
-		const response = await axiosInstance.put<Notification>(
+	markAsRead: async (notificationId: string): Promise<MarkAsReadResponse> => {
+		const response = await axiosInstance.put<MarkAsReadResponse>(
 			`/notifications/${notificationId}/read`,
 		);
 		return response.data;
@@ -53,11 +48,4 @@ export const notify = {
 		await axiosInstance.put("/notifications/read-all");
 	},
 
-	markAsUnread: async (notificationId: string): Promise<void> => {
-		await axiosInstance.post(`/notifications/${notificationId}/unread`);
-	},
-
-	markAsUntransferable: async (notificationId: string): Promise<void> => {
-		await axiosInstance.post(`/notifications/${notificationId}/untransferable`);
-	},
 };

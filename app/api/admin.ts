@@ -106,8 +106,9 @@ const transformStatsResponse = (data: AdminStatsResponse): AdminStats => {
 
 export const adminApi = {
 	getStats: async (): Promise<AdminStats> => {
-		const res = await apiClient.get<AdminStatsResponse>(`/admin/analytics`);
-		return transformStatsResponse(res.data);
+		const res = await apiClient.get<AdminStatsResponse>(`/admin/analytics/summary`);
+		const raw = (res.data as { data?: AdminStatsResponse }).data ?? res.data;
+		return transformStatsResponse(raw);
 	},
 
 	getUsers: async (page: number = 0, size: number = 10) => {

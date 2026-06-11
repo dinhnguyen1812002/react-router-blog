@@ -65,9 +65,6 @@ import { handleImageUpload, MAX_FILE_SIZE } from "~/lib/tiptap-utils";
 // --- Styles ---
 import "~/components/tiptap-templates/simple/simple-editor.scss";
 
-import { Save } from "lucide-react";
-import { useState } from "react";
-import { SavePostDialog } from "~/components/article/save-post-dialog";
 import content from "~/components/tiptap-templates/simple/data/content.json";
 
 const MainToolbarContent = ({
@@ -79,7 +76,6 @@ const MainToolbarContent = ({
 	onLinkClick: () => void;
 	isMobile: boolean;
 }) => {
-	const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
 	return (
 		<>
 			<Spacer />

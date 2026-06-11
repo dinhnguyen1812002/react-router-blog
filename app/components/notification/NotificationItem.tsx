@@ -1,20 +1,21 @@
-import { AlertTriangle, CheckCircle, Info, XCircle } from "lucide-react";
+import { AlertTriangle, CheckCircle, Heart, Info, MessageCircle, UserPlus, XCircle } from "lucide-react";
 import { cn } from "~/lib/utils";
-import type { Notification } from "./NotificationCenter";
+import type { UINotification } from "~/types/notification";
 
 interface NotificationItemProps {
-	notification: Notification;
+	notification: UINotification;
 	onMarkAsRead: (id: string) => void;
+	onClick?: (notification: UINotification) => void;
 }
 
-const iconMap: Record<Notification["type"], React.ComponentType<any>> = {
-	success: CheckCircle,
-	info: Info,
+const iconMap: Record<UINotification["type"], React.ComponentType<{ className?: string }>> = {
+	success: Heart,
+	info: MessageCircle,
 	warning: AlertTriangle,
 	error: XCircle,
 };
 
-const colorMap = {
+const colorMap: Record<UINotification["type"], string> = {
 	success: "text-success",
 	info: "text-info",
 	warning: "text-warning",
@@ -24,14 +25,18 @@ const colorMap = {
 export const NotificationItem = ({
 	notification,
 	onMarkAsRead,
+	onClick,
 }: NotificationItemProps) => {
 	const Icon = iconMap[notification.type] ?? Info;
 	const colorClass = colorMap[notification.type];
 
 	const handleClick = () => {
+		// Mark as read if unread
 		if (!notification.read) {
 			onMarkAsRead(notification.id);
 		}
+		// Trigger navigation handler if provided
+		onClick?.(notification);
 	};
 
 	return (
@@ -58,8 +63,13 @@ export const NotificationItem = ({
 					{notification.message}
 				</p>
 				<p className="text-xs text-muted-foreground">
-					{notification.timestamp}
-				</p>
+				{new Date(notification.timestamp).toLocaleString("vi-VN", {
+					day: "2-digit",
+					month: "2-digit",
+					hour: "2-digit",
+					minute: "2-digit",
+				})}
+			</p>
 			</div>
 		</div>
 	);

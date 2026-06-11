@@ -117,7 +117,7 @@ export const adminPostsApi = {
 	 * Get categories for filter dropdown
 	 */
 	getCategories: async () => {
-		const response = await axiosInstance.get("/category");
+		const response = await axiosInstance.get("/categories");
 		return response.data;
 	},
 };

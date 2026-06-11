@@ -1,9 +1,8 @@
+import { useQuery } from "@tanstack/react-query";
 import {
 	Activity,
 	ArrowDownRight,
 	ArrowUpRight,
-	BarChart3,
-	Calendar,
 	Eye,
 	FileText,
 	FolderOpen,
@@ -11,15 +10,20 @@ import {
 	Loader2,
 	Mail,
 	Minus,
-	PieChart,
 	Tags,
 	TrendingUp,
 	Users,
 } from "lucide-react";
-import { useState } from "react";
+import { Link } from "react-router";
+import { categoriesApi } from "~/api/categories";
+import { tagsApi } from "~/api/tags";
 import { ChartAreaInteractive } from "~/components/chart/chart-area-interactive";
 import adminMockData from "~/data/admin-mock-data.json";
-import { useAdminStats } from "~/hooks/useAdminStats";
+import {
+	useAnalyticsSummary,
+	useTopLikedPosts,
+	useTopViewedPosts,
+} from "~/hooks/useAdminAnalytics";
 import type { Route } from "./+types";
 export function meta({}: Route.MetaArgs) {
 	return [
@@ -141,126 +145,83 @@ const StatCard = ({
 };
 
 export default function AdminDashboard() {
+	const mockData = adminMockData.overview;
+
 	const {
-		data: statsData,
-		isLoading,
-		error,
-		refetch,
+		data: summary,
+		isLoading: summaryLoading,
+		error: summaryError,
+		refetch: refetchSummary,
 		isRefetching,
-	} = useAdminStats();
-	const [mockData] = useState(adminMockData.overview);
+	} = useAnalyticsSummary();
 
-	// Fallback data when API fails
-	const fallbackStats = {
-		totalUsers: {
-			value: mockData.stats.totalUsers.value,
-			change: mockData.stats.totalUsers.change,
-			changeType: mockData.stats.totalUsers.changeType as
-				| "increase"
-				| "decrease"
-				| "neutral",
-			period: mockData.stats.totalUsers.period,
-		},
-		totalPosts: {
-			value: mockData.stats.totalPosts.value,
-			change: mockData.stats.totalPosts.change,
-			changeType: mockData.stats.totalPosts.changeType as
-				| "increase"
-				| "decrease"
-				| "neutral",
-			period: mockData.stats.totalPosts.period,
-		},
-		totalCategories: {
-			value: mockData.stats.totalCategories.value,
-			change: mockData.stats.totalCategories.change,
-			changeType: mockData.stats.totalCategories.changeType as
-				| "increase"
-				| "decrease"
-				| "neutral",
-			period: mockData.stats.totalCategories.period,
-		},
-		totalTags: {
-			value: mockData.stats.totalTags.value,
-			change: mockData.stats.totalTags.change,
-			changeType: mockData.stats.totalTags.changeType as
-				| "increase"
-				| "decrease"
-				| "neutral",
-			period: mockData.stats.totalTags.period,
-		},
-		newsletterSubscribers: {
-			value: mockData.stats.newsletterSubscribers.value,
-			change: mockData.stats.newsletterSubscribers.change,
-			changeType: mockData.stats.newsletterSubscribers.changeType as
-				| "increase"
-				| "decrease"
-				| "neutral",
-			period: mockData.stats.newsletterSubscribers.period,
-		},
-		monthlyTraffic: {
-			value: mockData.stats.monthlyTraffic.value,
-			change: mockData.stats.monthlyTraffic.change,
-			changeType: mockData.stats.monthlyTraffic.changeType as
-				| "increase"
-				| "decrease"
-				| "neutral",
-			period: mockData.stats.monthlyTraffic.period,
-		},
-	};
+	const { data: topViewed = [], isLoading: topViewedLoading } =
+		useTopViewedPosts(5);
+	const { data: topLiked = [], isLoading: topLikedLoading } = useTopLikedPosts(5);
 
-	// Use API data or fallback to mock data
-	const currentStats = statsData || fallbackStats;
-	const hasError = !!error;
-	const loading = isLoading;
+	const { data: categories = [] } = useQuery({
+		queryKey: ["categories"],
+		queryFn: categoriesApi.getAll,
+		staleTime: 1000 * 60 * 5,
+	});
+
+	const { data: tags = [] } = useQuery({
+		queryKey: ["tags"],
+		queryFn: tagsApi.getAll,
+		staleTime: 1000 * 60 * 5,
+	});
+
+	const loading = summaryLoading;
+	const hasError = !!summaryError;
 
 	const stats = [
 		{
-			name: "Tổng người dùng",
-			value: currentStats.totalUsers.value,
-			change: currentStats.totalUsers.change,
-			changeType: currentStats.totalUsers.changeType,
-			period: currentStats.totalUsers.period,
+			name: "Tổng lượt xem",
+			value: summary?.totalViews ?? 0,
+			change: 0,
+			changeType: "neutral" as const,
+			period: "toàn nền tảng",
+			icon: Eye,
+		},
+		{
+			name: "Người dùng hoạt động",
+			value: summary?.activeUsers ?? 0,
+			change: 0,
+			changeType: "neutral" as const,
+			period: "30 ngày qua",
 			icon: Users,
 		},
 		{
-			name: "Tổng bài viết",
-			value: currentStats.totalPosts.value,
-			change: currentStats.totalPosts.change,
-			changeType: currentStats.totalPosts.changeType,
-			period: currentStats.totalPosts.period,
+			name: "Bài viết mới (tháng)",
+			value: summary?.newPosts ?? 0,
+			change: 0,
+			changeType: "neutral" as const,
+			period: "tháng hiện tại",
 			icon: FileText,
 		},
 		{
+			name: "Tổng lượt thích",
+			value: summary?.totalLikes ?? 0,
+			change: 0,
+			changeType: "neutral" as const,
+			period: "toàn nền tảng",
+			icon: Heart,
+		},
+		{
 			name: "Tổng danh mục",
-			value: currentStats.totalCategories.value,
-			change: currentStats.totalCategories.change,
-			changeType: currentStats.totalCategories.changeType,
-			period: currentStats.totalCategories.period,
+			value: categories.length,
+			change: 0,
+			changeType: "neutral" as const,
+			period: "đang quản lý",
 			icon: FolderOpen,
 		},
 		{
 			name: "Tổng thẻ",
-			value: currentStats.totalTags.value,
-			change: currentStats.totalTags.change,
-			changeType: currentStats.totalTags.changeType,
-			period: currentStats.totalTags.period,
+			value: tags.length,
+			change: 0,
+			changeType: "neutral" as const,
+			period: "đang quản lý",
 			icon: Tags,
-		},
-		{
-			name: "Newsletter Subscribers",
-			value: currentStats.newsletterSubscribers.value,
-			change: currentStats.newsletterSubscribers.change,
-			changeType: currentStats.newsletterSubscribers.changeType,
-			period: currentStats.newsletterSubscribers.period,
-			icon: Mail,
-		},
-		{
-			name: "Lượt truy cập tháng",
-			value: currentStats.monthlyTraffic.value,
-			change: currentStats.monthlyTraffic.change,
-			changeType: currentStats.monthlyTraffic.changeType,
-			period: currentStats.monthlyTraffic.period,
-			icon: TrendingUp,
 		},
 	];
 
@@ -283,7 +244,7 @@ export default function AdminDashboard() {
 					</p>
 				</div>
 				<button
-					onClick={() => refetch()}
+					onClick={() => refetchSummary()}
 					disabled={loading || isRefetching}
 					className="flex items-center space-x-2 px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
 				>
@@ -349,7 +310,7 @@ export default function AdminDashboard() {
 								Không thể tải dữ liệu thống kê
 							</p>
 							<p className="text-xs text-red-600 dark:text-red-400 mt-1">
-								Đang sử dụng dữ liệu mẫu
+								Vui lòng thử làm mới hoặc kiểm tra quyền ADMIN
 							</p>
 						</div>
 					</div>
@@ -373,31 +334,41 @@ export default function AdminDashboard() {
 						<Eye className="h-5 w-5 text-gray-400 dark:text-gray-500" />
 					</div>
 					<div className="space-y-4">
-						{mockData.topPosts.mostViewed.slice(0, 5).map((post, index) => (
-							<div key={post.id} className="flex items-start space-x-3">
-								<div className="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center">
-									<span className="text-xs font-medium text-blue-600 dark:text-blue-400">
-										{index + 1}
-									</span>
-								</div>
-								<div className="flex-1 min-w-0">
-									<p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-										{post.title}
-									</p>
-									<div className="flex items-center space-x-2 mt-1">
-										<span className="text-xs text-gray-500 dark:text-gray-400">
-											{post.views.toLocaleString()} lượt xem
-										</span>
-										<span className="text-xs text-gray-400 dark:text-gray-500">
-											•
-										</span>
-										<span className="text-xs text-gray-500 dark:text-gray-400">
-											{post.author}
+						{topViewedLoading ? (
+							<div className="flex justify-center py-4">
+								<Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+							</div>
+						) : topViewed.length === 0 ? (
+							<p className="text-sm text-gray-500 dark:text-gray-400">
+								Chưa có dữ liệu
+							</p>
+						) : (
+							topViewed.map((post, index) => (
+								<div key={post.postId} className="flex items-start space-x-3">
+									<div className="shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center">
+										<span className="text-xs font-medium text-blue-600 dark:text-blue-400">
+											{index + 1}
 										</span>
 									</div>
+									<div className="flex-1 min-w-0">
+										<p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+											{post.title}
+										</p>
+										<div className="flex items-center space-x-2 mt-1">
+											<span className="text-xs text-gray-500 dark:text-gray-400">
+												{post.viewCount.toLocaleString()} lượt xem
+											</span>
+											<span className="text-xs text-gray-400 dark:text-gray-500">
+												•
+											</span>
+											<span className="text-xs text-gray-500 dark:text-gray-400">
+												{post.authorName}
+											</span>
+										</div>
+									</div>
 								</div>
-							</div>
-						))}
+							))
+						)}
 					</div>
 				</div>
 
@@ -410,31 +381,41 @@ export default function AdminDashboard() {
 						<Heart className="h-5 w-5 text-gray-400 dark:text-gray-500" />
 					</div>
 					<div className="space-y-4">
-						{mockData.topPosts.mostLiked.slice(0, 5).map((post, index) => (
-							<div key={post.id} className="flex items-start space-x-3">
-								<div className="flex-shrink-0 w-6 h-6 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center">
-									<span className="text-xs font-medium text-red-600 dark:text-red-400">
-										{index + 1}
-									</span>
-								</div>
-								<div className="flex-1 min-w-0">
-									<p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-										{post.title}
-									</p>
-									<div className="flex items-center space-x-2 mt-1">
-										<span className="text-xs text-gray-500 dark:text-gray-400">
-											{post.likes} lượt thích
-										</span>
-										<span className="text-xs text-gray-400 dark:text-gray-500">
-											•
-										</span>
-										<span className="text-xs text-gray-500 dark:text-gray-400">
-											{post.author}
+						{topLikedLoading ? (
+							<div className="flex justify-center py-4">
+								<Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+							</div>
+						) : topLiked.length === 0 ? (
+							<p className="text-sm text-gray-500 dark:text-gray-400">
+								Chưa có dữ liệu
+							</p>
+						) : (
+							topLiked.map((post, index) => (
+								<div key={post.postId} className="flex items-start space-x-3">
+									<div className="shrink-0 w-6 h-6 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center">
+										<span className="text-xs font-medium text-red-600 dark:text-red-400">
+											{index + 1}
 										</span>
 									</div>
+									<div className="flex-1 min-w-0">
+										<p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+											{post.title}
+										</p>
+										<div className="flex items-center space-x-2 mt-1">
+											<span className="text-xs text-gray-500 dark:text-gray-400">
+												{post.likeCount} lượt thích
+											</span>
+											<span className="text-xs text-gray-400 dark:text-gray-500">
+												•
+											</span>
+											<span className="text-xs text-gray-500 dark:text-gray-400">
+												{post.authorName}
+											</span>
+										</div>
+									</div>
 								</div>
-							</div>
-						))}
+							))
+						)}
 					</div>
 				</div>
 			</div>
@@ -450,7 +431,7 @@ export default function AdminDashboard() {
 				<div className="space-y-4">
 					{mockData.recentActivities.map((activity) => (
 						<div key={activity.id} className="flex items-start space-x-3">
-							<div className="flex-shrink-0 w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full mt-2"></div>
+							<div className="shrink-0 w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full mt-2"></div>
 							<div className="flex-1 min-w-0">
 								<p className="text-sm text-gray-900 dark:text-white">
 									{activity.message}
@@ -483,30 +464,30 @@ export default function AdminDashboard() {
 					Thao tác nhanh
 				</h2>
 				<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-					<button className="p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+					<Link to="/admin/users" className="p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors block text-center">
 						<Users className="h-8 w-8 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
 						<p className="text-sm font-medium text-gray-700 dark:text-white">
 							Quản lý người dùng
 						</p>
-					</button>
-					<button className="p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+					</Link>
+					<Link to="/admin/categories" className="p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors block text-center">
 						<FolderOpen className="h-8 w-8 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
 						<p className="text-sm font-medium text-gray-700 dark:text-white">
 							Quản lý danh mục
 						</p>
-					</button>
-					<button className="p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+					</Link>
+					<Link to="/admin/tags" className="p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors block text-center">
 						<Tags className="h-8 w-8 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
 						<p className="text-sm font-medium text-gray-700 dark:text-white">
 							Quản lý thẻ
 						</p>
-					</button>
-					<button className="p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+					</Link>
+					<Link to="/admin/newsletter" className="p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors block text-center">
 						<Mail className="h-8 w-8 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
 						<p className="text-sm font-medium text-gray-700 dark:text-white">
 							Quản lý Newsletter
 						</p>
-					</button>
+					</Link>
 				</div>
 			</div>
 

@@ -105,20 +105,20 @@ export default function NewLetter() {
 									onChange={(e) => setEmail(e.target.value)}
 									disabled={subscribeMutation.isPending}
 									className="min-w-0 flex-auto rounded-md bg-white/5 px-3.5 py-2 
-      text-base text-white outline-1 -outline-offset-1 outline-white/10 
-      placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 
-      focus:outline-indigo-500 sm:text-sm/6"
-								/>
+										text-base text-white outline-1 -outline-offset-1 outline-white/10 
+										placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 
+										focus:outline-indigo-500 sm:text-sm/6"
+									/>
 
 								<button
 									type="submit"
 									disabled={subscribeMutation.isPending}
 									className="flex-none rounded-md bg-indigo-500 px-3.5 py-2.5 
-      text-sm font-semibold text-white shadow-xs hover:bg-indigo-400 
-      focus-visible:outline-2 focus-visible:outline-offset-2 
-      focus-visible:outline-indigo-500 disabled:opacity-50 
-      disabled:cursor-not-allowed"
-								>
+										text-sm font-semibold text-white shadow-xs hover:bg-indigo-400 
+										focus-visible:outline-2 focus-visible:outline-offset-2 
+										focus-visible:outline-indigo-500 disabled:opacity-50 
+										disabled:cursor-not-allowed"
+									>
 									{subscribeMutation.isPending ? "Submitting..." : "Subscribe"}
 								</button>
 							</div>
@@ -137,9 +137,9 @@ export default function NewLetter() {
 										onChange={(e) => setFirstName(e.target.value)}
 										disabled={subscribeMutation.isPending}
 										className="w-full rounded-md bg-white/5 px-3.5 py-2 
-      text-sm text-white outline-1 -outline-offset-1 outline-white/10 
-      placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 
-      focus:outline-indigo-500"
+										text-sm text-white outline-1 -outline-offset-1 outline-white/10 
+										placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 
+										focus:outline-indigo-500"
 									/>
 								</div>
 								<div>
@@ -155,14 +155,14 @@ export default function NewLetter() {
 										onChange={(e) => setLastName(e.target.value)}
 										disabled={subscribeMutation.isPending}
 										className="w-full rounded-md bg-white/5 px-3.5 py-2 
-      text-sm text-white outline-1 -outline-offset-1 outline-white/10 
-      placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 
-      focus:outline-indigo-500"
+										text-sm text-white outline-1 -outline-offset-1 outline-white/10 
+										placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 
+										focus:outline-indigo-500"
 									/>
 								</div>
 							</div>
 
-							<div>
+							{/* <div>
 								<label htmlFor="source-url" className="sr-only">
 									Source URL
 								</label>
@@ -175,11 +175,11 @@ export default function NewLetter() {
 									onChange={(e) => setSourceUrl(e.target.value)}
 									disabled={subscribeMutation.isPending}
 									className="w-full rounded-md bg-white/5 px-3.5 py-2 
-      text-sm text-white outline-1 -outline-offset-1 outline-white/10 
-      placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 
-      focus:outline-indigo-500"
+									text-sm text-white outline-1 -outline-offset-1 outline-white/10 
+									placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 
+									focus:outline-indigo-500"
 								/>
-							</div>
+							</div> */}
 
 							<label className="flex items-center gap-3 text-sm text-white/90 cursor-pointer">
 								<input
@@ -195,11 +195,10 @@ export default function NewLetter() {
 
 							{subscribeResponse && (
 								<p
-									className={`mt-3 text-sm ${
-										subscribeResponse.success
+									className={`mt-3 text-sm ${subscribeResponse.success
 											? "text-green-300"
 											: "text-red-300"
-									}`}
+										}`}
 								>
 									{subscribeResponse.message}
 								</p>

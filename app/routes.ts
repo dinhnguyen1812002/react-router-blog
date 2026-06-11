@@ -27,13 +27,16 @@ export default [
 		route("article/:id/edit", "routes/dashboard/posts/edit-article.tsx"),
 		route("series", "routes/dashboard/series/index.tsx"),
 		route("series/new", "routes/dashboard/series/new.tsx"),
+		route("series/:id/manage", "routes/dashboard/series/manage.tsx"),
 		route("series/:id/edit", "routes/dashboard/series/edit.tsx"),
+		route("series/:slug", "routes/dashboard/series/detail.tsx"), // Route xem series bằng slug
 	]),
 
 	route("articles", "routes/articles._index.tsx"),
 	route("articles/:slug", "routes/posts.slug.tsx"),
 	route("series", "routes/series._index.tsx"),
 	route("series/:slug", "routes/series.$slug.tsx"),
+
 	route("categories", "routes/category.index.tsx"),
 	// route("search", "routes/search.tsx"),
 	route("about", "routes/about.tsx"),

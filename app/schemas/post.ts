@@ -37,7 +37,7 @@ export type PostFormValues = z.infer<typeof postFormSchema>;
 
 export type PostVisibility = "PUBLISHED" | "SCHEDULED" | "PRIVATE" | "DRAFT";
 
-/** API-ready payload passed from SavePostDialog to parent on save */
+/** API-ready payload passed from SavePublishModal to parent on save */
 export interface PostFormMetadata {
 	title: string;
 	content: string;

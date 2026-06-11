@@ -3,6 +3,7 @@ import {
 	Calendar,
 	Edit,
 	FileText,
+	ListOrdered,
 	MoreHorizontal,
 	Plus,
 	Trash2,
@@ -20,6 +21,7 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { formatDateSimple } from "~/lib/utils";
 import type { Series } from "~/types";
+import { getSeriesPostCount, getSeriesPostId } from "~/utils/series";
 import UserAvatar from "../ui/boring-avatar";
 
 interface SeriesCardProps {
@@ -28,6 +30,7 @@ interface SeriesCardProps {
 	onEdit?: (series: Series) => void;
 	onDelete?: (series: Series) => void;
 	onAddPost?: (series: Series) => void;
+	onManage?: (series: Series) => void;
 }
 
 export const SeriesCard = ({
@@ -36,7 +39,10 @@ export const SeriesCard = ({
 	onEdit,
 	onDelete,
 	onAddPost,
+	onManage,
 }: SeriesCardProps) => {
+	const postCount = getSeriesPostCount(series);
+
 	return (
 		<Card className="group overflow-hidden border border-border bg-card hover:shadow-[var(--shadow-card-hover)] transition-all duration-300">
 			{/* Thumbnail Image */}
@@ -55,7 +61,7 @@ export const SeriesCard = ({
 				{/* Header */}
 				<div className="flex items-start justify-between gap-3">
 					<div className="flex-1 min-w-0">
-						<Link to={`/series/${series.slug}`} className="block group/link">
+						<Link to={`/dashboard/series/${series.id}/manage`} className="block group/link">
 							<h3 className="text-lg font-semibold text-foreground group-hover/link:text-primary transition-colors line-clamp-2 mb-2">
 								{series.title}
 							</h3>
@@ -76,13 +82,20 @@ export const SeriesCard = ({
 									<MoreHorizontal className="h-4 w-4" />
 								</Button>
 							</DropdownMenuTrigger>
-							<DropdownMenuContent align="end" className="w-48">
+							<DropdownMenuContent align="end" className="w-52">
+								<DropdownMenuItem
+									onClick={() => onManage?.(series)}
+									className="cursor-pointer"
+								>
+									<ListOrdered className="h-4 w-4 mr-2" />
+									Quản lý bài viết
+								</DropdownMenuItem>
 								<DropdownMenuItem
 									onClick={() => onEdit?.(series)}
 									className="cursor-pointer"
 								>
 									<Edit className="h-4 w-4 mr-2" />
-									Chỉnh sửa
+									Chỉnh sửa thông tin
 								</DropdownMenuItem>
 								<DropdownMenuItem
 									onClick={() => onAddPost?.(series)}
@@ -114,7 +127,7 @@ export const SeriesCard = ({
 
 					<div className="flex items-center gap-1.5">
 						<FileText className="h-4 w-4" />
-						<span>{series.posts?.length || 0}</span>
+						<span>{postCount}</span>
 					</div>
 
 					<div className="ml-auto flex items-center gap-1.5 text-xs">
@@ -133,7 +146,7 @@ export const SeriesCard = ({
 						<div className="space-y-1.5">
 							{series.posts.slice(0, 3).map((post, index) => (
 								<Link
-									key={post.id}
+									key={getSeriesPostId(post)}
 									to={`/articles/${post.slug}`}
 									className="group/post flex items-start gap-2 text-sm hover:text-primary transition-colors"
 								>

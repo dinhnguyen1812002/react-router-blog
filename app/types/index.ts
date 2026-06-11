@@ -229,30 +229,41 @@ export interface Series {
 }
 
 export interface SeriesPost {
-	id: string;
+	postId: string;
 	title: string;
 	slug: string;
-	order?: number;
+	excerpt?: string;
+	thumbnail?: string | null;
+	orderIndex: number;
+	addedAt?: string;
+	publicDate?: string;
 }
 
 export interface CreateSeriesRequest {
 	title: string;
 	slug: string;
 	description: string;
+	thumbnail?: string;
+	isActive?: boolean;
+	isCompleted?: boolean;
 }
 
 export interface UpdateSeriesRequest {
 	title?: string;
-	slug?: string;
 	description?: string;
+	thumbnail?: string;
+	isActive?: boolean;
+	isCompleted?: boolean;
 }
 
 export interface AddPostToSeriesRequest {
 	postId: string;
+	orderIndex?: number;
 }
 
 export interface ReorderSeriesPostsRequest {
-	postIds: string[];
+	postId: string;
+	newOrderIndex: number;
 }
 
 export interface SeriesSearchRequest {
