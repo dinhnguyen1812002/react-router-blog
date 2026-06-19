@@ -20,7 +20,8 @@ const AUTH_SKIP_PATHS = new Set([
 	"/auth/login",
 	"/auth/logout",
 	"/auth/register",
-	"/auth/oauth/login",
+	"/oauth/login",
+	"/oauth/verify",
 	"/auth/forgot-password",
 	"/auth/reset-password",
 ]);

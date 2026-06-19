@@ -1,27 +1,15 @@
 import { useCallback, useState } from "react";
-import { authApi, type OAuthProvider } from "~/api/auth";
+import { authApi } from "~/api/auth";
+import {
+	resolveOAuthReturnTo,
+	storeOAuthReturnTo,
+	type OAuthProvider,
+} from "~/lib/oauth";
 import { useClientOnly, useWindow } from "~/hooks/useClientOnly";
 
-export type { OAuthProvider } from "~/api/auth";
+export type { OAuthProvider } from "~/lib/oauth";
 
-const OAUTH_REDIRECT_STORAGE_KEY = "oauth:return-to";
-const AUTH_ROUTES = new Set(["/login", "/register", "/oauth2/redirect"]);
-
-const sanitizeReturnTo = (value: string | null | undefined): string => {
-	if (!value || !value.startsWith("/") || value.startsWith("//")) {
-		return "/";
-	}
-
-	return value;
-};
-
-export const getStoredOAuthReturnTo = (): string => {
-	if (typeof window === "undefined") return "/";
-
-	const value = window.sessionStorage.getItem(OAUTH_REDIRECT_STORAGE_KEY);
-	window.sessionStorage.removeItem(OAUTH_REDIRECT_STORAGE_KEY);
-	return sanitizeReturnTo(value);
-};
+export { consumeOAuthReturnTo as getStoredOAuthReturnTo } from "~/lib/oauth";
 
 export type OAuthLoginResult =
 	| { success: true }
@@ -41,7 +29,7 @@ export const useOAuthLogin = () => {
 			if (!isClient || !windowRef) {
 				return {
 					success: false,
-					error: "OAuth login is only available in the browser",
+					error: "Đăng nhập OAuth chỉ khả dụng trên trình duyệt",
 				};
 			}
 
@@ -49,19 +37,20 @@ export const useOAuthLogin = () => {
 			setError(null);
 
 			try {
-				const currentPath = `${windowRef.location.pathname}${windowRef.location.search}${windowRef.location.hash}`;
-				const returnTo = sanitizeReturnTo(
-					options?.returnTo ??
-						(AUTH_ROUTES.has(windowRef.location.pathname) ? "/" : currentPath),
+				const returnTo = resolveOAuthReturnTo(
+					windowRef.location.pathname,
+					windowRef.location.search,
+					windowRef.location.hash,
+					options?.returnTo,
 				);
 
-				windowRef.sessionStorage.setItem(OAUTH_REDIRECT_STORAGE_KEY, returnTo);
+				storeOAuthReturnTo(returnTo);
 				windowRef.location.assign(authApi.getOAuthAuthorizationUrl(provider));
 
 				return { success: true };
 			} catch (cause) {
 				const message =
-					cause instanceof Error ? cause.message : "OAuth login failed";
+					cause instanceof Error ? cause.message : "Đăng nhập OAuth thất bại";
 				setError(message);
 				setIsLoading(false);
 				return { success: false, error: message };

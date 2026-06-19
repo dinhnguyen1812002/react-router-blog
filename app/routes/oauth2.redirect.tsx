@@ -3,10 +3,10 @@ import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { toast } from "sonner";
 import { authApi } from "~/api/auth";
-import { getStoredOAuthReturnTo } from "~/hooks/useOAuthLogin";
-
-const sanitizeErrorMessage = (value: string | null): string =>
-	value?.trim() || "OAuth authentication failed";
+import {
+	consumeOAuthReturnTo,
+	sanitizeOAuthErrorMessage,
+} from "~/lib/oauth";
 
 export default function OAuthRedirectPage() {
 	const navigate = useNavigate();
@@ -18,10 +18,10 @@ export default function OAuthRedirectPage() {
 		const completeOAuth = async () => {
 			const error = searchParams.get("error");
 			const token = searchParams.get("token");
-			const returnTo = getStoredOAuthReturnTo();
+			const returnTo = consumeOAuthReturnTo();
 
 			if (error) {
-				const message = sanitizeErrorMessage(error);
+				const message = sanitizeOAuthErrorMessage(error);
 				toast.error(message);
 				navigate("/login", {
 					replace: true,
@@ -31,7 +31,7 @@ export default function OAuthRedirectPage() {
 			}
 
 			if (!token) {
-				const message = "Missing access token from OAuth callback";
+				const message = "Thiếu access token từ OAuth callback";
 				toast.error(message);
 				navigate("/login", {
 					replace: true,
@@ -44,7 +44,7 @@ export default function OAuthRedirectPage() {
 			if (cancelled) return;
 
 			if (!result.success) {
-				const message = sanitizeErrorMessage(result.message ?? null);
+				const message = sanitizeOAuthErrorMessage(result.message ?? null);
 				toast.error(message);
 				navigate("/login", {
 					replace: true,
@@ -53,7 +53,7 @@ export default function OAuthRedirectPage() {
 				return;
 			}
 
-			toast.success("Welcome back!");
+			toast.success("Đăng nhập thành công!");
 			navigate(returnTo, { replace: true });
 		};
 
@@ -71,10 +71,10 @@ export default function OAuthRedirectPage() {
 					<Loader2 className="h-6 w-6 animate-spin text-slate-700 dark:text-slate-200" />
 				</div>
 				<h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-					Completing sign in
+					Đang hoàn tất đăng nhập
 				</h1>
 				<p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-					We are validating your OAuth session and loading your profile.
+					Hệ thống đang xác thực phiên OAuth và tải hồ sơ của bạn.
 				</p>
 			</section>
 		</main>

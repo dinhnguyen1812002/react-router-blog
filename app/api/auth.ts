@@ -1,4 +1,8 @@
 import axiosInstance from "~/config/axios";
+import {
+	getOAuthAuthorizationUrl,
+	type OAuthProvider,
+} from "~/lib/oauth";
 import { useAuthStore } from "~/store/authStore";
 import type { ApiResponse, LoginResponse, ProfileUser, User } from "~/types";
 
@@ -37,7 +41,12 @@ export interface UpdateProfileRequest {
 	avatar: string;
 }
 
-export type OAuthProvider = "google" | "github" | "discord";
+export type { OAuthProvider } from "~/lib/oauth";
+
+export interface OAuthTokenRequest {
+	provider: OAuthProvider;
+	accessToken: string;
+}
 
 export interface OAuthLoginResponse {
 	success: boolean;
@@ -107,8 +116,24 @@ const normalizeUser = (
 	};
 };
 
-const resolveOAuthAuthorizationUrl = (provider: OAuthProvider): string =>
-	`${import.meta.env.VITE_BACKEND_BASE_URL || "http://localhost:8080"}/oauth2/authorization/${provider}`;
+const persistOAuthSession = (
+	data: Record<string, unknown>,
+): OAuthLoginResponse => {
+	const user = normalizeUser(data as SessionPayload);
+	const accessToken = extractToken(data);
+
+	if (!user || !accessToken) {
+		return {
+			success: false,
+			message:
+				(typeof data.message === "string" && data.message) ||
+				"OAuth login failed",
+		};
+	}
+
+	useAuthStore.getState().login(user, accessToken);
+	return { success: true, user, accessToken };
+};
 
 // ─── API ──────────────────────────────────────────────────────────────────────
 
@@ -220,60 +245,55 @@ export const authApi = {
 		}
 	},
 
+	/** Verify provider access token and return profile from Backend. */
+	async oauthVerify(payload: OAuthTokenRequest): Promise<ApiResponse<unknown>> {
+		const { data } = await axiosInstance.post("/oauth/verify", payload);
+		return data;
+	},
+
 	/**
-	 * OAuth login for google / github / discord.
-	 *
-	 * ✅ Removed the dual code+token payload — sending the same value under two
-	 *    keys is ambiguous and leaks implementation details to the server.
-	 *    Pass `code` only; if a provider uses tokens instead, call oauthLoginWithToken.
+	 * Token API flow: register/login with provider access token.
+	 * Backend sets cookies (`token`, `refresh-token`) like `/auth/login`.
 	 */
-	async oauthLogin(
-		provider: OAuthProvider,
-		code: string,
+	async oauthLoginWithToken(
+		payload: OAuthTokenRequest,
 	): Promise<OAuthLoginResponse> {
 		try {
 			const { data } = await axiosInstance.post(
-				"/auth/oauth/login",
-				{ provider, code },
+				"/oauth/login",
+				payload,
 				WITH_CREDENTIALS,
 			);
-
-			const finalToken = extractToken(data);
-
-			// ✅ js-early-exit: Return failure early; success path stays un-nested.
-			if (!data.user || !finalToken) {
-				return {
-					success: false,
-					message: data.message ?? "OAuth login failed",
-				};
-			}
-
-			useAuthStore.getState().login(data.user, finalToken);
-			return { success: true, user: data.user, accessToken: finalToken };
+			return persistOAuthSession(data);
 		} catch (error: unknown) {
-			const msg =
-				(error as any)?.response?.data?.message ??
+			const message =
+				(error as { response?: { data?: { message?: string } } })?.response
+					?.data?.message ??
 				(error as Error)?.message ??
 				"OAuth login failed";
-			return { success: false, message: msg };
+			return { success: false, message };
 		}
 	},
 
 	getOAuthAuthorizationUrl(provider: OAuthProvider): string {
-		return resolveOAuthAuthorizationUrl(provider);
+		return getOAuthAuthorizationUrl(provider);
 	},
 
+	/**
+	 * Redirect flow: Backend redirects to `/oauth2/redirect?token=...`
+	 * and sets auth cookies. Persist session and load profile.
+	 */
 	async finalizeOAuthLogin(accessToken: string): Promise<OAuthLoginResponse> {
 		try {
 			useAuthStore.getState().setToken(accessToken);
 			const user = await this.getCurrentUser();
-
 			useAuthStore.getState().login(user, accessToken);
 			return { success: true, user, accessToken };
 		} catch (error: unknown) {
 			useAuthStore.getState().logout();
 			const message =
-				(error as any)?.response?.data?.message ??
+				(error as { response?: { data?: { message?: string } } })?.response
+					?.data?.message ??
 				(error as Error)?.message ??
 				"OAuth login failed";
 			return { success: false, message };

@@ -4,7 +4,6 @@ export default [
 	index("routes/_index.tsx"),
 	route("login", "routes/login.tsx"),
 	route("oauth2/redirect", "routes/oauth2.redirect.tsx"),
-	route("auth/callback/:provider", "routes/auth.callback.$provider.tsx"),
 	route("register", "routes/register.tsx"),
 	route("forgot-password", "routes/forgot-password.tsx"),
 	route("reset-password", "routes/reset-password.tsx"),

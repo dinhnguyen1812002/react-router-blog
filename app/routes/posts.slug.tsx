@@ -66,10 +66,7 @@ export default function PostDetailPage() {
 			<MainLayout>
 				<div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
 					<div className="text-center">
-						<p
-							className="font-serif text-5xl text-black dark:text-white mb-6 opacity-10 select-none"
-							style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-						>
+						<p className="text-5xl font-bold text-black dark:text-white mb-6 opacity-10 select-none">
 							404
 						</p>
 						<p className="text-sm tracking-widest uppercase text-gray-400 dark:text-gray-500 mb-8">
@@ -144,10 +141,7 @@ export default function PostDetailPage() {
 								/>
 							</div>
 						)}
-						<h1
-							className="text-4xl md:text-5xl xl:text-6xl font-normal leading-tight mb-6"
-							style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-						>
+						<h1 className="text-4xl md:text-5xl xl:text-6xl font-bold leading-tight mb-6">
 							{post.title}
 						</h1>
 
@@ -193,11 +187,11 @@ export default function PostDetailPage() {
 						className="
               prose prose-lg max-w-none 
               dark:prose-invert
-              prose-headings:font-serif prose-headings:font-normal
+              prose-headings:font-semibold
               prose-p:leading-loose prose-p:text-gray-800 dark:prose-p:text-gray-200
               prose-a:text-black dark:prose-a:text-white prose-a:underline prose-a:decoration-1 prose-a:underline-offset-4 hover:prose-a:bg-black hover:prose-a:text-white dark:hover:prose-a:bg-white dark:hover:prose-a:text-black prose-a:transition-all
               prose-img:rounded-none prose-img:grayscale hover:prose-img:grayscale-0 prose-img:transition-all prose-img:duration-700
-              prose-blockquote:border-l-4 prose-blockquote:border-black dark:prose-blockquote:border-white prose-blockquote:font-serif prose-blockquote:text-xl
+              prose-blockquote:border-l-4 prose-blockquote:border-black dark:prose-blockquote:border-white prose-blockquote:text-xl
               prose-hr:border-black dark:prose-hr:border-white
             "
 					>
@@ -250,7 +244,7 @@ export default function PostDetailPage() {
 									className="w-16 h-16 object-cover"
 								/>
 							) : (
-								<div className="w-16 h-16 bg-black dark:bg-white text-white dark:text-black flex items-center justify-center text-xl font-serif">
+								<div className="w-16 h-16 bg-black dark:bg-white text-white dark:text-black flex items-center justify-center text-xl font-semibold">
 									{authorInitial}
 								</div>
 							)}
@@ -258,7 +252,7 @@ export default function PostDetailPage() {
 								<p className="text-xs uppercase tracking-widest text-gray-500 mb-1">
 									Được viết bởi
 								</p>
-								<p className="text-xl font-serif mb-2">{authorName}</p>
+								<p className="text-xl font-semibold mb-2">{authorName}</p>
 								<p className="text-sm text-gray-600 dark:text-gray-400">
 									Tác giả tập trung chia sẻ những góc nhìn sâu sắc về công nghệ,
 									thiết kế và cuộc sống.
@@ -272,7 +266,7 @@ export default function PostDetailPage() {
 						{/* Comments */}
 						<section>
 							<div className="flex items-center gap-4 mb-8">
-								<h2 className="text-2xl font-serif">Bình luận</h2>
+								<h2 className="text-2xl font-semibold">Bình luận</h2>
 								<div className="flex items-center gap-2 text-sm text-gray-500">
 									<MessageSquareText className="w-4 h-4" />[
 									{formatNumber(post.commentCount || 0)}]

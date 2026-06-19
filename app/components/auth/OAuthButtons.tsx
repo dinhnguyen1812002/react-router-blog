@@ -1,8 +1,9 @@
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
-import { type OAuthProvider, useOAuthLogin } from "~/hooks/useOAuthLogin";
+import { OAUTH_PROVIDERS, type OAuthProvider } from "~/lib/oauth";
+import { useOAuthLogin } from "~/hooks/useOAuthLogin";
 
 interface OAuthButtonsProps {
 	onSuccess?: (user: any) => void;
@@ -25,7 +26,7 @@ export const OAuthButtons = ({
 
 	const handleOAuthLogin = async (provider: OAuthProvider) => {
 		if (!isClient) {
-			onError?.("OAuth login is only available on the client side");
+			onError?.("Đăng nhập OAuth chỉ khả dụng trên trình duyệt");
 			return;
 		}
 
@@ -36,14 +37,16 @@ export const OAuthButtons = ({
 		if (result.success) {
 			onSuccess?.(null);
 		} else {
-			onError?.(result.error || "OAuth login failed");
+			onError?.(result.error || "Đăng nhập OAuth thất bại");
 			setLoadingProvider(null);
 		}
 	};
 
-	const providers = [
-		{
-			id: "google" as OAuthProvider,
+	const providerMeta: Record<
+		OAuthProvider,
+		{ name: string; icon: ReactNode }
+	> = {
+		google: {
 			name: "Google",
 			icon: (
 				<svg className="w-5 h-5" viewBox="0 0 24 24" aria-hidden="true">
@@ -66,8 +69,7 @@ export const OAuthButtons = ({
 				</svg>
 			),
 		},
-		{
-			id: "github" as OAuthProvider,
+		github: {
 			name: "GitHub",
 			icon: (
 				<svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -75,8 +77,7 @@ export const OAuthButtons = ({
 				</svg>
 			),
 		},
-		{
-			id: "discord" as OAuthProvider,
+		discord: {
 			name: "Discord",
 			icon: (
 				<svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -84,7 +85,12 @@ export const OAuthButtons = ({
 				</svg>
 			),
 		},
-	];
+	};
+
+	const providers = OAUTH_PROVIDERS.map((id) => ({
+		id,
+		...providerMeta[id],
+	}));
 
 	const isGrid = layout === "icon-grid";
 
@@ -152,8 +158,8 @@ export const OAuthButtons = ({
 						{!isGrid && (
 							<span>
 								{loadingProvider === provider.id
-									? "Redirecting..."
-									: `Continue with ${provider.name}`}
+									? "Đang chuyển hướng..."
+									: `Tiếp tục với ${provider.name}`}
 							</span>
 						)}
 					</Button>
@@ -162,13 +168,13 @@ export const OAuthButtons = ({
 
 			<div className="pt-2 text-center">
 				<p className="text-xs text-muted-foreground">
-					By signing in, you agree to our{" "}
+					Bằng việc đăng nhập, bạn đồng ý với{" "}
 					<a href="/terms" className="underline-offset-2 hover:underline">
-						Terms of Service
+						Điều khoản dịch vụ
 					</a>{" "}
-					and{" "}
+					và{" "}
 					<a href="/privacy" className="underline-offset-2 hover:underline">
-						Privacy Policy
+						Chính sách bảo mật
 					</a>
 				</p>
 			</div>

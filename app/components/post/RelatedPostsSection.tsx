@@ -26,10 +26,7 @@ function SectionHeader() {
 			<p className="text-[10px] uppercase tracking-[0.25em] text-gray-400 mb-2">
 				Đọc thêm
 			</p>
-			<h2
-				className="text-2xl md:text-3xl font-normal text-black dark:text-white"
-				style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-			>
+			<h2 className="text-2xl md:text-3xl font-semibold text-black dark:text-white">
 				Bài viết liên quan
 			</h2>
 			<hr className="border-black dark:border-white mt-4" />
